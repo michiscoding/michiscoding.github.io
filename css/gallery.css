@@ -1,0 +1,64 @@
+// For presentation only
+* {
+	box-sizing: border-box;
+}
+
+body {
+	padding: 2rem;
+	margin: 0;
+	font-family: 'Lato', sans-serif;
+	counter-reset: bricks;
+	background-color: #e3e7f2;
+	line-height: 1.5;
+	color: rgba(17, 20, 45, 1);
+}
+
+p {
+	color: rgba(17, 20, 45, .8);
+}
+
+h1 {
+	text-transform: uppercase;
+	font-size: 18px;
+	margin: 2rem 0 1.5rem;
+}
+
+.post {
+	position: relative;
+	background-color: #fff;
+	padding: 2rem;
+	margin-bottom: 2rem;
+	box-shadow: rgba(255, 255, 255, 0.1) 0px 1px 1px 0px inset, rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+	
+	img {
+		width: 100%;
+		display: block;
+	}
+	
+	&::before {
+		counter-increment: bricks;
+		content: counter(bricks);
+		position: absolute;
+		top: 0;
+		left: 0;
+		background-color: #ff2c6d;
+		width: 1.5rem;
+		height: 1.5rem;
+		color: #fff;
+		text-align: center;
+		line-height: 1.5rem;
+		font-size: 80%;
+	}
+}
+
+@media screen and (min-width: 768px) {
+	.c-multicol {
+		gap: 2rem;
+		column-width: 30vw;
+		column-count: 2;
+	}
+	
+	.post {
+		break-inside: avoid;
+	}
+}
