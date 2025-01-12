@@ -8,8 +8,9 @@ body{
 .grid {
 	margin: 3rem 13rem;
 	background-color: whitesmoke;
+  max-width: 1200px;   
   }
-  
+
   .grid-sizer,
   .grid-item {
 	width: 31.3%;       /* or any percentage/px you like */
