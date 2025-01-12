@@ -1,0 +1,42 @@
+
+/* play button */
+.custom-play-button {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  animation: spin 15s linear infinite; 
+  cursor: pointer;
+  border: none;
+}
+
+.custom-play-button:focus {
+  outline: none;
+}
+
+.custom-play-button input{
+  display: none;
+}
+
+/* pause button */
+.custom-pause-button {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  cursor: pointer;
+  border-color: transparent;
+  border: none;
+}
+
+.custom-pause-button:focus {
+  outline: none;
+}
+
+/* play animation */
+@keyframes spin {
+  from {
+      transform: rotate(0deg);
+  }
+  to {
+      transform: rotate(360deg);
+  }
+}

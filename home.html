@@ -21,6 +21,19 @@
     </ul>
 </nav>
 
+<!-- music player -->
+<div class="button-container">
+    <button class="custom-pause-button" onclick="pauseMusic()" id="pause"><img src="/images/pause.png"></img></button>
+    <button class="custom-play-button" onclick="playMusic()" id="play"><img src="/images/play.png"></img></button>
+
+    <div class="music-label-container">
+        <span class="song-name">CODEINE CUPS</span>
+        <span class="artist">SLIM HUSTLA (feat. DJ ÆDIDIAS)</span>
+    </div>
+</div>
+<audio id="audio">
+    <source src="/images/track 1.mp3" type="audio/mpeg">
+</audio>
 
 <body>
     <div class ="grid">
@@ -37,6 +50,7 @@
         </div>
     </div>
 </body>
+
 
 <!-- Link your external JavaScript file -->
 <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
