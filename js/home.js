@@ -1,10 +1,6 @@
 //max width onload
 function setWidth() {
   //print grid margin
-  const element = document.querySelector('.grid'); // Target your element
-  const computedStyle = getComputedStyle(element);
-  console.log('Computed Margin Top:', computedStyle.marginTop);
-
   const screenWidth = window.innerWidth;
   const maxWidth = screenWidth*.67;
   const marginRight = screenWidth*.3
