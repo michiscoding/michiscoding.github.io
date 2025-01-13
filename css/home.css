@@ -1,22 +1,22 @@
 
 body{
+  margin-top: 3vw;
 	background-color: whitesmoke;
   opacity: 0;
   transition: opacity 1s ease-in-out;
 }
 
 .grid {
-  margin: 3rem auto;
-  background-color: whitesmoke;
-  max-width: 1200px;  
-}
+  margin: 0 auto;
+  max-width: var(--maxWidth); 
+} 
 
 .grid-sizer,
 .grid-item {
-  width: 31.3%;       
-  margin-bottom: 1rem;
-  margin-left: 1rem;
-  background-color: transparent;
+  width: calc(33% - 1rem);    
+  margin: 0.5vw;
+  max-width: 450px;
+  box-sizing: border-box;
 }
 
 .grid-item img {
@@ -28,10 +28,10 @@ body{
 /* From Uiverse.io by Cevorob */ 
 .burger {
     position: fixed;
-    right: 2rem;
-    top: 3rem;
-    width: 40px;
-    height: 25px;
+    right: 2vw;
+    top: 3vw;
+    width: 3.8vw;
+    height: 2.5vw;
     background: transparent;
     cursor: pointer;
     display: block;
@@ -45,7 +45,7 @@ body{
   .burger span {
     display: block;
     position: absolute;
-    height: 2px;
+    height: .2vw;
     width: 100%;
     background: black;
     border-radius: 9px;
@@ -123,22 +123,24 @@ a:hover {
 
 .button-container {
   position: fixed;
-  bottom: 2rem;
-  left: 2rem;
+  bottom: 1vw;
+  left: 1vw;
   display: flex;
   align-items: center; /* Vertical alignment centered */
   justify-content: flex-start; /* Items aligned horizontally */
   gap: 1rem; /* Space between buttons and text */
+  height: 6vw;
+  max-width: var(--marginRight);
+  z-index: 10;
 }
 
 .custom-play-button, 
 .custom-pause-button {
     position: absolute;
-    bottom: 0;
-    left: 0;
     cursor: pointer;
     border: none;
-    width: 50px; /* Adjust button size */
+    height: 2vw;
+    width: 2vw; /* Adjust button size */
     background-color: whitesmoke;
 }
 
@@ -156,20 +158,20 @@ a:hover {
 
 .music-label-container {
   display: flex;
-  margin-left: 4.3rem;
+  margin-left: 3vw;
   flex-direction: column;   /* Stack the text vertically */
   justify-content: center;  /* Center-align both rows */
   gap: 0;              /* Space between lines of text */
 }
 
 .song-name {
-  font-size: 1.1rem;
+  font-size: 1vw;
   color: black;
   font-weight: 600;
 }
 
 .artist {
-  font-size: 1rem;
+  font-size: .5vw;
   color: rgb(0, 0, 0);
   font-style: italic;
 }

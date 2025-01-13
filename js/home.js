@@ -1,12 +1,31 @@
+//max width onload
+function setWidth() {
+  //print grid margin
+  const element = document.querySelector('.grid'); // Target your element
+  const computedStyle = getComputedStyle(element);
+  console.log('Computed Margin Top:', computedStyle.marginTop);
+
+  const screenWidth = window.innerWidth;
+  const maxWidth = screenWidth*.67;
+  const marginRight = screenWidth*.3
+  console.log(marginRight);
+
+  document.documentElement.style.setProperty('--maxWidth', `${maxWidth}px`);
+  document.documentElement.style.setProperty('--marginRight', `${marginRight}px`);
+}
+
+const rootFontSize = getComputedStyle(document.documentElement).fontSize;
+console.log(`1rem is equal to: ${rootFontSize}`);
+
+
+//reset on load and on resize
+window.addEventListener('load', setWidth);
+window.addEventListener('resize', setWidth);
+
 //fade in 
 document.addEventListener('DOMContentLoaded', () => {
   document.body.style.opacity = '1';
-});
-
-
-window.addEventListener('load', function() {
-  document.body.style.opacity = '1';
-
+  setWidth();
 });
 
 //masonry grid
@@ -15,8 +34,8 @@ document.addEventListener("DOMContentLoaded", function() {
     var msnry = new Masonry(gridElem, {
       // options
       itemSelector: '.grid-item',
-      columnWidth: '.grid-sizer',   // matches the class of your sizer
-      percentPosition: true         // if you use percentage widths
+      columnWidth: '.grid-sizer',   // matches the class of sizer
+      percentPosition: true,         // use percentage widths
     });
   });
 
