@@ -24,6 +24,15 @@ body{
     font-weight: 600;
 }
 
+.blog-link {
+  text-decoration: none; /* remove underline */
+  color: inherit;        /* keep your normal text color */
+}
+
+.blog-link:hover {
+  color: blue;           /* or any hover color you like */
+  text-decoration: underline;
+}
 
 /* From Uiverse.io by Cevorob */ 
 .burger {
