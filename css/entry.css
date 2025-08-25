@@ -1,0 +1,122 @@
+body{
+	background-color: whitesmoke;
+}
+
+.entry-container {
+  max-width: 800px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.entry-title {
+  margin-bottom: 1rem;
+}
+
+.entry-title .blog-details-1 {
+  font-size: 28px;   /* bigger than on list page */
+  font-weight: 700;
+}
+
+.entry-content {
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* From Uiverse.io by Cevorob */ 
+.burger {
+    position: fixed;
+    right: 2rem;
+    top: 3rem;
+    width: 40px;
+    height: 25px;
+    background: transparent;
+    cursor: pointer;
+    display: block;
+    transform: scale(0.7);
+  }
+  
+  .burger input {
+    display: none;
+  }
+  
+  .burger span {
+    display: block;
+    position: absolute;
+    height: 2px;
+    width: 100%;
+    background: black;
+    border-radius: 9px;
+    opacity: 1;
+    left: 0;
+    transform: rotate(0deg);
+    transition: .25s ease-in-out;
+  }
+  
+  .burger span:nth-of-type(1) {
+    top: 0px;
+    transform-origin: left center;
+  }
+  
+  .burger span:nth-of-type(2) {
+    top: 50%;
+    transform: translateY(-50%);
+    transform-origin: left center;
+  }
+  
+  .burger span:nth-of-type(3) {
+    top: 100%;
+    transform-origin: left center;
+    transform: translateY(-100%);
+  }
+  
+  .burger input:checked ~ span:nth-of-type(1) {
+    transform: rotate(45deg);
+    top: 0px;
+    left: 5px;
+  }
+  
+  .burger input:checked ~ span:nth-of-type(2) {
+    width: 0%;
+    opacity: 0;
+  }
+  
+  .burger input:checked ~ span:nth-of-type(3) {
+    transform: rotate(-45deg);
+    top: 28px;
+    left: 5px;
+  }
+
+  .nav-menu {
+    position: fixed;
+    right: 2rem;
+    top: 6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+    padding: 0;
+}
+
+.burger input:checked ~ .nav-menu {
+    display: flex;
+}
+
+li{
+    list-style-type: none;
+    font-weight: 600;
+    text-align: right;
+    color: black;
+    padding: .5rem;
+}
+
+a{
+  color:black;
+}
+
+a:hover {
+  color: black;
+  text-decoration: none;
+}
