@@ -25,13 +25,20 @@ body{
 }
 
 .blog-link {
-  text-decoration: none; /* remove underline */
-  color: inherit;        /* keep your normal text color */
+  text-decoration: none;   /* no underline */
+  color: inherit;          /* same as surrounding text */
 }
 
-.blog-link:hover {
-  color: blue;           /* or any hover color you like */
-  text-decoration: underline;
+.blog-link:visited {
+  color: inherit;          /* stop purple visited links */
+}
+
+.blog-link:hover,
+.blog-link:active,
+.blog-link:focus {
+  color: blue;             /* or any color you want on hover */
+  background-color: transparent !important; /* remove black bg */
+  text-decoration: underline; 
 }
 
 /* From Uiverse.io by Cevorob */ 
