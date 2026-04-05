@@ -3,7 +3,8 @@ body{
 }
 
 .blog-container {
-	margin: 3rem 13rem;
+	max-width: var(--maxWidth);
+	margin: 3rem auto;
 	background-color: whitesmoke;
   }
 

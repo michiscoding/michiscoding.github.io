@@ -1,5 +1,5 @@
 .entry-container{
-  max-width: 820px;            /* keeps width sane */
+  max-width: var(--maxWidth);  /* matches homepage grid width */
   margin: 3rem auto;           /* same top/btm margin, centered */
   padding: 2rem;               /* breathing room inside */
   background: whitesmoke;
