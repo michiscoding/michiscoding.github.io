@@ -20,6 +20,7 @@
     height: 100%;
     overflow: hidden;
     z-index: -1;
+    filter: grayscale(1);
   }
   
   /* Video Styling */
@@ -33,10 +34,9 @@
   }
   
   /* Content Styling (on top of the video) */
-  
   .text-container {
     width: 100vw;               /* Full viewport width */
-    height: 22.5vw;               /* 20% of viewport height */
+    height: 10.5vw;               /* 20% of viewport height */
     max-width: 100%;            /* Prevents overflow */
     margin: 0;                  /* Removed incorrect value */
     padding: 0;

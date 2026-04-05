@@ -27,12 +27,15 @@ document.addEventListener('DOMContentLoaded', () => {
 //masonry grid
 document.addEventListener("DOMContentLoaded", function() {
     var gridElem = document.querySelector('.grid');
-    var msnry = new Masonry(gridElem, {
-      // options
-      itemSelector: '.grid-item',
-      columnWidth: '.grid-sizer',   // matches the class of sizer
-      percentPosition: true,         // use percentage widths
-    });
+    if (gridElem) {
+      imagesLoaded(gridElem, function() {
+        new Masonry(gridElem, {
+          itemSelector: '.grid-item',
+          columnWidth: '.grid-sizer',
+          percentPosition: true,
+        });
+      });
+    }
   });
 
 //nav button
@@ -46,7 +49,7 @@ function hideButton(element) {
     } else {
       clearInterval(intervalID);
     }
-  }, 40); 
+  }, 40);
 }
 
 //fade in
@@ -59,23 +62,29 @@ function showButton(element) {
     } else {
       clearInterval(intervalID);
     }
-  }, 40); 
+  }, 40);
 }
 
-//show navigation
-document.addEventListener('DOMContentLoaded', () => {
-  const burger = document.getElementById('burger');
-  const navMenu = document.querySelector('.nav-menu');
-  navMenu.style.opacity = 0; 
+//inject shared nav
+fetch('/nav.html')
+  .then(res => res.text())
+  .then(html => {
+    const container = document.createElement('div');
+    container.innerHTML = html;
+    document.body.insertBefore(container, document.body.firstChild);
 
-  burger.addEventListener('click', () => {
-    if(burger.checked == true) {
-      showButton(navMenu)
-    } else {
-      hideButton(navMenu);
-    }
+    const burger = document.getElementById('burger');
+    const navMenu = document.querySelector('.nav-menu');
+    navMenu.style.opacity = 0;
+
+    burger.addEventListener('click', () => {
+      if (burger.checked == true) {
+        showButton(navMenu);
+      } else {
+        hideButton(navMenu);
+      }
+    });
   });
-});
 
 
 //music player 
