@@ -21,7 +21,14 @@
 .resume-link:hover { color: #555; }
 
 .edu-block {
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.edu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
 }
 
 .edu-school {
@@ -29,13 +36,24 @@
     font-size: 0.95rem;
 }
 
-.edu-detail {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
+.edu-meta {
+    font-style: italic;
+    font-size: 0.85rem;
+    color: #444;
+    white-space: nowrap;
+}
+
+.edu-degree {
     font-style: italic;
     font-size: 0.9rem;
     color: #444;
+    margin-top: 0.2rem;
+}
+
+.edu-courses {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 0.25rem;
 }
 
 .cert-list {
@@ -50,4 +68,5 @@
     padding: 0.2rem 0;
     font-weight: 400;
     color: #111;
+    text-align: left;
 }
