@@ -14,6 +14,14 @@
   <h1>my stream of consciousness</h1>
   <div id="entries-list"></div>
 </div>
+
+<div id="password-modal" class="pw-modal">
+  <div class="pw-box">
+    <p class="pw-prompt">michael and _______?</p>
+    <input type="text" id="pw-input" class="pw-input" autocomplete="off" placeholder="..." aria-label="password">
+    <p id="pw-error" class="pw-error"></p>
+  </div>
+</div>
 </body>
 
 <script src="/js/home.js"></script>
@@ -56,5 +64,57 @@ async function loadEntries() {
 }
 
 loadEntries();
+
+const OWNER_PW = 'pumkin';
+const VIEWER_PW = 'raymond';
+const OWNER_KEY = 'michi_owner';
+
+const modal = document.getElementById('password-modal');
+const input = document.getElementById('pw-input');
+const error = document.getElementById('pw-error');
+let pendingHref = null;
+
+function isOwner() {
+    return localStorage.getItem(OWNER_KEY) === 'yes';
+}
+
+function openModal(href) {
+    pendingHref = href;
+    input.value = '';
+    error.textContent = '';
+    modal.classList.add('open');
+    setTimeout(() => input.focus(), 50);
+}
+
+function closeModal() {
+    modal.classList.remove('open');
+    pendingHref = null;
+}
+
+document.getElementById('entries-list').addEventListener('click', e => {
+    const link = e.target.closest('.blog-link');
+    if (!link) return;
+    if (isOwner()) return;
+    e.preventDefault();
+    openModal(link.href);
+});
+
+input.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    const val = input.value.trim().toLowerCase();
+    if (val === OWNER_PW) {
+        localStorage.setItem(OWNER_KEY, 'yes');
+        window.location.href = pendingHref;
+    } else if (val === VIEWER_PW) {
+        window.location.href = pendingHref;
+    } else {
+        error.textContent = 'try again';
+        input.value = '';
+    }
+});
+
+modal.addEventListener('click', e => {
+    if (e.target === modal) closeModal();
+});
 </script>
 </html>

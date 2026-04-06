@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../michiscoding app"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "michiscoding.github.io"
+	}
+}

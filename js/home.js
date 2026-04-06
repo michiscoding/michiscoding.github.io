@@ -82,12 +82,93 @@ fetch('/nav.html')
         showButton(navMenu);
       } else {
         hideButton(navMenu);
+        const workSub = document.getElementById('work-sub');
+        if (workSub) workSub.classList.remove('open');
       }
     });
+
+    const workToggle = document.getElementById('work-toggle');
+    const workSub = document.getElementById('work-sub');
+    if (workToggle) {
+      workToggle.addEventListener('click', () => {
+        workSub.classList.toggle('open');
+      });
+    }
   });
 
 
-//music player 
+// filter pills + password
+document.addEventListener('DOMContentLoaded', () => {
+  const pills = document.querySelectorAll('.filter-pill');
+  if (!pills.length) return;
+
+  const modal = document.getElementById('password-modal');
+  const input = document.getElementById('pw-input');
+  const error = document.getElementById('pw-error');
+  let pendingFilter = null;
+
+  const OWNER_PW = 'pumkin';
+  const VIEWER_PW = 'raymond';
+  const OWNER_KEY = 'michi_owner';
+
+  function isOwner() {
+    return localStorage.getItem(OWNER_KEY) === 'yes';
+  }
+
+  function setActive(filter) {
+    pills.forEach(p => p.classList.toggle('active', p.dataset.filter === filter));
+  }
+
+  function openModal(filter) {
+    pendingFilter = filter;
+    input.value = '';
+    error.textContent = '';
+    modal.classList.add('open');
+    setTimeout(() => input.focus(), 50);
+  }
+
+  function closeModal() {
+    modal.classList.remove('open');
+    pendingFilter = null;
+  }
+
+  pills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      const filter = pill.dataset.filter;
+      if (filter === 'home') {
+        setActive('home');
+        return;
+      }
+      if (isOwner()) {
+        setActive(filter);
+        return;
+      }
+      openModal(filter);
+    });
+  });
+
+  input.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    const val = input.value.trim().toLowerCase();
+    if (val === OWNER_PW) {
+      localStorage.setItem(OWNER_KEY, 'yes');
+      setActive(pendingFilter);
+      closeModal();
+    } else if (val === VIEWER_PW) {
+      setActive(pendingFilter);
+      closeModal();
+    } else {
+      error.textContent = 'try again';
+      input.value = '';
+    }
+  });
+
+  modal.addEventListener('click', e => {
+    if (e.target === modal) closeModal();
+  });
+});
+
+//music player
 
 //play
 function playMusic() {

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="/css/blog.css">
+    <title>research</title>
+</head>
+
+<body>
+<div class="blog-container">
+  <h1>research</h1>
+  <div id="entries-list"></div>
+</div>
+</body>
+
+<script src="/js/home.js"></script>
+<script>
+async function loadEntries() {
+    const res = await fetch('https://api.github.com/repos/michiscoding/michiscoding.github.io/contents/r-entry');
+    const files = await res.json();
+
+    const sorted = files
+        .filter(f => f.name.endsWith('.html'))
+        .sort((a, b) => b.name.localeCompare(a.name));
+
+    const container = document.getElementById('entries-list');
+
+    for (const file of sorted) {
+        const [yyyy, mm, dd] = file.name.replace('.html', '').split('-');
+        const months = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+        const dateLabel = `${months[parseInt(mm)-1]} ${parseInt(dd)} ${yyyy}`;
+
+        const contentRes = await fetch(file.download_url);
+        const html = await contentRes.text();
+
+        // extract title from <h1>
+        const h1Match = html.match(/<h1[^>]*>(.*?)<\/h1>/i);
+        const title = h1Match ? h1Match[1] : file.name;
+
+        const text = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+        const wordCount = text.split(' ').filter(w => w.length > 0).length;
+
+        const record = document.createElement('div');
+        record.className = 'blog-record';
+        record.innerHTML = `
+            <div class="blog-details-1">
+                <a href="/r-entry/${file.name}" class="blog-link">${title}</a>
+                <div class="blog-details-2">${dateLabel} — word count ${wordCount}</div>
+            </div>
+        `;
+        container.appendChild(record);
+    }
+}
+
+loadEntries();
+</script>
+</html>
