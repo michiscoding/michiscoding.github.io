@@ -39,18 +39,17 @@
 }
 
 .edu-meta {
-    color: #888;
+    color: #aaa;
     white-space: nowrap;
 }
 
 .edu-degree {
-    font-style: italic;
-    color: #444;
+    color: #111;
     margin-top: 0.2rem;
 }
 
 .edu-courses {
-    color: #888;
+    color: #aaa;
     margin-top: 0.2rem;
 }
 
@@ -61,7 +60,6 @@
 }
 
 .cert-list li {
-    font-style: italic;
     padding: 0.2rem 0;
     font-weight: 400;
     color: #111;
