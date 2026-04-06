@@ -3,16 +3,16 @@
   top: 3rem;
   left: 2rem;
   font-family: inherit;
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-size: 1.5rem;
+  font-weight: 300;
   color: #888;
   background: none;
   border: none;
   cursor: pointer;
-  letter-spacing: 0.05em;
   padding: 0;
   z-index: 100;
   transform: translateY(-50%);
+  line-height: 1;
 }
 
 .back-btn:hover { color: #333; }

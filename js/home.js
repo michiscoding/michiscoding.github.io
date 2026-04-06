@@ -79,8 +79,10 @@ fetch('/nav.html')
 
     burger.addEventListener('click', () => {
       if (burger.checked == true) {
+        navMenu.style.pointerEvents = 'auto';
         showButton(navMenu);
       } else {
+        navMenu.style.pointerEvents = 'none';
         hideButton(navMenu);
         const workSub = document.getElementById('work-sub');
         if (workSub) workSub.classList.remove('open');
