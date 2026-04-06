@@ -1,3 +1,21 @@
+.back-btn {
+  position: fixed;
+  top: 1.25rem;
+  right: 1.5rem;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #888;
+  background: none;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  padding: 0;
+  z-index: 100;
+}
+
+.back-btn:hover { color: #111; }
+
 .entry-container{
   max-width: var(--maxWidth);  /* matches homepage grid width */
   margin: 3rem auto;           /* same top/btm margin, centered */

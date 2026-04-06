@@ -68,6 +68,7 @@ loadEntries();
 const OWNER_PW = 'pumkin';
 const VIEWER_PW = 'raymond';
 const OWNER_KEY = 'michi_owner';
+const VIEWER_KEY = 'michi_viewer';
 
 const modal = document.getElementById('password-modal');
 const input = document.getElementById('pw-input');
@@ -76,6 +77,10 @@ let pendingHref = null;
 
 function isOwner() {
     return localStorage.getItem(OWNER_KEY) === 'yes';
+}
+
+function isViewer() {
+    return sessionStorage.getItem(VIEWER_KEY) === 'yes';
 }
 
 function openModal(href) {
@@ -94,7 +99,7 @@ function closeModal() {
 document.getElementById('entries-list').addEventListener('click', e => {
     const link = e.target.closest('.blog-link');
     if (!link) return;
-    if (isOwner()) return;
+    if (isOwner() || isViewer()) return;
     e.preventDefault();
     openModal(link.href);
 });
@@ -106,6 +111,7 @@ input.addEventListener('keydown', e => {
         localStorage.setItem(OWNER_KEY, 'yes');
         window.location.href = pendingHref;
     } else if (val === VIEWER_PW) {
+        sessionStorage.setItem(VIEWER_KEY, 'yes');
         window.location.href = pendingHref;
     } else {
         error.textContent = 'try again';
@@ -116,5 +122,7 @@ input.addEventListener('keydown', e => {
 modal.addEventListener('click', e => {
     if (e.target === modal) closeModal();
 });
+
+window.addEventListener('pageshow', () => closeModal());
 </script>
 </html>
