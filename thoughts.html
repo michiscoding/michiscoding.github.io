@@ -30,7 +30,8 @@ async function loadEntries() {
     const container = document.getElementById('entries-list');
 
     for (const file of sorted) {
-        const dateLabel = file.name.replace('.html', '');
+        const [yyyy, mm, dd] = file.name.replace('.html', '').split('-');
+        const dateLabel = `${mm}${dd}${yyyy.slice(2)}`;
 
         // fetch file content to count words
         const contentRes = await fetch(file.download_url);
