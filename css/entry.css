@@ -25,19 +25,6 @@
   border-radius: 12px;
 }
 
-/* Top strip for date/title; NOT for full text */
-.entry-record{
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: .75rem 1rem;
-  background: #ededed;
-  /* height: 100px;  <-- REMOVE this so it can grow */
-  min-height: 56px;            /* optional */
-  border-radius: 8px;
-  overflow: hidden;            /* tidy if content is long */
-}
-
 /* Main article content */
 .entry-content{
   margin-top: 1rem;
