@@ -12,30 +12,46 @@
 <body>
 <div class="blog-container">
   <h1>my stream of consciousness</h1>
-
-  <div class="blog-record"> 
-    <div class="blog-details-1">
-      <a href="/entry2.html" class="blog-link" data-id="blog-post-2">
-        083125
-      </a>
-      <div class="blog-details-2">
-        word count 5558
-      </div>
-    </div>
-  </div>
-  
-  <div class="blog-record"> 
-    <div class="blog-details-1">
-      <a href="/entry.html" class="blog-link" data-id="blog-post-1">
-        082525
-      </a>
-      <div class="blog-details-2">
-        word count 3086
-      </div>
-    </div>
-  </div>
-
+  <div id="entries-list"></div>
 </div>
 </body>
 
 <script src="/js/home.js"></script>
+<script>
+async function loadEntries() {
+    const res = await fetch('https://api.github.com/repos/michiscoding/michiscoding.github.io/contents/entries');
+    const files = await res.json();
+
+    // sort newest first
+    const sorted = files
+        .filter(f => f.name.endsWith('.html'))
+        .sort((a, b) => b.name.localeCompare(a.name));
+
+    const container = document.getElementById('entries-list');
+
+    for (const file of sorted) {
+        const dateLabel = file.name.replace('.html', '');
+
+        // fetch file content to count words
+        const contentRes = await fetch(file.download_url);
+        const html = await contentRes.text();
+
+        // strip tags and count words
+        const text = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+        const wordCount = text.split(' ').filter(w => w.length > 0).length;
+
+        const record = document.createElement('div');
+        record.className = 'blog-record';
+        record.innerHTML = `
+            <div class="blog-details-1">
+                <a href="/entries/${file.name}" class="blog-link">${dateLabel}</a>
+                <div class="blog-details-2">word count ${wordCount}</div>
+            </div>
+        `;
+        container.appendChild(record);
+    }
+}
+
+loadEntries();
+</script>
+</html>
