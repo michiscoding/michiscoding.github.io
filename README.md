@@ -1,1 +1,1 @@
-hello world ! mich here ! welcome to my diary
+hello world ! mich here ! if ya found me, welcome to my diary
