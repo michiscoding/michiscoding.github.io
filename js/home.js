@@ -175,21 +175,30 @@ function playMusic() {
   const play = document.getElementById('play');
   const pause = document.getElementById('pause');
   const audio = document.getElementById('audio');
-  console.log(audio);
+  const labels = document.querySelector('.music-label-container');
 
   audio.play();
-  play.style.visibility = "hidden"
-  pause.style.visibility = "visible"
+  play.style.opacity = '0';
+  play.style.pointerEvents = 'none';
+  pause.style.opacity = '1';
+  pause.style.pointerEvents = 'auto';
+  pause.classList.add('spinning');
+  labels.classList.add('visible');
 }
 
-//pause 
+//pause
 function pauseMusic() {
   const play = document.getElementById('play');
   const pause = document.getElementById('pause');
   const audio = document.getElementById('audio');
+  const labels = document.querySelector('.music-label-container');
 
   audio.pause();
-  pause.style.visibility = "hidden"
-  play.style.visibility = "visible"
+  pause.style.opacity = '0';
+  pause.style.pointerEvents = 'none';
+  pause.classList.remove('spinning');
+  play.style.opacity = '1';
+  play.style.pointerEvents = 'auto';
+  labels.classList.remove('visible');
 }
 

@@ -218,58 +218,101 @@ a:hover {
   text-decoration: none;
 }
 
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
 .button-container {
   position: fixed;
   bottom: 1vw;
   left: 1vw;
   display: flex;
-  align-items: center; /* Vertical alignment centered */
-  justify-content: flex-start; /* Items aligned horizontally */
-  gap: 1rem; /* Space between buttons and text */
+  align-items: center;
+  gap: 1rem;
   height: 6vw;
   max-width: var(--marginRight);
   z-index: 10;
 }
 
-.custom-play-button, 
-.custom-pause-button {
-    position: absolute;
-    cursor: pointer;
-    border: none;
-    height: 2vw;
-    width: 2vw; /* Adjust button size */
-    background-color: whitesmoke;
-}
-
-.custom-play-button {
-  animation: spin 15s linear infinite; 
-}
-
-.custom-pause-button:focus {
+#play, #pause {
+  position: absolute;
+  cursor: pointer;
+  border: none;
+  height: 2vw;
+  width: 2vw;
+  background-color: whitesmoke;
+  border-radius: 50%;
+  transition: opacity 0.4s ease;
   outline: none;
 }
 
-.custom-play-button:focus {
-  outline: none;
+#play {
+  opacity: 1;
+}
+
+#pause {
+  opacity: 0;
+  animation: spin 8s linear infinite;
+  animation-play-state: paused;
+}
+
+#pause.spinning {
+  animation-play-state: running;
 }
 
 .music-label-container {
   display: flex;
-  margin-left: 3vw;
-  flex-direction: column;   /* Stack the text vertically */
-  justify-content: center;  /* Center-align both rows */
-  gap: 0;              /* Space between lines of text */
+  margin-left: 2.6vw;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.music-label-container.visible {
+  opacity: 1;
 }
 
 .song-name {
-  font-size: 1vw;
+  font-size: 0.75vw;
   color: black;
   font-weight: 600;
 }
 
 .artist {
-  font-size: .75vw;
+  font-size: 0.6vw;
   color: rgb(0, 0, 0);
   font-style: italic;
+}
+
+/* gallery overlay */
+.gallery-item {
+  position: relative;
+  cursor: pointer;
+  display: block;
+}
+
+.gallery-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: flex-end;
+  padding: 1rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.gallery-item:hover .gallery-overlay {
+  opacity: 1;
+}
+
+.gallery-title {
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
