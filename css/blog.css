@@ -9,11 +9,12 @@ body{
   }
 
 .blog-record{
-    height: 100px;
+    min-height: 100px;
     background-color: rgb(237, 237, 237);
     display: flex;
     align-items: center;
 	margin-bottom: 1rem;
+    padding: 1rem;
 }  
 
 .blog-details-1 {

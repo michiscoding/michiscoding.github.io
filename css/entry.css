@@ -25,7 +25,10 @@
   font-size: 1.05rem;
   line-height: 1.7;
   color: #111;
-  overflow-wrap: anywhere;     /* avoid overflow on long strings */
+  overflow-wrap: anywhere;
+  background: #ededed;
+  border-radius: 8px;
+  padding: 1.25rem;
 }
 
 .entry-content p{

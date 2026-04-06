@@ -48,8 +48,8 @@ async function loadEntries() {
         const record = document.createElement('div');
         record.className = 'blog-record';
         record.innerHTML = `
-            <div class="blog-details-1">
-                <a href="/r-entry/${file.name}" class="blog-link">${title}</a>
+            <div style="display:flex; flex-direction:column; gap:0.3rem;">
+                <div class="blog-details-1"><a href="/r-entry/${file.name}" class="blog-link">${title}</a></div>
                 <div class="blog-details-2">${dateLabel} — word count ${wordCount}</div>
             </div>
         `;
