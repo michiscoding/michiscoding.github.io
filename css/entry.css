@@ -1,7 +1,7 @@
 .back-btn {
   position: fixed;
-  top: 1.25rem;
-  right: 1.5rem;
+  top: 3rem;
+  left: 2rem;
   font-family: inherit;
   font-size: 0.8rem;
   font-weight: 600;
@@ -12,9 +12,10 @@
   letter-spacing: 0.05em;
   padding: 0;
   z-index: 100;
+  transform: translateY(-50%);
 }
 
-.back-btn:hover { color: #111; }
+.back-btn:hover { color: #333; }
 
 .entry-container{
   max-width: var(--maxWidth);  /* matches homepage grid width */
