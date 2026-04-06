@@ -1,0 +1,53 @@
+.resume-section {
+    margin-bottom: 2rem;
+}
+
+.resume-section h2 {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #aaa;
+    margin-bottom: 1rem;
+}
+
+.resume-link {
+    color: #111;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-size: 0.95rem;
+}
+
+.resume-link:hover { color: #555; }
+
+.edu-block {
+    margin-bottom: 1.25rem;
+}
+
+.edu-school {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.edu-detail {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-style: italic;
+    font-size: 0.9rem;
+    color: #444;
+}
+
+.cert-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.cert-list li {
+    font-style: italic;
+    font-size: 0.9rem;
+    padding: 0.2rem 0;
+    font-weight: 400;
+    color: #111;
+}
