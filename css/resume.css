@@ -1,5 +1,9 @@
 .resume-section {
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
+}
+
+.resume-section:first-of-type {
+    margin-top: 1.5rem;
 }
 
 .resume-section h2 {
@@ -15,13 +19,12 @@
     color: #111;
     text-decoration: underline;
     text-underline-offset: 3px;
-    font-size: 0.95rem;
 }
 
 .resume-link:hover { color: #555; }
 
 .edu-block {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
 }
 
 .edu-header {
@@ -33,27 +36,22 @@
 
 .edu-school {
     font-weight: 600;
-    font-size: 0.95rem;
 }
 
 .edu-meta {
-    font-style: italic;
-    font-size: 0.85rem;
-    color: #444;
+    color: #888;
     white-space: nowrap;
 }
 
 .edu-degree {
     font-style: italic;
-    font-size: 0.9rem;
     color: #444;
     margin-top: 0.2rem;
 }
 
 .edu-courses {
-    font-size: 0.85rem;
-    color: #666;
-    margin-top: 0.25rem;
+    color: #888;
+    margin-top: 0.2rem;
 }
 
 .cert-list {
@@ -64,7 +62,6 @@
 
 .cert-list li {
     font-style: italic;
-    font-size: 0.9rem;
     padding: 0.2rem 0;
     font-weight: 400;
     color: #111;
