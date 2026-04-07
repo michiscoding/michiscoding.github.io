@@ -238,6 +238,7 @@ body.dark .burger-btn:hover { color: #eee; }
     position: fixed;
     right: 2rem;
     top: 5rem;
+    z-index: 300;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -322,7 +323,9 @@ body.dark #eye-toggle:hover { color: #aaa; }
 body.dark .filter-pill { border-color: #444; color: #666; }
 body.dark .filter-pill.active { border-color: #ccc; color: #ccc; }
 body.dark .pw-modal { background: rgba(17,17,17,0.9); }
-body.dark .pw-input { border-bottom-color: #aaa; color: #eee; }
+body.dark .pw-prompt { color: #eee; }
+body.dark .pw-input { border-bottom-color: #aaa; color: #eee; background: transparent; }
+body.dark .pw-error { color: #777; }
 body.dark .resume-link { color: #ddd; }
 body.dark .edu-school { color: #eee; }
 body.dark .edu-degree { color: #ccc; }
