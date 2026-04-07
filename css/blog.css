@@ -8,6 +8,13 @@ body.dark .blog-record { background-color: #1e1e1e; color: #ddd; }
 body.dark .blog-link { color: #ddd; }
 body.dark .blog-link:hover { color: #fff; }
 
+@media (max-width: 768px) {
+  .blog-container {
+    max-width: 92vw;
+    margin: 2rem auto;
+  }
+}
+
 .blog-container {
 	max-width: var(--maxWidth);
 	margin: 3rem auto;

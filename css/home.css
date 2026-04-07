@@ -405,6 +405,71 @@ body.dark .artist { color: #aaa; }
   font-style: italic;
 }
 
+@media (max-width: 768px) {
+  body {
+    margin-top: 4rem;
+  }
+
+  body.home-page {
+    margin-top: 0.5rem;
+  }
+
+  .top-bar {
+    top: 2rem;
+    padding: 0 1.25rem;
+  }
+
+  .filter-pills {
+    top: 5rem;
+    left: 1.25rem;
+  }
+
+  .grid-sizer,
+  .grid-item {
+    width: calc(50% - 0.5rem);
+  }
+
+  .button-container {
+    bottom: 1.25rem;
+    left: 1.25rem;
+    height: 28px;
+  }
+
+  #play, #pause {
+    height: 28px;
+    width: 28px;
+  }
+
+  .music-label-container {
+    margin-left: 36px;
+  }
+
+  .song-name {
+    font-size: 0.65rem;
+  }
+
+  .artist {
+    font-size: 0.55rem;
+  }
+
+  #dark-toggle {
+    bottom: 1.25rem;
+    right: 1.25rem;
+  }
+
+  .nav-menu {
+    top: 4rem;
+    right: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid-sizer,
+  .grid-item {
+    width: 100%;
+  }
+}
+
 /* gallery overlay */
 .gallery-item {
   position: relative;

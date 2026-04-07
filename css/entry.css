@@ -49,3 +49,16 @@
   display: block;
 }
 
+@media (max-width: 768px) {
+  .entry-container {
+    max-width: 92vw;
+    margin: 2rem auto;
+    padding: 0 0 1.5rem 0;
+  }
+
+  .back-btn {
+    top: 2rem;
+    left: 1.25rem;
+  }
+}
+
