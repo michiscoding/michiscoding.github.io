@@ -237,6 +237,33 @@ function playMusic() {
   labels.classList.add('visible');
 }
 
+// entry gallery
+document.addEventListener('DOMContentLoaded', () => {
+  const gallery = document.querySelector('.entry-gallery');
+  if (!gallery) return;
+
+  const track = gallery.querySelector('.gallery-track');
+  const items = Array.from(track.querySelectorAll('.entry-gallery-item'));
+  const prev = gallery.querySelector('.gallery-prev');
+  const next = gallery.querySelector('.gallery-next');
+  const perPage = 3;
+  let page = 0;
+  const totalPages = Math.ceil(items.length / perPage);
+
+  function showPage(p) {
+    page = p;
+    items.forEach((item, i) => {
+      item.style.display = (i >= page * perPage && i < (page + 1) * perPage) ? '' : 'none';
+    });
+    prev.classList.toggle('hidden', page === 0);
+    next.classList.toggle('hidden', page >= totalPages - 1);
+  }
+
+  prev.addEventListener('click', () => showPage(page - 1));
+  next.addEventListener('click', () => showPage(page + 1));
+  showPage(0);
+});
+
 //pause
 function pauseMusic() {
   const play = document.getElementById('play');
