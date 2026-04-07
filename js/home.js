@@ -21,6 +21,7 @@ window.addEventListener('resize', setWidth);
 document.addEventListener('DOMContentLoaded', () => {
   document.body.style.opacity = '1';
   setWidth();
+  setTimeout(() => document.body.classList.add('transitions-enabled'), 500);
 });
 
 //masonry grid
