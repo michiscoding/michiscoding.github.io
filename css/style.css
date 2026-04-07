@@ -42,10 +42,9 @@
   /* Content Styling (on top of the video) */
   .text-container {
     width: 100vw;
-    height: 10.5vw;
     max-width: 100%;
     margin: 0;
-    padding: 0;
+    padding: 1.5vw 0;
     background-color: white;
     opacity: 0.95;
     display: flex;
@@ -56,8 +55,7 @@
 
 @media (max-width: 768px) {
   .text-container {
-    height: auto;
-    padding: 1.5rem 0;
+    padding: 1.2rem 0;
   }
 
   .btn a {
