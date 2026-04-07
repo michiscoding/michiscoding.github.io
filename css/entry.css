@@ -19,9 +19,9 @@
 .back-btn:hover { color: #333; }
 
 .entry-container{
-  max-width: var(--maxWidth);  /* matches homepage grid width */
-  margin: 3rem auto;           /* same top/btm margin, centered */
-  padding: 2rem;               /* breathing room inside */
+  max-width: var(--maxWidth);
+  margin: 3rem auto;
+  padding: 0 0 2rem 0;
   background: whitesmoke;
   border-radius: 12px;
 }

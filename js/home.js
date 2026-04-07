@@ -78,12 +78,18 @@ fetch('/nav.html')
     container.innerHTML = html;
     document.body.insertBefore(container, document.body.firstChild);
 
-    const burger = document.getElementById('burger');
+    const burgerBtn = document.getElementById('burger-btn');
+    const burgerIcon = document.getElementById('burger-icon');
+    const closeIcon = document.getElementById('close-icon');
     const navMenu = document.querySelector('.nav-menu');
     navMenu.style.opacity = 0;
+    let navOpen = false;
 
-    burger.addEventListener('click', () => {
-      if (burger.checked == true) {
+    burgerBtn.addEventListener('click', () => {
+      navOpen = !navOpen;
+      burgerIcon.style.opacity = navOpen ? '0' : '1';
+      closeIcon.style.opacity = navOpen ? '1' : '0';
+      if (navOpen) {
         navMenu.style.pointerEvents = 'auto';
         showButton(navMenu);
       } else {
@@ -118,8 +124,8 @@ fetch('/nav.html')
     if (eyeToggle && filterPills) {
       eyeToggle.addEventListener('click', () => {
         const isOpen = filterPills.classList.toggle('open');
-        eyeOpen.style.display = isOpen ? 'none' : 'block';
-        eyeClosed.style.display = isOpen ? 'block' : 'none';
+        eyeOpen.style.opacity = isOpen ? '0' : '1';
+        eyeClosed.style.opacity = isOpen ? '1' : '0';
       });
     }
 
