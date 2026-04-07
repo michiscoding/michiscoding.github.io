@@ -21,6 +21,8 @@ window.addEventListener('resize', setWidth);
 document.addEventListener('DOMContentLoaded', () => {
   document.body.style.opacity = '1';
   setWidth();
+  const backBtn = document.querySelector('.back-btn');
+  if (backBtn) backBtn.style.opacity = '1';
   setTimeout(() => document.body.classList.add('transitions-enabled'), 500);
 });
 
