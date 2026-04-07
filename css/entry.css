@@ -24,6 +24,7 @@
   padding: 0 0 2rem 0;
   background: whitesmoke;
   border-radius: 12px;
+  transition: background-color 0.4s ease;
 }
 
 /* Main article content */
