@@ -41,17 +41,23 @@
   
   /* Content Styling (on top of the video) */
   .text-container {
-    width: 100vw;               /* Full viewport width */
-    height: 10.5vw;               /* 20% of viewport height */
-    max-width: 100%;            /* Prevents overflow */
-    margin: 0;                  /* Removed incorrect value */
+    width: 100vw;
+    height: 10.5vw;
+    max-width: 100%;
+    margin: 0;
     padding: 0;
-    background-color: white; 
+    background-color: white;
     opacity: 0.95;
-    display: flex;              /* Flexbox added here for vertical centering */
-    flex-direction: column;     /* Stack children vertically */
-    justify-content: center;    /* Center content horizontally */
-    align-items: center;        /* Center content vertically */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+  .text-container {
+    height: 20vw;
+  }
 }
 .content {
     text-align: center;         /* Center text inside */
@@ -84,6 +90,10 @@
     border-color: black;
   }
   
+  .btn a {
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+
   .btn a:hover {
     border-color: #000000;
     background: #000000;
