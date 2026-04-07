@@ -309,7 +309,6 @@ a:hover {
 #dark-toggle:hover { color: #333; }
 
 body.dark { background-color: #111; }
-body.dark .entry-container { background: #111; }
 body.dark .entry-content { background: #1e1e1e; color: #ddd; }
 body.dark .entry-content p { color: #ddd; }
 body.dark h1 { color: #eee; }
