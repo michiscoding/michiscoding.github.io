@@ -478,6 +478,60 @@ body.dark .artist { color: #aaa; }
   }
 }
 
+/* lightbox */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.92);
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox.open { display: flex; }
+
+.lightbox img, .lightbox video {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  display: block;
+}
+
+.lb-close {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 1.8rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  font-weight: 300;
+}
+
+.lb-close:hover { color: #fff; }
+
+.lb-prev, .lb-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 1.8rem;
+  cursor: pointer;
+  padding: 1rem;
+  font-weight: 300;
+}
+
+.lb-prev:hover, .lb-next:hover { color: #fff; }
+.lb-prev { left: 1rem; }
+.lb-next { right: 1rem; }
+.lb-prev.hidden, .lb-next.hidden { opacity: 0; pointer-events: none; }
+
 /* gallery overlay */
 .gallery-item {
   position: relative;

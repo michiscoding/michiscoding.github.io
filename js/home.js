@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.body.style.opacity = '1';
   setWidth();
   const backBtn = document.querySelector('.back-btn');
-  if (backBtn) backBtn.style.opacity = '1';
+  if (backBtn) setTimeout(() => { backBtn.style.opacity = '1'; }, 150);
   setTimeout(() => document.body.classList.add('transitions-enabled'), 500);
 });
 
@@ -237,15 +237,15 @@ function playMusic() {
   labels.classList.add('visible');
 }
 
-// entry gallery
+// entry gallery + lightbox
 document.addEventListener('DOMContentLoaded', () => {
   const gallery = document.querySelector('.entry-gallery');
   if (!gallery) return;
 
   const track = gallery.querySelector('.gallery-track');
   const items = Array.from(track.querySelectorAll('.entry-gallery-item'));
-  const prev = gallery.querySelector('.gallery-prev');
-  const next = gallery.querySelector('.gallery-next');
+  const galleryPrev = gallery.querySelector('.gallery-prev');
+  const galleryNext = gallery.querySelector('.gallery-next');
   const perPage = 3;
   let page = 0;
   const totalPages = Math.ceil(items.length / perPage);
@@ -255,13 +255,56 @@ document.addEventListener('DOMContentLoaded', () => {
     items.forEach((item, i) => {
       item.style.display = (i >= page * perPage && i < (page + 1) * perPage) ? '' : 'none';
     });
-    prev.classList.toggle('hidden', page === 0);
-    next.classList.toggle('hidden', page >= totalPages - 1);
+    galleryPrev.classList.toggle('hidden', page === 0);
+    galleryNext.classList.toggle('hidden', page >= totalPages - 1);
   }
 
-  prev.addEventListener('click', () => showPage(page - 1));
-  next.addEventListener('click', () => showPage(page + 1));
+  galleryPrev.addEventListener('click', () => showPage(page - 1));
+  galleryNext.addEventListener('click', () => showPage(page + 1));
   showPage(0);
+
+  // lightbox
+  const allImgs = items.map(item => item.querySelector('img, video'));
+  const lb = document.createElement('div');
+  lb.className = 'lightbox';
+  lb.innerHTML = `
+    <button class="lb-close">×</button>
+    <button class="lb-prev">←</button>
+    <img id="lb-media">
+    <button class="lb-next">→</button>
+  `;
+  document.body.appendChild(lb);
+
+  const lbMedia = lb.querySelector('#lb-media');
+  const lbClose = lb.querySelector('.lb-close');
+  const lbPrev = lb.querySelector('.lb-prev');
+  const lbNext = lb.querySelector('.lb-next');
+  let lbIdx = 0;
+
+  function openLightbox(idx) {
+    lbIdx = idx;
+    lbMedia.src = allImgs[idx].src;
+    lb.classList.add('open');
+    lbPrev.classList.toggle('hidden', idx === 0);
+    lbNext.classList.toggle('hidden', idx === allImgs.length - 1);
+  }
+
+  allImgs.forEach((img, i) => {
+    img.style.cursor = 'pointer';
+    img.addEventListener('click', () => openLightbox(i));
+  });
+
+  lbClose.addEventListener('click', () => lb.classList.remove('open'));
+  lb.addEventListener('click', e => { if (e.target === lb) lb.classList.remove('open'); });
+  lbPrev.addEventListener('click', e => { e.stopPropagation(); openLightbox(lbIdx - 1); });
+  lbNext.addEventListener('click', e => { e.stopPropagation(); openLightbox(lbIdx + 1); });
+
+  document.addEventListener('keydown', e => {
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape') lb.classList.remove('open');
+    if (e.key === 'ArrowLeft' && lbIdx > 0) openLightbox(lbIdx - 1);
+    if (e.key === 'ArrowRight' && lbIdx < allImgs.length - 1) openLightbox(lbIdx + 1);
+  });
 });
 
 //pause
