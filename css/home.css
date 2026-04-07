@@ -79,7 +79,8 @@ body.dark #eye-toggle:hover { color: #eee; }
   display: flex;
   gap: 0.5rem;
   justify-content: center;
-  margin-bottom: 2rem;
+  margin-top: 0;
+  margin-bottom: 0.5vw;
 }
 
 .pa-filter-bar .filter-pill {
