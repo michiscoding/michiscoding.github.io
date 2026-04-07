@@ -13,6 +13,7 @@
   z-index: 100;
   transform: translateY(-50%);
   line-height: 1;
+  outline: none;
 }
 
 .back-btn:hover { color: #333; }

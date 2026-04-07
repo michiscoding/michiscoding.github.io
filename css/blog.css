@@ -2,6 +2,12 @@ body{
 	background-color: whitesmoke;
 }
 
+body.dark { background-color: #111; }
+body.dark .blog-container { background-color: #111; }
+body.dark .blog-record { background-color: #1e1e1e; color: #ddd; }
+body.dark .blog-link { color: #ddd; }
+body.dark .blog-link:hover { color: #fff; }
+
 .blog-container {
 	max-width: var(--maxWidth);
 	margin: 3rem auto;

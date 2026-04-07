@@ -65,6 +65,11 @@ function showButton(element) {
   }, 40);
 }
 
+// dark mode
+(function() {
+  if (localStorage.getItem('dark') === '1') document.body.classList.add('dark');
+})();
+
 //inject shared nav
 fetch('/nav.html')
   .then(res => res.text())
@@ -96,13 +101,43 @@ fetch('/nav.html')
         workSub.classList.toggle('open');
       });
     }
+
+    const homeBtn = document.getElementById('home-btn');
+    const eyeToggle = document.getElementById('eye-toggle');
+    const isHome = window.location.pathname === '/' || window.location.pathname.endsWith('home.html');
+    if (isHome) {
+      if (eyeToggle) eyeToggle.style.display = 'block';
+    } else {
+      if (homeBtn) homeBtn.style.display = 'block';
+    }
+
+    // wire eye toggle here since it's injected async
+    const filterPills = document.getElementById('filter-pills');
+    const eyeOpen = document.getElementById('eye-open');
+    const eyeClosed = document.getElementById('eye-closed');
+    if (eyeToggle && filterPills) {
+      eyeToggle.addEventListener('click', () => {
+        const isOpen = filterPills.classList.toggle('open');
+        eyeOpen.style.display = isOpen ? 'none' : 'block';
+        eyeClosed.style.display = isOpen ? 'block' : 'none';
+      });
+    }
+
+    const darkToggle = document.getElementById('dark-toggle');
+    if (darkToggle) {
+      darkToggle.addEventListener('click', () => {
+        const isDark = document.body.classList.toggle('dark');
+        localStorage.setItem('dark', isDark ? '1' : '0');
+      });
+    }
   });
 
 
 // filter pills + password
 document.addEventListener('DOMContentLoaded', () => {
-  const pills = document.querySelectorAll('.filter-pill');
+  const pills = document.querySelectorAll('.filter-pill[data-filter]');
   if (!pills.length) return;
+
 
   const modal = document.getElementById('password-modal');
   const input = document.getElementById('pw-input');
