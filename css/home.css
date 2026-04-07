@@ -452,11 +452,6 @@ body.dark .artist { color: #aaa; }
     font-size: 0.55rem;
   }
 
-  #dark-toggle {
-    bottom: 1.25rem;
-    right: 1.25rem;
-  }
-
   .nav-menu {
     top: 4rem;
     right: 1.25rem;

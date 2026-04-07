@@ -1,10 +1,9 @@
 //max width onload
 function setWidth() {
-  //print grid margin
   const screenWidth = window.innerWidth;
-  const maxWidth = screenWidth*.67;
-  const marginRight = screenWidth*.3
-  console.log(marginRight);
+  const isMobile = screenWidth <= 768;
+  const maxWidth = isMobile ? screenWidth * 0.92 : screenWidth * 0.67;
+  const marginRight = isMobile ? 0 : screenWidth * 0.3;
 
   document.documentElement.style.setProperty('--maxWidth', `${maxWidth}px`);
   document.documentElement.style.setProperty('--marginRight', `${marginRight}px`);
