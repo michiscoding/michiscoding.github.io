@@ -44,18 +44,18 @@
     width: 100vw;
     max-width: 100%;
     margin: 0;
-    padding: 1.5vw 0;
+    padding: 0;
     background-color: white;
     opacity: 0.95;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
+    min-height: 10.5vw;
 }
 
 @media (max-width: 768px) {
   .text-container {
-    padding: 1.2rem 0;
+    min-height: 80px;
   }
 
   .btn a {
@@ -64,13 +64,15 @@
   }
 }
 .content {
-    text-align: center;         /* Center text inside */
+    text-align: center;
     font-family: Arial, sans-serif;
-    display: flex;              
-    flex-direction: column;     /* Stack children vertically */
-    justify-content: center;    /* Center vertically inside .text-container */
-    align-items: center;        /* Center horizontally */
-    gap: 40px;                  /* Space between <h1> and <p> */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    margin: 0;
+    padding: 0;
 }
 
   .content h1 {
@@ -83,6 +85,12 @@
     font-size: 1.5rem;
   }
   
+  .btn {
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+  }
+
   .btn a{
     padding: 10px 20px;
     background-color: transparent;
