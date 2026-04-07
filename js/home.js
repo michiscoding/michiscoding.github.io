@@ -2,7 +2,7 @@
 function setWidth() {
   const screenWidth = window.innerWidth;
   const isMobile = screenWidth <= 768;
-  const maxWidth = isMobile ? screenWidth * 0.75 : screenWidth * 0.67;
+  const maxWidth = isMobile ? screenWidth * 0.65 : screenWidth * 0.67;
   const marginRight = isMobile ? 0 : screenWidth * 0.3;
 
   document.documentElement.style.setProperty('--maxWidth', `${maxWidth}px`);
