@@ -131,9 +131,14 @@ fetch('/nav.html')
 
     const darkToggle = document.getElementById('dark-toggle');
     if (darkToggle) {
+      const updateIcon = () => {
+        darkToggle.textContent = document.body.classList.contains('dark') ? '☀︎' : '☾';
+      };
+      updateIcon();
       darkToggle.addEventListener('click', () => {
         const isDark = document.body.classList.toggle('dark');
         localStorage.setItem('dark', isDark ? '1' : '0');
+        updateIcon();
       });
     }
   });
