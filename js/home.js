@@ -110,9 +110,10 @@ fetch('/nav.html')
     const homeBtn = document.getElementById('home-btn');
     const eyeToggle = document.getElementById('eye-toggle');
     const isHome = window.location.pathname === '/' || window.location.pathname.endsWith('home.html');
+    const hasBackBtn = document.querySelector('.back-btn');
     if (isHome) {
       if (eyeToggle) eyeToggle.style.display = 'block';
-    } else {
+    } else if (!hasBackBtn) {
       if (homeBtn) homeBtn.style.display = 'block';
     }
 
