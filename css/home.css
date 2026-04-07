@@ -569,6 +569,11 @@ body.dark .artist { color: #aaa; }
   max-width: var(--maxWidth);
   margin: 0 auto;
   padding: 0 0.5rem;
+  transition: opacity 0.3s ease;
+}
+
+.grid {
+  transition: opacity 0.3s ease;
 }
 
 .card-365 {
@@ -576,9 +581,19 @@ body.dark .artist { color: #aaa; }
   aspect-ratio: 1;
   cursor: pointer;
   overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.4s ease;
 }
 
-.card-365 img {
+.card-365-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.4s ease;
+}
+
+.card-365-track img {
+  flex: 0 0 100%;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -589,32 +604,44 @@ body.dark .artist { color: #aaa; }
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(0,0,0,0.35);
+  background: none;
   border: none;
-  color: #fff;
-  font-size: 1rem;
-  padding: 0.4rem 0.5rem;
+  outline: none;
+  color: rgba(255,255,255,0.9);
+  font-size: 1.1rem;
+  padding: 0.5rem;
   cursor: pointer;
   line-height: 1;
-  transition: opacity 0.2s;
   z-index: 2;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.6);
 }
 
-.card-365-prev { left: 0; }
-.card-365-next { right: 0; }
+.card-365-btn:focus, .card-365-btn:focus-visible { outline: none; }
+
+.card-365:hover .card-365-btn { opacity: 1; }
+.card-365-prev { left: 0.25rem; }
+.card-365-next { right: 0.25rem; }
 
 .card-365-label {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(0,0,0,0.4);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   color: #fff;
-  font-size: 0.7rem;
-  padding: 0.3rem 0.5rem;
-  text-align: center;
-  letter-spacing: 0.05em;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
 }
+
+.card-365:hover .card-365-label { opacity: 1; }
 
 @media (max-width: 768px) {
   #gallery-365 {

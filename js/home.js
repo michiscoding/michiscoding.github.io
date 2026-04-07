@@ -174,13 +174,29 @@ document.addEventListener('DOMContentLoaded', () => {
     pills.forEach(p => p.classList.toggle('active', p.dataset.filter === filter));
   }
 
+  function fadeOutEl(el, cb) {
+    if (!el || el.style.display === 'none') { if (cb) cb(); return; }
+    el.style.opacity = '0';
+    setTimeout(() => { el.style.display = 'none'; if (cb) cb(); }, 300);
+  }
+
+  function fadeInEl(el, displayVal) {
+    if (!el) return;
+    el.style.display = displayVal || '';
+    el.style.opacity = '0';
+    requestAnimationFrame(() => requestAnimationFrame(() => { el.style.opacity = '1'; }));
+  }
+
   function showView(filter) {
     if (filter === '365') {
-      if (grid) grid.style.display = 'none';
-      if (gallery365) { gallery365.style.display = 'grid'; load365(); }
+      fadeOutEl(grid, () => {
+        fadeInEl(gallery365, 'grid');
+        load365();
+      });
     } else {
-      if (grid) grid.style.display = '';
-      if (gallery365) gallery365.style.display = 'none';
+      fadeOutEl(gallery365, () => {
+        fadeInEl(grid);
+      });
     }
   }
 
@@ -210,24 +226,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     for (const date of dates) {
       const photos = byDate[date];
-      let idx = Math.floor(Math.random() * photos.length);
+      let idx = 0;
 
       const card = document.createElement('div');
       card.className = 'card-365';
-      card.addEventListener('click', () => { window.location.href = `/entries/${date}.html`; });
+      card.addEventListener('click', e => {
+        if (!e.target.closest('.card-365-btn')) window.location.href = `/entries/${date}.html`;
+      });
 
-      const img = document.createElement('img');
-      img.src = photos[idx];
+      const track = document.createElement('div');
+      track.className = 'card-365-track';
+      for (const src of photos) {
+        const img = document.createElement('img');
+        img.src = src;
+        track.appendChild(img);
+      }
 
       const prev = document.createElement('button');
       prev.className = 'card-365-btn card-365-prev';
       prev.textContent = '←';
-      prev.addEventListener('click', e => { e.stopPropagation(); showCard(idx - 1); });
+      prev.addEventListener('click', e => {
+        e.stopPropagation();
+        idx = (idx - 1 + photos.length) % photos.length;
+        track.style.transform = `translateX(-${idx * 100}%)`;
+      });
 
       const next = document.createElement('button');
       next.className = 'card-365-btn card-365-next';
       next.textContent = '→';
-      next.addEventListener('click', e => { e.stopPropagation(); showCard(idx + 1); });
+      next.addEventListener('click', e => {
+        e.stopPropagation();
+        idx = (idx + 1) % photos.length;
+        track.style.transform = `translateX(-${idx * 100}%)`;
+      });
 
       const label = document.createElement('div');
       label.className = 'card-365-label';
@@ -235,22 +266,21 @@ document.addEventListener('DOMContentLoaded', () => {
       const months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
       label.textContent = `${months[parseInt(mm)-1]} ${parseInt(dd)}`;
 
-      function showCard(i) {
-        idx = Math.max(0, Math.min(photos.length - 1, i));
-        img.src = photos[idx];
-        prev.style.opacity = idx === 0 ? '0' : '1';
-        prev.style.pointerEvents = idx === 0 ? 'none' : 'auto';
-        next.style.opacity = idx === photos.length - 1 ? '0' : '1';
-        next.style.pointerEvents = idx === photos.length - 1 ? 'none' : 'auto';
-      }
-      showCard(idx);
-
-      card.appendChild(img);
+      card.appendChild(track);
       card.appendChild(prev);
       card.appendChild(next);
       card.appendChild(label);
       gallery365.appendChild(card);
     }
+
+    // staggered fade in
+    const cards = gallery365.querySelectorAll('.card-365');
+    cards.forEach((card, i) => {
+      card.style.transitionDelay = `${i * 0.04}s`;
+    });
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      cards.forEach(card => { card.style.opacity = '1'; });
+    }));
   }
 
   function openModal(filter) {
