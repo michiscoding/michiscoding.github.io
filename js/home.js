@@ -166,8 +166,91 @@ document.addEventListener('DOMContentLoaded', () => {
     return localStorage.getItem(OWNER_KEY) === 'yes';
   }
 
+  const grid = document.querySelector('.grid');
+  const gallery365 = document.getElementById('gallery-365');
+  let gallery365Loaded = false;
+
   function setActive(filter) {
     pills.forEach(p => p.classList.toggle('active', p.dataset.filter === filter));
+  }
+
+  function showView(filter) {
+    if (filter === '365') {
+      if (grid) grid.style.display = 'none';
+      if (gallery365) { gallery365.style.display = 'grid'; load365(); }
+    } else {
+      if (grid) grid.style.display = '';
+      if (gallery365) gallery365.style.display = 'none';
+    }
+  }
+
+  async function load365() {
+    if (gallery365Loaded) return;
+    gallery365Loaded = true;
+    gallery365.innerHTML = '<p style="opacity:0.4;font-size:0.85rem">loading...</p>';
+
+    const res = await fetch('https://api.github.com/repos/michiscoding/michiscoding.github.io/git/trees/main?recursive=1');
+    const data = await res.json();
+    const imgFiles = data.tree.filter(f => f.type === 'blob' && /^entries\/images\/[\d-]+\/.+\.(jpg|jpeg|png|gif|webp)$/i.test(f.path));
+
+    const byDate = {};
+    for (const f of imgFiles) {
+      const date = f.path.split('/')[2];
+      if (!byDate[date]) byDate[date] = [];
+      byDate[date].push(`https://raw.githubusercontent.com/michiscoding/michiscoding.github.io/main/${f.path}`);
+    }
+
+    gallery365.innerHTML = '';
+    const dates = Object.keys(byDate).sort((a, b) => b.localeCompare(a));
+
+    if (!dates.length) {
+      gallery365.innerHTML = '<p style="opacity:0.4;font-size:0.85rem">no photos yet</p>';
+      return;
+    }
+
+    for (const date of dates) {
+      const photos = byDate[date];
+      let idx = Math.floor(Math.random() * photos.length);
+
+      const card = document.createElement('div');
+      card.className = 'card-365';
+      card.addEventListener('click', () => { window.location.href = `/entries/${date}.html`; });
+
+      const img = document.createElement('img');
+      img.src = photos[idx];
+
+      const prev = document.createElement('button');
+      prev.className = 'card-365-btn card-365-prev';
+      prev.textContent = '←';
+      prev.addEventListener('click', e => { e.stopPropagation(); showCard(idx - 1); });
+
+      const next = document.createElement('button');
+      next.className = 'card-365-btn card-365-next';
+      next.textContent = '→';
+      next.addEventListener('click', e => { e.stopPropagation(); showCard(idx + 1); });
+
+      const label = document.createElement('div');
+      label.className = 'card-365-label';
+      const [yyyy, mm, dd] = date.split('-');
+      const months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+      label.textContent = `${months[parseInt(mm)-1]} ${parseInt(dd)}`;
+
+      function showCard(i) {
+        idx = Math.max(0, Math.min(photos.length - 1, i));
+        img.src = photos[idx];
+        prev.style.opacity = idx === 0 ? '0' : '1';
+        prev.style.pointerEvents = idx === 0 ? 'none' : 'auto';
+        next.style.opacity = idx === photos.length - 1 ? '0' : '1';
+        next.style.pointerEvents = idx === photos.length - 1 ? 'none' : 'auto';
+      }
+      showCard(idx);
+
+      card.appendChild(img);
+      card.appendChild(prev);
+      card.appendChild(next);
+      card.appendChild(label);
+      gallery365.appendChild(card);
+    }
   }
 
   function openModal(filter) {
@@ -188,10 +271,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const filter = pill.dataset.filter;
       if (filter === 'home') {
         setActive('home');
+        showView('home');
         return;
       }
       if (isOwner()) {
         setActive(filter);
+        showView(filter);
         return;
       }
       openModal(filter);
@@ -204,9 +289,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (val === OWNER_PW) {
       localStorage.setItem(OWNER_KEY, 'yes');
       setActive(pendingFilter);
+      showView(pendingFilter);
       closeModal();
     } else if (val === VIEWER_PW) {
       setActive(pendingFilter);
+      showView(pendingFilter);
       closeModal();
     } else {
       error.textContent = 'try again';
