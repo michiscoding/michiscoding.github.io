@@ -112,12 +112,57 @@ fetch('/nav.html')
     const filterPills = document.getElementById('filter-pills');
     const eyeOpen = document.getElementById('eye-open');
     const eyeClosed = document.getElementById('eye-closed');
+    const modal = document.getElementById('password-modal');
+    const pwInput = document.getElementById('pw-input');
+    const pwError = document.getElementById('pw-error');
+    const OWNER_PW = 'pumkin';
+    const VIEWER_PW = 'raymond';
+    const OWNER_KEY = 'michi_owner';
+    const UNLOCKED_KEY = 'michi_unlocked';
+
     if (eyeToggle && filterPills) {
       eyeToggle.addEventListener('click', () => {
-        const isOpen = filterPills.classList.toggle('open');
-        eyeOpen.style.opacity = isOpen ? '0' : '1';
-        eyeClosed.style.opacity = isOpen ? '1' : '0';
+        const alreadyUnlocked = localStorage.getItem(UNLOCKED_KEY) === 'yes';
+        if (alreadyUnlocked) {
+          const isOpen = filterPills.classList.toggle('open');
+          eyeOpen.style.opacity = isOpen ? '0' : '1';
+          eyeClosed.style.opacity = isOpen ? '1' : '0';
+        } else {
+          // show password modal
+          pwInput.value = '';
+          pwError.textContent = '';
+          modal.classList.add('open');
+          setTimeout(() => pwInput.focus(), 50);
+        }
       });
+
+      if (pwInput) {
+        pwInput.addEventListener('keydown', e => {
+          if (e.key !== 'Enter') return;
+          const val = pwInput.value.trim().toLowerCase();
+          if (val === OWNER_PW) {
+            localStorage.setItem(OWNER_KEY, 'yes');
+            localStorage.setItem(UNLOCKED_KEY, 'yes');
+            modal.classList.remove('open');
+            filterPills.classList.add('open');
+            eyeOpen.style.opacity = '0';
+            eyeClosed.style.opacity = '1';
+          } else if (val === VIEWER_PW) {
+            localStorage.setItem(UNLOCKED_KEY, 'yes');
+            modal.classList.remove('open');
+            filterPills.classList.add('open');
+            eyeOpen.style.opacity = '0';
+            eyeClosed.style.opacity = '1';
+          } else {
+            pwError.textContent = 'try again';
+            pwInput.value = '';
+          }
+        });
+
+        modal.addEventListener('click', e => {
+          if (e.target === modal) modal.classList.remove('open');
+        });
+      }
     }
 
     const darkToggle = document.getElementById('dark-toggle');
@@ -139,19 +184,6 @@ fetch('/nav.html')
 document.addEventListener('DOMContentLoaded', () => {
   const pills = document.querySelectorAll('.filter-pill[data-filter]');
   if (!pills.length) return;
-
-  const modal = document.getElementById('password-modal');
-  const input = document.getElementById('pw-input');
-  const error = document.getElementById('pw-error');
-  let pendingFilter = null;
-
-  const OWNER_PW = 'pumkin';
-  const VIEWER_PW = 'raymond';
-  const OWNER_KEY = 'michi_owner';
-
-  function isOwner() {
-    return localStorage.getItem(OWNER_KEY) === 'yes';
-  }
 
   const grid = document.querySelector('.grid');
   const gallery365 = document.getElementById('gallery-365');
@@ -338,56 +370,12 @@ document.addEventListener('DOMContentLoaded', () => {
     requestAnimationFrame(() => requestAnimationFrame(() => { gallery365.style.opacity = '1'; }));
   }
 
-  function openModal(filter) {
-    pendingFilter = filter;
-    input.value = '';
-    error.textContent = '';
-    modal.classList.add('open');
-    setTimeout(() => input.focus(), 50);
-  }
-
-  function closeModal() {
-    modal.classList.remove('open');
-    pendingFilter = null;
-  }
-
   pills.forEach(pill => {
     pill.addEventListener('click', () => {
       const filter = pill.dataset.filter;
-      if (filter === 'home') {
-        setActive('home');
-        showView('home');
-        return;
-      }
-      if (isOwner()) {
-        setActive(filter);
-        showView(filter);
-        return;
-      }
-      openModal(filter);
+      setActive(filter);
+      showView(filter);
     });
-  });
-
-  input.addEventListener('keydown', e => {
-    if (e.key !== 'Enter') return;
-    const val = input.value.trim().toLowerCase();
-    if (val === OWNER_PW) {
-      localStorage.setItem(OWNER_KEY, 'yes');
-      setActive(pendingFilter);
-      showView(pendingFilter);
-      closeModal();
-    } else if (val === VIEWER_PW) {
-      setActive(pendingFilter);
-      showView(pendingFilter);
-      closeModal();
-    } else {
-      error.textContent = 'try again';
-      input.value = '';
-    }
-  });
-
-  modal.addEventListener('click', e => {
-    if (e.target === modal) closeModal();
   });
 
   // initial render
