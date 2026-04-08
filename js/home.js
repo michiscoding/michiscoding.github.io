@@ -190,7 +190,8 @@ document.addEventListener('DOMContentLoaded', () => {
   function showView(filter) {
     if (filter === '365') {
       fadeOutEl(grid, () => {
-        fadeInEl(gallery365, 'grid');
+        gallery365.style.display = 'grid';
+        gallery365.style.opacity = '0';
         load365();
       });
     } else {
@@ -201,9 +202,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function load365() {
-    if (gallery365Loaded) return;
+    if (gallery365Loaded) {
+      requestAnimationFrame(() => requestAnimationFrame(() => { gallery365.style.opacity = '1'; }));
+      return;
+    }
     gallery365Loaded = true;
-    gallery365.innerHTML = '<p style="opacity:0.4;font-size:0.85rem">loading...</p>';
 
     const res = await fetch('https://api.github.com/repos/michiscoding/michiscoding.github.io/git/trees/main?recursive=1');
     const data = await res.json();
@@ -221,6 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!dates.length) {
       gallery365.innerHTML = '<p style="opacity:0.4;font-size:0.85rem">no photos yet</p>';
+      requestAnimationFrame(() => requestAnimationFrame(() => { gallery365.style.opacity = '1'; }));
       return;
     }
 
@@ -236,11 +240,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const track = document.createElement('div');
       track.className = 'card-365-track';
-      for (const src of photos) {
+      photos.forEach((src, i) => {
         const img = document.createElement('img');
-        img.src = src;
+        if (i === 0) {
+          const onLoad = () => card.classList.add('loaded');
+          img.addEventListener('load', onLoad, { once: true });
+          img.src = src;
+          if (img.complete && img.naturalWidth) onLoad();
+        } else {
+          img.src = src;
+        }
         track.appendChild(img);
-      }
+      });
 
       const prev = document.createElement('button');
       prev.className = 'card-365-btn card-365-prev';
@@ -273,14 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
       gallery365.appendChild(card);
     }
 
-    // staggered fade in
-    const cards = gallery365.querySelectorAll('.card-365');
-    cards.forEach((card, i) => {
-      card.style.transitionDelay = `${i * 0.04}s`;
-    });
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      cards.forEach(card => { card.style.opacity = '1'; });
-    }));
+    requestAnimationFrame(() => requestAnimationFrame(() => { gallery365.style.opacity = '1'; }));
   }
 
   function openModal(filter) {

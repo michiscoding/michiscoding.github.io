@@ -576,13 +576,34 @@ body.dark .artist { color: #aaa; }
   transition: opacity 0.3s ease;
 }
 
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
 .card-365 {
   position: relative;
   aspect-ratio: 1;
   cursor: pointer;
   overflow: hidden;
-  opacity: 0;
-  transition: opacity 0.4s ease;
+  background: #e8e8e8;
+}
+
+.card-365::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%);
+  transform: translateX(-100%);
+  animation: shimmer 1.4s infinite linear;
+  pointer-events: none;
+}
+
+.card-365.loaded::after { display: none; }
+
+body.dark .card-365 { background: #2a2a2a; }
+body.dark .card-365::after {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.07) 50%, transparent 100%);
 }
 
 .card-365-track {
