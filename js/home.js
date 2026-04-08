@@ -280,18 +280,25 @@ document.addEventListener('DOMContentLoaded', () => {
         load365();
       });
     } else {
-      fadeOutEl(gallery365, () => {
-        // fade out grid, rebuild, then fade back in
-        if (grid) {
-          grid.style.display = '';
-          grid.style.opacity = '0';
-          renderGrid(filter).then(() => {
-            requestAnimationFrame(() => requestAnimationFrame(() => {
-              grid.style.opacity = '1';
-            }));
-          });
-        }
-      });
+      // fade out whatever is visible, then rebuild grid and fade in
+      const doRender = () => {
+        grid.style.display = '';
+        grid.style.opacity = '0';
+        renderGrid(filter).then(() => {
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            grid.style.opacity = '1';
+          }));
+        });
+      };
+
+      const gallery365Visible = gallery365 && gallery365.style.display !== 'none' && gallery365.style.display !== '';
+      if (gallery365Visible) {
+        fadeOutEl(gallery365, doRender);
+      } else {
+        // grid is visible — fade it out first
+        grid.style.opacity = '0';
+        setTimeout(doRender, 300);
+      }
     }
   }
 
