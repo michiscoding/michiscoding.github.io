@@ -71,6 +71,18 @@
             pill.classList.add('active');
         });
     });
+
+    // masonry
+    var gridElem = document.querySelector('.grid');
+    if (gridElem) {
+        imagesLoaded(gridElem, function() {
+            new Masonry(gridElem, {
+                itemSelector: '.grid-item',
+                columnWidth: '.grid-sizer',
+                percentPosition: true,
+            });
+        });
+    }
 </script>
 
 </html>
