@@ -17,28 +17,44 @@ console.log(`1rem is equal to: ${rootFontSize}`);
 window.addEventListener('load', setWidth);
 window.addEventListener('resize', setWidth);
 
-//fade in 
+//fade in
 document.addEventListener('DOMContentLoaded', () => {
   document.body.style.opacity = '1';
   setWidth();
   const backBtn = document.querySelector('.back-btn');
   if (backBtn) setTimeout(() => { backBtn.style.opacity = '1'; }, 150);
   setTimeout(() => document.body.classList.add('transitions-enabled'), 500);
-});
 
-//masonry grid
-document.addEventListener("DOMContentLoaded", function() {
-    var gridElem = document.querySelector('.grid');
-    if (gridElem) {
-      imagesLoaded(gridElem, function() {
-        new Masonry(gridElem, {
-          itemSelector: '.grid-item',
-          columnWidth: '.grid-sizer',
-          percentPosition: true,
+  // initial grid render for home page
+  const homeGrid = document.querySelector('.grid');
+  if (homeGrid) {
+    fetch('/photos.json')
+      .then(r => r.json())
+      .then(photos => {
+        const filtered = photos.filter(p => p.tags && p.tags.includes('home'))
+          .sort((a, b) => b.date.localeCompare(a.date));
+        const fragment = document.createDocumentFragment();
+        filtered.forEach(photo => {
+          const item = document.createElement('div');
+          item.className = 'grid-item';
+          const img = document.createElement('img');
+          img.className = 'img';
+          img.src = photo.src;
+          item.appendChild(img);
+          fragment.appendChild(item);
+        });
+        homeGrid.appendChild(fragment);
+        imagesLoaded(homeGrid, () => {
+          new Masonry(homeGrid, {
+            itemSelector: '.grid-item',
+            columnWidth: '.grid-sizer',
+            percentPosition: true,
+          });
         });
       });
-    }
-  });
+  }
+});
+
 
 //nav button
 //fade out
@@ -152,7 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const pills = document.querySelectorAll('.filter-pill[data-filter]');
   if (!pills.length) return;
 
-
   const modal = document.getElementById('password-modal');
   const input = document.getElementById('pw-input');
   const error = document.getElementById('pw-error');
@@ -169,6 +184,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const grid = document.querySelector('.grid');
   const gallery365 = document.getElementById('gallery-365');
   let gallery365Loaded = false;
+  let photosCache = null;
+  let masonryInstance = null;
 
   function setActive(filter) {
     pills.forEach(p => p.classList.toggle('active', p.dataset.filter === filter));
@@ -187,6 +204,64 @@ document.addEventListener('DOMContentLoaded', () => {
     requestAnimationFrame(() => requestAnimationFrame(() => { el.style.opacity = '1'; }));
   }
 
+  async function getPhotos() {
+    if (photosCache) return photosCache;
+    const res = await fetch('/photos.json');
+    photosCache = await res.json();
+    return photosCache;
+  }
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  async function renderGrid(filter) {
+    const photos = await getPhotos();
+
+    let filtered;
+    if (filter === 'all') {
+      filtered = [...photos].sort((a, b) => b.date.localeCompare(a.date));
+    } else if (filter === 'random') {
+      filtered = shuffle(photos);
+    } else {
+      filtered = photos
+        .filter(p => p.tags && p.tags.includes(filter))
+        .sort((a, b) => b.date.localeCompare(a.date));
+    }
+
+    // clear existing items (keep grid-sizer)
+    const existing = grid.querySelectorAll('.grid-item');
+    existing.forEach(el => el.remove());
+    if (masonryInstance) { masonryInstance.destroy(); masonryInstance = null; }
+
+    if (!filtered.length) return;
+
+    const fragment = document.createDocumentFragment();
+    filtered.forEach(photo => {
+      const item = document.createElement('div');
+      item.className = 'grid-item';
+      const img = document.createElement('img');
+      img.className = 'img';
+      img.src = photo.src;
+      item.appendChild(img);
+      fragment.appendChild(item);
+    });
+    grid.appendChild(fragment);
+
+    imagesLoaded(grid, () => {
+      masonryInstance = new Masonry(grid, {
+        itemSelector: '.grid-item',
+        columnWidth: '.grid-sizer',
+        percentPosition: true,
+      });
+    });
+  }
+
   function showView(filter) {
     if (filter === '365') {
       fadeOutEl(grid, () => {
@@ -197,6 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       fadeOutEl(gallery365, () => {
         fadeInEl(grid);
+        renderGrid(filter);
       });
     }
   }
