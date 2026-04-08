@@ -260,11 +260,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     grid.appendChild(fragment);
 
-    imagesLoaded(grid, () => {
-      masonryInstance = new Masonry(grid, {
-        itemSelector: '.grid-item',
-        columnWidth: '.grid-sizer',
-        percentPosition: true,
+    return new Promise(resolve => {
+      imagesLoaded(grid, () => {
+        masonryInstance = new Masonry(grid, {
+          itemSelector: '.grid-item',
+          columnWidth: '.grid-sizer',
+          percentPosition: true,
+        });
+        resolve();
       });
     });
   }
@@ -278,8 +281,16 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     } else {
       fadeOutEl(gallery365, () => {
-        fadeInEl(grid);
-        renderGrid(filter);
+        // fade out grid, rebuild, then fade back in
+        if (grid) {
+          grid.style.display = '';
+          grid.style.opacity = '0';
+          renderGrid(filter).then(() => {
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+              grid.style.opacity = '1';
+            }));
+          });
+        }
       });
     }
   }
@@ -379,7 +390,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // initial render
-  if (grid) renderGrid('home');
+  if (grid) {
+    grid.style.opacity = '0';
+    renderGrid('home').then(() => {
+      requestAnimationFrame(() => requestAnimationFrame(() => { grid.style.opacity = '1'; }));
+    });
+  }
 });
 
 //music player
