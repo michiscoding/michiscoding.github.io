@@ -576,9 +576,13 @@ body.dark .artist { color: #aaa; }
   transition: opacity 0.3s ease;
 }
 
-@keyframes shimmer {
-  0%   { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+@keyframes vhs-jitter {
+  0%   { transform: translate(0,    0); }
+  20%  { transform: translate(3px, -2px); }
+  40%  { transform: translate(-2px, 3px); }
+  60%  { transform: translate(2px,  1px); }
+  80%  { transform: translate(-3px, -1px); }
+  100% { transform: translate(0,    0); }
 }
 
 .card-365 {
@@ -586,25 +590,27 @@ body.dark .artist { color: #aaa; }
   aspect-ratio: 1;
   cursor: pointer;
   overflow: hidden;
-  background: #e8e8e8;
+  background: #999;
 }
 
 .card-365::after {
   content: '';
   position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%);
-  transform: translateX(-100%);
-  animation: shimmer 1.4s infinite linear;
+  inset: -10%;
+  width: 120%;
+  height: 120%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: cover;
+  opacity: 0.85;
+  animation: vhs-jitter 0.08s steps(1) infinite;
+  transition: opacity 0.5s ease;
   pointer-events: none;
+  z-index: 1;
 }
 
-.card-365.loaded::after { display: none; }
+.card-365.loaded::after { opacity: 0; }
 
-body.dark .card-365 { background: #2a2a2a; }
-body.dark .card-365::after {
-  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.07) 50%, transparent 100%);
-}
+body.dark .card-365 { background: #555; }
 
 .card-365-track {
   display: flex;

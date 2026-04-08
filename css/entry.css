@@ -55,16 +55,13 @@
 .entry-gallery {
     position: relative;
     margin-top: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
 }
 
 .gallery-track {
     display: flex;
     gap: 0.5rem;
     overflow: hidden;
-    flex: 1;
+    width: 100%;
 }
 
 .entry-gallery-item {
@@ -82,17 +79,22 @@
 }
 
 .gallery-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
     background: none;
     border: none;
     font-size: 1.2rem;
     color: #aaa;
     cursor: pointer;
-    padding: 0.25rem;
-    flex-shrink: 0;
+    padding: 0.25rem 0.4rem;
     transition: color 0.2s;
     outline: none;
+    z-index: 2;
 }
 
+.gallery-prev { left: 0.25rem; }
+.gallery-next { right: 0.25rem; }
 .gallery-arrow:hover { color: #333; }
 .gallery-arrow.hidden { opacity: 0; pointer-events: none; }
 
