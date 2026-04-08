@@ -25,34 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (backBtn) setTimeout(() => { backBtn.style.opacity = '1'; }, 150);
   setTimeout(() => document.body.classList.add('transitions-enabled'), 500);
 
-  // initial grid render for home page
-  const homeGrid = document.querySelector('.grid');
-  if (homeGrid) {
-    fetch('/photos.json')
-      .then(r => r.json())
-      .then(photos => {
-        const filtered = photos.filter(p => p.tags && p.tags.includes('home'))
-          .sort((a, b) => b.date.localeCompare(a.date));
-        const fragment = document.createDocumentFragment();
-        filtered.forEach(photo => {
-          const item = document.createElement('div');
-          item.className = 'grid-item';
-          const img = document.createElement('img');
-          img.className = 'img';
-          img.src = photo.src;
-          item.appendChild(img);
-          fragment.appendChild(item);
-        });
-        homeGrid.appendChild(fragment);
-        imagesLoaded(homeGrid, () => {
-          new Masonry(homeGrid, {
-            itemSelector: '.grid-item',
-            columnWidth: '.grid-sizer',
-            percentPosition: true,
-          });
-        });
-      });
-  }
 });
 
 
@@ -226,8 +198,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let filtered;
     if (filter === 'all') {
       filtered = [...photos].sort((a, b) => b.date.localeCompare(a.date));
-    } else if (filter === 'random') {
-      filtered = shuffle(photos);
+    } else if (filter === 'random' || filter === 'home') {
+      const pool = filter === 'home'
+        ? photos.filter(p => p.tags && p.tags.includes('home'))
+        : photos;
+      filtered = shuffle(pool);
     } else {
       filtered = photos
         .filter(p => p.tags && p.tags.includes(filter))
@@ -414,6 +389,9 @@ document.addEventListener('DOMContentLoaded', () => {
   modal.addEventListener('click', e => {
     if (e.target === modal) closeModal();
   });
+
+  // initial render
+  if (grid) renderGrid('home');
 });
 
 //music player
