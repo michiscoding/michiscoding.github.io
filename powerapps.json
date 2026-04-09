@@ -1,6 +1,26 @@
 [
-  { "slug": "test-1", "title": "create purchase requisition portal", "tag": "pages", "media": "" },
-  { "slug": "test-2", "title": "email change request", "tag": "pages", "media": "" },
-  { "slug": "test-3", "title": "credit card reconciliation", "tag": "apps", "media": "" },
-  { "slug": "test-4", "title": "d365 to/from sftp file transfer", "tag": "flows", "media": "" }
+  {
+    "slug": "test-1",
+    "title": "create purchase requisition portal",
+    "tag": "pages",
+    "media": ""
+  },
+  {
+    "slug": "test-2",
+    "title": "email change request",
+    "tag": "pages",
+    "media": ""
+  },
+  {
+    "slug": "test-4",
+    "title": "d365 to/from sftp file transfer",
+    "tag": "flows",
+    "media": ""
+  },
+  {
+    "slug": "credit-card-reconciliation",
+    "title": "credit card reconciliation",
+    "tag": "apps",
+    "media": ""
+  }
 ]
