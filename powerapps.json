@@ -28,5 +28,11 @@
     "title": "cash reconciliation",
     "tag": "flows, apps",
     "media": ""
+  },
+  {
+    "slug": "workflow-approval-app",
+    "title": "workflow approval app",
+    "tag": "apps, flows",
+    "media": ""
   }
 ]
