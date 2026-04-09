@@ -20,43 +20,6 @@
 
     <div class="grid">
         <div class="grid-sizer"></div>
-
-        <div class="grid-item">
-            <div class="gallery-item" onclick="location.href='/powerapps/test-1.html'">
-                <img class="img" alt="approval flow" src="https://64.media.tumblr.com/a17df8ad41a394b8a1749f54315fbdb4/9300f1904ee9ac2c-75/s500x750/8931b0e27784d1a42512a5e341e0b0f8b40e0092.gif">
-                <div class="gallery-overlay">
-                    <span class="gallery-title">approval flow</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="grid-item">
-            <div class="gallery-item" onclick="location.href='/powerapps/test-2.html'">
-                <img class="img" alt="intake form" src="https://64.media.tumblr.com/c57a286ae7f70b7811b1341ec0fb5a5c/tumblr_prducatkJe1tdnee7o1_500.gif">
-                <div class="gallery-overlay">
-                    <span class="gallery-title">intake form</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="grid-item">
-            <div class="gallery-item" onclick="location.href='/powerapps/test-3.html'">
-                <img class="img" alt="dashboard app" src="https://64.media.tumblr.com/368b30aabb2494affc0b7b6dd6251195/tumblr_om05688Oa01rn5gv3o1_500.gifv">
-                <div class="gallery-overlay">
-                    <span class="gallery-title">dashboard app</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="grid-item">
-            <div class="gallery-item" onclick="location.href='/powerapps/test-4.html'">
-                <img class="img" alt="email automation" src="https://64.media.tumblr.com/d4b55ff0fe8affb3cb2e608cc4a1332b/tumblr_nhbjgtGy781r918xko1_500.jpg">
-                <div class="gallery-overlay">
-                    <span class="gallery-title">email automation</span>
-                </div>
-            </div>
-        </div>
-
     </div>
 </body>
 
@@ -64,25 +27,49 @@
 <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
 <script src="/js/home.js"></script>
 <script>
-    // filter pills — UI only for now
+    const grid = document.querySelector('.grid');
+    let allEntries = [];
+    let activeFilter = 'all';
+
+    function renderGrid() {
+        const items = grid.querySelectorAll('.grid-item');
+        items.forEach(el => el.remove());
+
+        const filtered = activeFilter === 'all' ? allEntries : allEntries.filter(e => e.tag === activeFilter);
+        filtered.forEach(entry => {
+            const item = document.createElement('div');
+            item.className = 'grid-item';
+            const mediaSrc = entry.media || '';
+            const mediaEl = mediaSrc.endsWith('.mp4')
+                ? `<video class="img" muted autoplay loop playsinline><source src="${mediaSrc}" type="video/mp4"></video>`
+                : `<img class="img" alt="${entry.title}" src="${mediaSrc}">`;
+            item.innerHTML = `
+                <div class="gallery-item" onclick="location.href='/powerapps/${entry.slug}.html'">
+                    ${mediaEl}
+                    <div class="gallery-overlay"><span class="gallery-title">${entry.title}</span></div>
+                </div>`;
+            grid.appendChild(item);
+        });
+
+        imagesLoaded(grid, () => {
+            new Masonry(grid, { itemSelector: '.grid-item', columnWidth: '.grid-sizer', percentPosition: true });
+        });
+    }
+
     document.querySelectorAll('.filter-pill').forEach(pill => {
         pill.addEventListener('click', () => {
             document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
             pill.classList.add('active');
+            activeFilter = pill.textContent.trim();
+            renderGrid();
         });
     });
 
-    // masonry
-    var gridElem = document.querySelector('.grid');
-    if (gridElem) {
-        imagesLoaded(gridElem, function() {
-            new Masonry(gridElem, {
-                itemSelector: '.grid-item',
-                columnWidth: '.grid-sizer',
-                percentPosition: true,
-            });
-        });
-    }
+    fetch('/powerapps.json')
+        .then(r => r.json())
+        .then(data => { allEntries = data; renderGrid(); })
+        .catch(() => {});
+
 </script>
 
 </html>
