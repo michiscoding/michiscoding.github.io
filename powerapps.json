@@ -1,6 +1,6 @@
 [
-  { "slug": "test-1", "title": "approval flow", "tag": "flows", "media": "https://64.media.tumblr.com/a17df8ad41a394b8a1749f54315fbdb4/9300f1904ee9ac2c-75/s500x750/8931b0e27784d1a42512a5e341e0b0f8b40e0092.gif" },
-  { "slug": "test-2", "title": "intake form", "tag": "pages", "media": "https://64.media.tumblr.com/c57a286ae7f70b7811b1341ec0fb5a5c/tumblr_prducatkJe1tdnee7o1_500.gif" },
-  { "slug": "test-3", "title": "dashboard app", "tag": "apps", "media": "https://64.media.tumblr.com/368b30aabb2494affc0b7b6dd6251195/tumblr_om05688Oa01rn5gv3o1_500.gifv" },
-  { "slug": "test-4", "title": "email automation", "tag": "flows", "media": "https://64.media.tumblr.com/d4b55ff0fe8affb3cb2e608cc4a1332b/tumblr_nhbjgtGy781r918xko1_500.jpg" }
+  { "slug": "test-1", "title": "create purchase requisition portal", "tag": "pages", "media": "" },
+  { "slug": "test-2", "title": "email change request", "tag": "pages", "media": "" },
+  { "slug": "test-3", "title": "credit card reconciliation", "tag": "apps", "media": "" },
+  { "slug": "test-4", "title": "d365 to/from sftp file transfer", "tag": "flows", "media": "" }
 ]
