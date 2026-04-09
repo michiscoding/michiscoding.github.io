@@ -8,6 +8,24 @@
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/home.css">
     <title>powerapps</title>
+    <style>
+        .grid-slide {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            display: block;
+        }
+        .grid-slide:first-child {
+            position: relative;
+        }
+        .grid-slide.active {
+            opacity: 1;
+        }
+    </style>
 </head>
 
 <body>
@@ -30,22 +48,41 @@
     const grid = document.querySelector('.grid');
     let allEntries = [];
     let activeFilter = 'all';
+    let slideIntervals = [];
 
     function renderGrid() {
+        slideIntervals.forEach(clearInterval);
+        slideIntervals = [];
         const items = grid.querySelectorAll('.grid-item');
         items.forEach(el => el.remove());
 
-        const filtered = activeFilter === 'all' ? allEntries : allEntries.filter(e => e.tag === activeFilter);
+        const filtered = activeFilter === 'all' ? allEntries : allEntries.filter(e => {
+            const tags = Array.isArray(e.tag) ? e.tag : e.tag.split(',').map(t => t.trim());
+            return tags.includes(activeFilter);
+        });
         filtered.forEach(entry => {
+            if (!entry.media || (Array.isArray(entry.media) && !entry.media.length)) return;
             const item = document.createElement('div');
             item.className = 'grid-item';
-            const mediaSrc = entry.media || '';
-            const mediaEl = mediaSrc.endsWith('.mp4')
-                ? `<video class="img" muted autoplay loop playsinline><source src="${mediaSrc}" type="video/mp4"></video>`
-                : `<img class="img" alt="${entry.title}" src="${mediaSrc}">`;
+            const srcs = Array.isArray(entry.media) ? entry.media : [entry.media];
+
+            let mediaInner = '';
+            if (srcs.length === 1) {
+                const src = srcs[0];
+                mediaInner = src.endsWith('.mp4')
+                    ? `<video class="img" muted autoplay loop playsinline><source src="${src}" type="video/mp4"></video>`
+                    : `<img class="img" alt="${entry.title}" src="${src}">`;
+            } else {
+                mediaInner = srcs.map((src, i) =>
+                    src.endsWith('.mp4')
+                        ? `<video class="grid-slide img${i===0?' active':''}" muted autoplay loop playsinline><source src="${src}" type="video/mp4"></video>`
+                        : `<img class="grid-slide img${i===0?' active':''}" alt="${entry.title}" src="${src}">`
+                ).join('');
+            }
+
             item.innerHTML = `
                 <div class="gallery-item" onclick="location.href='/powerapps/${entry.slug}.html'">
-                    ${mediaEl}
+                    ${mediaInner}
                     <div class="gallery-overlay"><span class="gallery-title">${entry.title}</span></div>
                 </div>`;
             grid.appendChild(item);
@@ -53,6 +90,17 @@
 
         imagesLoaded(grid, () => {
             new Masonry(grid, { itemSelector: '.grid-item', columnWidth: '.grid-sizer', percentPosition: true });
+            grid.querySelectorAll('.gallery-item').forEach(item => {
+                const slides = item.querySelectorAll('.grid-slide');
+                if (slides.length < 2) return;
+                let current = 0;
+                const id = setInterval(() => {
+                    slides[current].classList.remove('active');
+                    current = (current + 1) % slides.length;
+                    slides[current].classList.add('active');
+                }, 3000);
+                slideIntervals.push(id);
+            });
         });
     }
 
