@@ -1,11 +1,5 @@
 [
   {
-    "slug": "test-2",
-    "title": "email change request",
-    "tag": "pages",
-    "media": ""
-  },
-  {
     "slug": "test-4",
     "title": "d365 to/from sftp file transfer",
     "tag": "flows",
@@ -20,6 +14,12 @@
   {
     "slug": "create-purchase-requisition-portal",
     "title": "create purchase requisition portal",
+    "tag": "pages, flows",
+    "media": ""
+  },
+  {
+    "slug": "email-change-request",
+    "title": "email change request",
     "tag": "pages, flows",
     "media": ""
   }
