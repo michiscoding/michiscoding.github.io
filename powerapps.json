@@ -21,7 +21,10 @@
     "slug": "email-change-request",
     "title": "email change request",
     "tag": "pages, flows",
-    "media": "/powerapps/email-change-request.png"
+    "media": [
+      "/powerapps/email-change-request-1.png",
+      "/powerapps/email-change-request-2.png"
+    ]
   },
   {
     "slug": "cash-reconciliation",
