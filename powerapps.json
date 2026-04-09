@@ -1,11 +1,5 @@
 [
   {
-    "slug": "test-1",
-    "title": "create purchase requisition portal",
-    "tag": "pages",
-    "media": ""
-  },
-  {
     "slug": "test-2",
     "title": "email change request",
     "tag": "pages",
@@ -21,6 +15,12 @@
     "slug": "credit-card-reconciliation",
     "title": "credit card reconciliation",
     "tag": "apps",
+    "media": ""
+  },
+  {
+    "slug": "create-purchase-requisition-portal",
+    "title": "create purchase requisition portal",
+    "tag": "pages, flows",
     "media": ""
   }
 ]
