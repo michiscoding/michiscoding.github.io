@@ -203,7 +203,8 @@ body.dark #eye-toggle:hover { color: #eee; }
   box-sizing: border-box;
 }
 
-.grid-item img {
+.grid-item img,
+.grid-item video {
 	display: block;
 	max-width: 100%;
 	height: auto;
@@ -537,6 +538,15 @@ body.dark .artist { color: #aaa; }
   position: relative;
   cursor: pointer;
   display: block;
+  overflow: hidden;
+}
+
+.gallery-item video {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+  object-fit: cover;
 }
 
 .gallery-overlay {

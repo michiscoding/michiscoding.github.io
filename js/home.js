@@ -509,3 +509,17 @@ function pauseMusic() {
   labels.classList.remove('visible');
 }
 
+
+// pa slideshow
+(function() {
+  const slides = document.querySelectorAll('.pa-slide');
+  if (slides.length < 2) return;
+  let current = 0;
+  // set container height to first slide's natural height
+  slides[0].style.opacity = '1';
+  setInterval(() => {
+    slides[current].style.opacity = '0';
+    current = (current + 1) % slides.length;
+    slides[current].style.opacity = '1';
+  }, 3000);
+})();
