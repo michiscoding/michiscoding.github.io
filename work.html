@@ -14,8 +14,8 @@
         .work-tabs {
             display: flex;
             gap: 2rem;
-            padding: 0 2rem;
-            margin-bottom: 1.5rem;
+            max-width: var(--maxWidth);
+            margin: 0 auto 1.5rem;
         }
         .work-tab {
             background: none;
@@ -30,12 +30,14 @@
             transition: color 0.2s;
             letter-spacing: 0.05em;
         }
+        .work-tab:focus, .work-tab:focus-visible { outline: none; }
         .work-tab.active { color: #222; }
         body.dark .work-tab { color: #555; }
         body.dark .work-tab.active { color: #eee; }
 
-        .work-panel { display: none; }
+        .work-panel { display: none; opacity: 0; transition: opacity 0.4s ease; }
         .work-panel.active { display: block; }
+        .work-panel.visible { opacity: 1; }
 
         .grid-slide {
             position: absolute;
@@ -135,7 +137,13 @@
 
     function showTab(name) {
         tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === name));
-        document.querySelectorAll('.work-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + name));
+        document.querySelectorAll('.work-panel').forEach(p => {
+            const isActive = p.id === 'panel-' + name;
+            if (!isActive) { p.classList.remove('visible'); setTimeout(() => p.classList.remove('active'), 400); }
+        });
+        const panel = document.getElementById('panel-' + name);
+        panel.classList.add('active');
+        requestAnimationFrame(() => requestAnimationFrame(() => panel.classList.add('visible')));
         history.replaceState(null, '', '#' + name);
         if (name === 'powerapps' && !paLoaded) { paLoaded = true; loadPa(); }
         if (name === 'research' && !researchLoaded) { researchLoaded = true; loadResearch(); }
@@ -144,7 +152,13 @@
     tabs.forEach(tab => tab.addEventListener('click', () => showTab(tab.dataset.tab)));
 
     const hash = location.hash.replace('#', '');
-    showTab(['powerapps', 'research', 'resume'].includes(hash) ? hash : 'powerapps');
+    const initialTab = ['powerapps', 'research', 'resume'].includes(hash) ? hash : 'powerapps';
+    tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === initialTab));
+    const initialPanel = document.getElementById('panel-' + initialTab);
+    initialPanel.classList.add('active');
+    requestAnimationFrame(() => requestAnimationFrame(() => initialPanel.classList.add('visible')));
+    if (initialTab === 'powerapps') { paLoaded = true; loadPa(); }
+    if (initialTab === 'research') { researchLoaded = true; loadResearch(); }
 
     // --- powerapps ---
     const grid = document.querySelector('.grid');
