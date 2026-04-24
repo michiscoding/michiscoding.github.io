@@ -42,7 +42,8 @@ async function loadEntries() {
         const h1Match = html.match(/<h1[^>]*>(.*?)<\/h1>/i);
         const title = h1Match ? h1Match[1] : file.name;
 
-        const text = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        const text = (doc.querySelector('.r-body, .entry-content')?.textContent || '').replace(/\s+/g, ' ').trim();
         const wordCount = text.split(' ').filter(w => w.length > 0).length;
 
         const record = document.createElement('div');

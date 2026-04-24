@@ -55,6 +55,7 @@
         slideIntervals = [];
         const items = grid.querySelectorAll('.grid-item');
         items.forEach(el => el.remove());
+        grid.style.opacity = '1';
 
         const filtered = activeFilter === 'all' ? allEntries : allEntries.filter(e => {
             const tags = Array.isArray(e.tag) ? e.tag : e.tag.split(',').map(t => t.trim());
@@ -101,6 +102,7 @@
                 }, 2000);
                 slideIntervals.push(id);
             });
+            grid.style.opacity = '1';
         });
     }
 
@@ -109,7 +111,8 @@
             document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
             pill.classList.add('active');
             activeFilter = pill.textContent.trim();
-            renderGrid();
+            grid.style.opacity = '0';
+            setTimeout(() => renderGrid(), 300);
         });
     });
 
