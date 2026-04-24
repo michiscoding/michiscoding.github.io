@@ -64,6 +64,16 @@
             <div class="pa-section"><h2>how it works</h2><p>${(data.how || '').replace(/\n/g, '<br>')}</p></div>
         </div>
     `;
+
+    const slides = body.querySelectorAll('.pa-slide');
+    if (slides.length > 1) {
+        let current = 0;
+        setInterval(() => {
+            slides[current].classList.remove('active');
+            current = (current + 1) % slides.length;
+            slides[current].classList.add('active');
+        }, 3000);
+    }
 })();
 </script>
 </html>

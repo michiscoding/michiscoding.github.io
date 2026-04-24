@@ -144,3 +144,5 @@
 .pa-slide:first-child {
   position: relative;
 }
+
+.pa-slide.active { opacity: 1; }
