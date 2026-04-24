@@ -212,7 +212,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (photosCache) return photosCache;
     const MEDIA_BASE = SUPABASE_URL + '/storage/v1/object/public/media/';
     const { data } = await db.from('photos').select('storage_path, tags, date').order('date', { ascending: false });
-    photosCache = (data || []).map(p => ({ src: MEDIA_BASE + p.storage_path, tags: p.tags || [], date: p.date }));
+    photosCache = (data || []).map(p => ({
+      src: p.storage_path.startsWith('http') ? p.storage_path : MEDIA_BASE + p.storage_path,
+      tags: p.tags || [],
+      date: p.date,
+    }));
     return photosCache;
   }
 
