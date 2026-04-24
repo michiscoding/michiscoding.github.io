@@ -53,6 +53,34 @@
         .grid-slide.active { opacity: 1; }
 
         #panel-resume .entry-container { margin-top: 0; }
+
+        .work-subtabs {
+            display: flex;
+            gap: 1.5rem;
+            max-width: var(--maxWidth);
+            margin: -0.5rem auto 1.25rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .work-subtabs.visible { opacity: 1; pointer-events: auto; }
+        .work-subtab {
+            background: none;
+            border: none;
+            padding: 0.2rem 0;
+            font-family: inherit;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #bbb;
+            cursor: pointer;
+            outline: none;
+            transition: color 0.2s;
+            letter-spacing: 0.05em;
+        }
+        .work-subtab:focus, .work-subtab:focus-visible { outline: none; }
+        .work-subtab.active { color: #444; }
+        body.dark .work-subtab { color: #555; }
+        body.dark .work-subtab.active { color: #aaa; }
     </style>
 </head>
 <body>
@@ -61,14 +89,14 @@
         <button type="button" class="work-tab" data-tab="research">research</button>
         <button type="button" class="work-tab" data-tab="resume">resume</button>
     </div>
+    <div class="work-subtabs" id="pa-subtabs">
+        <button type="button" class="work-subtab active" data-filter="all">all</button>
+        <button type="button" class="work-subtab" data-filter="flows">flows</button>
+        <button type="button" class="work-subtab" data-filter="pages">pages</button>
+        <button type="button" class="work-subtab" data-filter="apps">apps</button>
+    </div>
 
     <div class="work-panel" id="panel-powerapps">
-        <div class="pa-filter-bar">
-            <button type="button" class="filter-pill active">all</button>
-            <button type="button" class="filter-pill">flows</button>
-            <button type="button" class="filter-pill">pages</button>
-            <button type="button" class="filter-pill">apps</button>
-        </div>
         <div class="grid">
             <div class="grid-sizer"></div>
         </div>
@@ -135,6 +163,8 @@
     const tabs = document.querySelectorAll('.work-tab');
     let paLoaded = false, researchLoaded = false;
 
+    const paSubtabs = document.getElementById('pa-subtabs');
+
     function showTab(name) {
         tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === name));
         document.querySelectorAll('.work-panel').forEach(p => {
@@ -144,6 +174,7 @@
         const panel = document.getElementById('panel-' + name);
         panel.classList.add('active');
         requestAnimationFrame(() => requestAnimationFrame(() => panel.classList.add('visible')));
+        paSubtabs.classList.toggle('visible', name === 'powerapps');
         history.replaceState(null, '', '#' + name);
         if (name === 'powerapps' && !paLoaded) { paLoaded = true; loadPa(); }
         if (name === 'research' && !researchLoaded) { researchLoaded = true; loadResearch(); }
@@ -156,7 +187,10 @@
     tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === initialTab));
     const initialPanel = document.getElementById('panel-' + initialTab);
     initialPanel.classList.add('active');
-    requestAnimationFrame(() => requestAnimationFrame(() => initialPanel.classList.add('visible')));
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+        initialPanel.classList.add('visible');
+        if (initialTab === 'powerapps') paSubtabs.classList.add('visible');
+    }));
     if (initialTab === 'powerapps') { paLoaded = true; loadPa(); }
     if (initialTab === 'research') { researchLoaded = true; loadResearch(); }
 
@@ -208,11 +242,11 @@
         });
     }
 
-    document.querySelectorAll('.filter-pill').forEach(pill => {
-        pill.addEventListener('click', () => {
-            document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-            pill.classList.add('active');
-            activeFilter = pill.textContent.trim();
+    document.querySelectorAll('.work-subtab').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.work-subtab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            activeFilter = btn.dataset.filter;
             grid.style.opacity = '0';
             setTimeout(() => { renderGrid(); grid.style.opacity = '1'; }, 300);
         });
