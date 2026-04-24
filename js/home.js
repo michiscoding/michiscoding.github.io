@@ -90,13 +90,7 @@ fetch('/nav.html')
       }
     });
 
-    const workToggle = document.getElementById('work-toggle');
     const workSub = document.getElementById('work-sub');
-    if (workToggle) {
-      workToggle.addEventListener('click', () => {
-        workSub.classList.toggle('open');
-      });
-    }
 
     const homeBtn = document.getElementById('home-btn');
     const eyeToggle = document.getElementById('eye-toggle');

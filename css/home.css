@@ -281,6 +281,13 @@ li{
     opacity: 1;
 }
 
+@media (hover: hover) {
+    .nav-menu li:has(#work-sub):hover #work-sub {
+        max-height: 200px;
+        opacity: 1;
+    }
+}
+
 .nav-sub li {
     font-weight: 400;
     font-size: 0.9em;
