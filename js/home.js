@@ -210,8 +210,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function getPhotos() {
     if (photosCache) return photosCache;
-    const res = await fetch('/photos.json');
-    photosCache = await res.json();
+    const MEDIA_BASE = SUPABASE_URL + '/storage/v1/object/public/media/';
+    const { data } = await db.from('photos').select('storage_path, tags, date').order('date', { ascending: false });
+    photosCache = (data || []).map(p => ({ src: MEDIA_BASE + p.storage_path, tags: p.tags || [], date: p.date }));
     return photosCache;
   }
 
@@ -309,15 +310,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     gallery365Loaded = true;
 
-    const res = await fetch('https://api.github.com/repos/michiscoding/michiscoding.github.io/git/trees/main?recursive=1');
-    const data = await res.json();
-    const imgFiles = data.tree.filter(f => f.type === 'blob' && /^entries\/images\/[\d-]+\/.+\.(jpg|jpeg|png|gif|webp)$/i.test(f.path));
+    const MEDIA_BASE = SUPABASE_URL + '/storage/v1/object/public/media/';
+    const { data: rows } = await db.from('entry_photos').select('storage_path, entry_date').order('entry_date', { ascending: false });
 
     const byDate = {};
-    for (const f of imgFiles) {
-      const date = f.path.split('/')[2];
-      if (!byDate[date]) byDate[date] = [];
-      byDate[date].push(`https://raw.githubusercontent.com/michiscoding/michiscoding.github.io/main/${f.path}`);
+    for (const row of (rows || [])) {
+      if (!byDate[row.entry_date]) byDate[row.entry_date] = [];
+      byDate[row.entry_date].push(MEDIA_BASE + row.storage_path);
     }
 
     gallery365.innerHTML = '';
@@ -336,7 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const card = document.createElement('div');
       card.className = 'card-365';
       card.addEventListener('click', e => {
-        if (!e.target.closest('.card-365-btn')) window.location.href = `/entries/${date}.html`;
+        if (!e.target.closest('.card-365-btn')) window.location.href = `/entries/view.html?date=${date}`;
       });
 
       const track = document.createElement('div');

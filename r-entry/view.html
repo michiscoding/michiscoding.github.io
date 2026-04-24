@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="/css/blog.css">
+    <link rel="stylesheet" href="/css/entry.css">
+    <style>:root { --maxWidth: 67vw; }</style>
+    <title></title>
+</head>
+<body>
+  <button type="button" class="back-btn" onclick="history.back()">←</button>
+  <div class="entry-container" id="r-body"></div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/js/supabase.js"></script>
+<script src="/js/home.js"></script>
+<script>
+(async () => {
+    const slug = new URLSearchParams(location.search).get('slug');
+    if (!slug) return;
+
+    const { data, error } = await db.from('research').select('*').eq('slug', slug).single();
+    if (error || !data) return;
+
+    document.title = data.title;
+    const body = document.getElementById('r-body');
+    const lines = (data.body || '').split('\n').map(l => l.trimEnd()).join('<br>\n');
+
+    body.innerHTML = `
+        <h1>${data.title}</h1>
+        <div class="entry-content"><p>${lines}</p></div>
+    `;
+})();
+</script>
+</html>

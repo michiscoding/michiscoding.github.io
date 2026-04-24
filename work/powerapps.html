@@ -43,9 +43,12 @@
 
 <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
 <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/js/supabase.js"></script>
 <script src="/js/home.js"></script>
 <script>
     const grid = document.querySelector('.grid');
+    const MEDIA_BASE = SUPABASE_URL + '/storage/v1/object/public/media/';
     let allEntries = [];
     let activeFilter = 'all';
     let slideIntervals = [];
@@ -58,31 +61,30 @@
         grid.style.opacity = '1';
 
         const filtered = activeFilter === 'all' ? allEntries : allEntries.filter(e => {
-            const tags = Array.isArray(e.tag) ? e.tag : e.tag.split(',').map(t => t.trim());
-            return tags.includes(activeFilter);
+            return (e.tags || []).includes(activeFilter);
         });
         filtered.forEach(entry => {
-            if (!entry.media || (Array.isArray(entry.media) && !entry.media.length)) return;
+            if (!entry.media?.length) return;
             const item = document.createElement('div');
             item.className = 'grid-item';
-            const srcs = Array.isArray(entry.media) ? entry.media : [entry.media];
+            const srcs = entry.media;
 
             let mediaInner = '';
             if (srcs.length === 1) {
                 const src = srcs[0];
-                mediaInner = src.endsWith('.mp4')
+                mediaInner = /\.(mp4|webm|mov)$/i.test(src)
                     ? `<video class="img" muted autoplay loop playsinline><source src="${src}" type="video/mp4"></video>`
                     : `<img class="img" alt="${entry.title}" src="${src}">`;
             } else {
                 mediaInner = srcs.map((src, i) =>
-                    src.endsWith('.mp4')
+                    /\.(mp4|webm|mov)$/i.test(src)
                         ? `<video class="grid-slide img${i===0?' active':''}" muted autoplay loop playsinline><source src="${src}" type="video/mp4"></video>`
                         : `<img class="grid-slide img${i===0?' active':''}" alt="${entry.title}" src="${src}">`
                 ).join('');
             }
 
             item.innerHTML = `
-                <div class="gallery-item" onclick="location.href='/powerapps/${entry.slug}.html'">
+                <div class="gallery-item" onclick="location.href='/powerapps/view.html?slug=${entry.slug}'">
                     ${mediaInner}
                     <div class="gallery-overlay"><span class="gallery-title">${entry.title}</span></div>
                 </div>`;
@@ -116,10 +118,14 @@
         });
     });
 
-    fetch('/powerapps.json')
-        .then(r => r.json())
-        .then(data => { allEntries = data; renderGrid(); })
-        .catch(() => {});
+    (async () => {
+        const { data } = await db.from('powerapps').select('*').order('created_at', { ascending: false });
+        allEntries = (data || []).map(e => ({
+            ...e,
+            media: (e.media || []).map(path => MEDIA_BASE + path)
+        }));
+        renderGrid();
+    })();
 
 </script>
 

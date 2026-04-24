@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="/css/entry.css">
+    <style>
+        :root { --maxWidth: 67vw; }
+        .pa-meta { font-size: .8rem; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 2rem; }
+        .pa-section { margin-bottom: 2rem; }
+        .pa-section h2 { font-size: 1rem; font-weight: 700; margin-bottom: .5rem; }
+    </style>
+    <title></title>
+</head>
+<body>
+  <button type="button" class="back-btn" onclick="history.back()">←</button>
+  <div class="entry-container" id="pa-body"></div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/js/supabase.js"></script>
+<script src="/js/home.js"></script>
+<script>
+(async () => {
+    const slug = new URLSearchParams(location.search).get('slug');
+    if (!slug) return;
+
+    const { data, error } = await db.from('powerapps').select('*').eq('slug', slug).single();
+    if (error || !data) return;
+
+    document.title = data.title;
+    const MEDIA_BASE = SUPABASE_URL + '/storage/v1/object/public/media/';
+    const body = document.getElementById('pa-body');
+
+    const tags = (data.tags || []).join(', ');
+    const d = new Date(data.created_at);
+    const months = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+    const dateStr = `${months[d.getMonth()]} ${d.getDate()} ${d.getFullYear()}`;
+
+    let mediaHTML = '';
+    const srcs = (data.media || []).map(p => MEDIA_BASE + p);
+    if (srcs.length === 1) {
+        const src = srcs[0];
+        mediaHTML = /\.(mp4|webm|mov)$/i.test(src)
+            ? `<video class="pa-media" muted autoplay loop playsinline><source src="${src}" type="video/mp4"></video>`
+            : `<img class="pa-media" alt="${data.title}" src="${src}">`;
+    } else if (srcs.length > 1) {
+        const slides = srcs.map((src, i) =>
+            /\.(mp4|webm|mov)$/i.test(src)
+                ? `<video class="pa-slide${i===0?' active':''}" muted autoplay loop playsinline><source src="${src}" type="video/mp4"></video>`
+                : `<img class="pa-slide${i===0?' active':''}" alt="${data.title}" src="${src}">`
+        ).join('');
+        mediaHTML = `<div class="pa-slideshow">${slides}</div>`;
+    }
+
+    body.innerHTML = `
+        <h1>${data.title}</h1>
+        <p class="pa-meta">${tags}${tags ? ' — ' : ''}${dateStr}</p>
+        ${mediaHTML}
+        <div class="entry-content">
+            <div class="pa-section"><h2>what it does</h2><p>${(data.what || '').replace(/\n/g, '<br>')}</p></div>
+            <div class="pa-section"><h2>how it works</h2><p>${(data.how || '').replace(/\n/g, '<br>')}</p></div>
+        </div>
+    `;
+})();
+</script>
+</html>

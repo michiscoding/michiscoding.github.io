@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="/css/blog.css">
+    <link rel="stylesheet" href="/css/entry.css">
+    <style>:root { --maxWidth: 67vw; }</style>
+    <title></title>
+</head>
+<body>
+  <button type="button" class="back-btn" onclick="history.back()">←</button>
+  <div class="entry-container" id="entry-body"></div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/js/supabase.js"></script>
+<script src="/js/home.js"></script>
+<script>
+(async () => {
+    const date = new URLSearchParams(location.search).get('date');
+    if (!date) return;
+
+    const months = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+    const [yyyy, mm, dd] = date.split('-');
+    const dateTitle = `${months[parseInt(mm)-1]} ${parseInt(dd)} ${yyyy}`;
+    document.title = dateTitle;
+
+    const MEDIA_BASE = SUPABASE_URL + '/storage/v1/object/public/media/';
+    const [{ data: entry }, { data: photos }] = await Promise.all([
+        db.from('entries').select('content').eq('date', date).single(),
+        db.from('entry_photos').select('storage_path').eq('entry_date', date)
+    ]);
+
+    const body = document.getElementById('entry-body');
+    body.innerHTML = `<h1>${dateTitle}</h1>`;
+
+    const content = document.createElement('div');
+    content.className = 'entry-content';
+    const lines = (entry?.content || '').split('\n').map(l => l.trimEnd()).join('<br>\n');
+    content.innerHTML = `<p>${lines}</p>`;
+    body.appendChild(content);
+
+    if (photos?.length) {
+        const gallery = document.createElement('div');
+        gallery.className = 'entry-gallery';
+        const thumbs = photos.map(p => {
+            const src = MEDIA_BASE + p.storage_path;
+            const isVideo = /\.(mp4|webm|mov)$/i.test(p.storage_path);
+            return `<div class="entry-gallery-item">${isVideo
+                ? `<video muted autoplay loop playsinline><source src="${src}" type="video/mp4"></video>`
+                : `<img src="${src}" loading="lazy">`}</div>`;
+        }).join('');
+        gallery.innerHTML = `
+            <button class="gallery-arrow gallery-prev" aria-label="previous">&#8592;</button>
+            <div class="gallery-track">${thumbs}</div>
+            <button class="gallery-arrow gallery-next" aria-label="next">&#8594;</button>
+        `;
+        body.appendChild(gallery);
+    }
+})();
+</script>
+</html>
