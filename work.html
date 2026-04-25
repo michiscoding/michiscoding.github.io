@@ -170,8 +170,7 @@
     function showTab(name) {
         tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === name));
         document.querySelectorAll('.work-panel').forEach(p => {
-            const isActive = p.id === 'panel-' + name;
-            if (!isActive) { p.classList.remove('visible'); setTimeout(() => p.classList.remove('active'), 400); }
+            if (p.id !== 'panel-' + name) { p.classList.remove('visible', 'active'); }
         });
         const panel = document.getElementById('panel-' + name);
         panel.classList.add('active');
