@@ -102,6 +102,7 @@
         <div class="grid">
             <div class="grid-sizer"></div>
         </div>
+        <div id="pa-text-list"></div>
     </div>
 
     <div class="work-panel" id="panel-writings">
@@ -201,11 +202,16 @@
     let activeFilter = 'all';
     let slideIntervals = [];
 
+    const paTextList = document.getElementById('pa-text-list');
+    const months = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+
     function renderGrid() {
         slideIntervals.forEach(clearInterval);
         slideIntervals = [];
         grid.querySelectorAll('.grid-item').forEach(el => el.remove());
+        paTextList.innerHTML = '';
         const filtered = activeFilter === 'all' ? allEntries : allEntries.filter(e => (e.tags || []).includes(activeFilter));
+        const textOnly = filtered.filter(e => !e.media?.length);
         filtered.forEach(entry => {
             if (!entry.media?.length) return;
             const item = document.createElement('div');
@@ -241,6 +247,18 @@
                 slideIntervals.push(id);
             });
         });
+
+        if (textOnly.length) {
+            paTextList.style.marginTop = filtered.some(e => e.media?.length) ? '2rem' : '0';
+            textOnly.forEach(entry => {
+                const d = new Date(entry.created_at);
+                const dateLabel = `${months[d.getMonth()]} ${d.getDate()} ${d.getFullYear()}`;
+                const record = document.createElement('div');
+                record.className = 'blog-record';
+                record.innerHTML = `<div style="display:flex;flex-direction:column;gap:0.3rem;"><div class="blog-details-1"><a href="/powerapps/view.html?slug=${entry.slug}" class="blog-link">${entry.title}</a></div><div class="blog-details-2">${dateLabel}</div></div>`;
+                paTextList.appendChild(record);
+            });
+        }
     }
 
     document.querySelectorAll('.work-subtab').forEach(btn => {
