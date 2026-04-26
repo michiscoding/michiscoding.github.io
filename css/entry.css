@@ -60,13 +60,19 @@
 .gallery-track {
     display: flex;
     gap: 0.5rem;
-    overflow: hidden;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
     width: 100%;
 }
+.gallery-track::-webkit-scrollbar { display: none; }
 
 .entry-gallery-item {
     flex: 0 0 calc(33.333% - 0.34rem);
     aspect-ratio: 1;
+    scroll-snap-align: start;
 }
 
 .entry-gallery-item img,
