@@ -59,6 +59,23 @@
             <button class="gallery-arrow gallery-next" aria-label="next">&#8594;</button>
         `;
         body.appendChild(gallery);
+
+        const lb = document.createElement('div');
+        lb.id = 'media-lb';
+        document.body.appendChild(lb);
+        lb.addEventListener('click', () => {
+            lb.classList.remove('open');
+            setTimeout(() => { lb.innerHTML = ''; }, 300);
+        });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') lb.click(); });
+
+        gallery.querySelectorAll('.entry-gallery-item img').forEach(img => {
+            img.style.cursor = 'zoom-in';
+            img.addEventListener('click', () => {
+                lb.innerHTML = `<img class="lb-media" src="${img.src}">`;
+                requestAnimationFrame(() => lb.classList.add('open'));
+            });
+        });
     }
 })();
 </script>
