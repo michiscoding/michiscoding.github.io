@@ -214,10 +214,9 @@ body.dark #eye-toggle:hover { color: #eee; }
     position: relative;
 }
 
-.sound-btn {
+.sound-btn,
+.fs-btn {
     position: absolute;
-    bottom: 0.4rem;
-    right: 0.4rem;
     background: rgba(0,0,0,0.45);
     border: none;
     border-radius: 50%;
@@ -229,8 +228,15 @@ body.dark #eye-toggle:hover { color: #eee; }
     cursor: pointer;
     padding: 0;
     color: white;
+    opacity: 0;
+    transition: opacity 0.2s;
     z-index: 2;
 }
+
+.sound-btn { bottom: 0.4rem; right: 0.4rem; }
+.fs-btn { bottom: 0.4rem; left: 0.4rem; }
+.media-wrap:hover .sound-btn,
+.media-wrap:hover .fs-btn { opacity: 1; }
 
 .burger-btn {
   background: none;

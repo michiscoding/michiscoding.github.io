@@ -247,6 +247,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!filtered.length) return;
 
+    const ICON_MUTED = `<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15" stroke="white" stroke-width="2" stroke-linecap="round"/><line x1="17" y1="9" x2="23" y2="15" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>`;
+    const ICON_SOUND = `<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`;
+    const ICON_FS = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>`;
+
     const fragment = document.createDocumentFragment();
     filtered.forEach(photo => {
       const item = document.createElement('div');
@@ -255,26 +259,34 @@ document.addEventListener('DOMContentLoaded', () => {
       const media = document.createElement(isVid ? 'video' : 'img');
       media.className = 'img';
       media.src = photo.src;
+      if (isVid) { media.muted = true; media.autoplay = true; media.loop = true; media.playsInline = true; }
+
+      const wrap = document.createElement('div');
+      wrap.className = 'media-wrap';
+      wrap.appendChild(media);
+
+      const fsBtn = document.createElement('button');
+      fsBtn.className = 'fs-btn';
+      fsBtn.innerHTML = ICON_FS;
+      fsBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        media.requestFullscreen();
+      });
+      wrap.appendChild(fsBtn);
+
       if (isVid) {
-        media.muted = true; media.autoplay = true; media.loop = true; media.playsInline = true;
-        const wrap = document.createElement('div');
-        wrap.className = 'media-wrap';
         const soundBtn = document.createElement('button');
         soundBtn.className = 'sound-btn';
-        const ICON_MUTED = `<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15" stroke="white" stroke-width="2" stroke-linecap="round"/><line x1="17" y1="9" x2="23" y2="15" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>`;
-        const ICON_SOUND = `<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`;
         soundBtn.innerHTML = ICON_MUTED;
         soundBtn.addEventListener('click', e => {
           e.stopPropagation();
           media.muted = !media.muted;
           soundBtn.innerHTML = media.muted ? ICON_MUTED : ICON_SOUND;
         });
-        wrap.appendChild(media);
         wrap.appendChild(soundBtn);
-        item.appendChild(wrap);
-      } else {
-        item.appendChild(media);
       }
+
+      item.appendChild(wrap);
       fragment.appendChild(item);
     });
     grid.appendChild(fragment);
