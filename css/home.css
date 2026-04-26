@@ -206,9 +206,35 @@ body.dark #eye-toggle:hover { color: #eee; }
 .grid-item img,
 .grid-item video {
 	display: block;
-	max-width: 100%;
+	width: 100%;
 	height: auto;
-  }
+}
+
+.grid-item .media-wrap {
+    position: relative;
+}
+
+.sound-btn {
+    position: absolute;
+    bottom: 0.4rem;
+    right: 0.4rem;
+    background: rgba(0,0,0,0.45);
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 2;
+}
+
+.grid-item:hover .sound-btn { opacity: 1; }
 
 .burger-btn {
   background: none;

@@ -251,12 +251,30 @@ document.addEventListener('DOMContentLoaded', () => {
     filtered.forEach(photo => {
       const item = document.createElement('div');
       item.className = 'grid-item';
-      const isVid = /\.(mp4|webm|mov)$/i.test(photo.src);
-      const img = document.createElement(isVid ? 'video' : 'img');
-      img.className = 'img';
-      img.src = photo.src;
-      if (isVid) { img.muted = true; img.autoplay = true; img.loop = true; img.playsInline = true; }
-      item.appendChild(img);
+      const isVid = /\.(mp4|webm|mov)$/i.test(photo.src) || photo.src.includes('cloudinary.com');
+      const media = document.createElement(isVid ? 'video' : 'img');
+      media.className = 'img';
+      media.src = photo.src;
+      if (isVid) {
+        media.muted = true; media.autoplay = true; media.loop = true; media.playsInline = true;
+        const wrap = document.createElement('div');
+        wrap.className = 'media-wrap';
+        const soundBtn = document.createElement('button');
+        soundBtn.className = 'sound-btn';
+        soundBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`;
+        soundBtn.addEventListener('click', e => {
+          e.stopPropagation();
+          media.muted = !media.muted;
+          soundBtn.innerHTML = media.muted
+            ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15" stroke="white" stroke-width="2" stroke-linecap="round"/><line x1="17" y1="9" x2="23" y2="15" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>`
+            : `<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`;
+        });
+        wrap.appendChild(media);
+        wrap.appendChild(soundBtn);
+        item.appendChild(wrap);
+      } else {
+        item.appendChild(media);
+      }
       fragment.appendChild(item);
     });
     grid.appendChild(fragment);
