@@ -331,6 +331,13 @@ document.addEventListener('DOMContentLoaded', () => {
       wrap.appendChild(media);
 
       if (isVid) {
+        media.addEventListener('loadeddata', () => wrap.classList.add('loaded'), { once: true });
+      } else {
+        if (media.complete && media.naturalWidth) { wrap.classList.add('loaded'); }
+        else { media.addEventListener('load', () => wrap.classList.add('loaded'), { once: true }); }
+      }
+
+      if (isVid) {
         const fsBtn = document.createElement('button');
         fsBtn.className = 'fs-btn';
         fsBtn.innerHTML = ICON_FS;
