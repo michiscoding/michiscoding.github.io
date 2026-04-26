@@ -195,7 +195,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const PLAY_ICON = `<svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
   const PAUSE_ICON = `<svg width="20" height="20" viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
 
-  function openLb(src) {
+  function openLb(src, sourceVid) {
+    lb._sourceVid = sourceVid || null;
+    if (sourceVid) sourceVid.pause();
     lb.innerHTML = '';
     const wrap = document.createElement('div');
     wrap.className = 'lb-wrap';
@@ -244,6 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function closeLb() {
     lb.classList.remove('open');
+    if (lb._sourceVid) { lb._sourceVid.play(); lb._sourceVid = null; }
     setTimeout(() => { lb.innerHTML = ''; }, 300);
   }
 
@@ -333,7 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fsBtn.innerHTML = ICON_FS;
         fsBtn.addEventListener('click', e => {
           e.stopPropagation();
-          openLb(photo.src);
+          openLb(photo.src, media);
         });
         wrap.appendChild(fsBtn);
       }
