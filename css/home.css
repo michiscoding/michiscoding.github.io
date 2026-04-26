@@ -809,11 +809,13 @@ body.dark .card-365 { background: #555; }
   text-shadow: 0 1px 4px rgba(0,0,0,0.7);
   white-space: nowrap;
   pointer-events: none;
+  z-index: 2;
   opacity: 0;
   transition: opacity 0.2s ease;
 }
 
 .card-365:hover .card-365-label { opacity: 1; }
+
 
 @media (max-width: 768px) {
   #gallery-365 {

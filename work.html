@@ -247,18 +247,17 @@
                 }, 2000);
                 slideIntervals.push(id);
             });
+            if (textOnly.length) {
+                paTextList.style.marginTop = filtered.some(e => e.media?.length) ? '2rem' : '0';
+                textOnly.forEach(entry => {
+                    const tagsLabel = (entry.tags || []).join(', ');
+                    const record = document.createElement('div');
+                    record.className = 'blog-record';
+                    record.innerHTML = `<div style="display:flex;flex-direction:column;gap:0.3rem;"><div class="blog-details-1"><a href="/powerapps/view.html?slug=${entry.slug}" class="blog-link">${entry.title}</a></div>${tagsLabel ? `<div class="blog-details-2">${tagsLabel}</div>` : ''}</div>`;
+                    paTextList.appendChild(record);
+                });
+            }
         });
-
-        if (textOnly.length) {
-            paTextList.style.marginTop = filtered.some(e => e.media?.length) ? '2rem' : '0';
-            textOnly.forEach(entry => {
-                const tagsLabel = (entry.tags || []).join(', ');
-                const record = document.createElement('div');
-                record.className = 'blog-record';
-                record.innerHTML = `<div style="display:flex;flex-direction:column;gap:0.3rem;"><div class="blog-details-1"><a href="/powerapps/view.html?slug=${entry.slug}" class="blog-link">${entry.title}</a></div>${tagsLabel ? `<div class="blog-details-2">${tagsLabel}</div>` : ''}</div>`;
-                paTextList.appendChild(record);
-            });
-        }
     }
 
     document.querySelectorAll('.work-subtab').forEach(btn => {
