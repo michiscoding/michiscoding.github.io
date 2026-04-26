@@ -202,6 +202,7 @@
     let allEntries = [];
     let activeFilter = 'all';
     let slideIntervals = [];
+    let paMasonry = null;
 
     const paTextList = document.getElementById('pa-text-list');
     const months = ['january','february','march','april','may','june','july','august','september','october','november','december'];
@@ -234,8 +235,12 @@
             item.innerHTML = `<div class="gallery-item" onclick="location.href='/powerapps/view.html?slug=${entry.slug}'">${mediaInner}<div class="gallery-overlay"><span class="gallery-title">${entry.title}</span></div></div>`;
             grid.appendChild(item);
         });
+        if (paMasonry) { paMasonry.destroy(); paMasonry = null; }
         imagesLoaded(grid, () => {
-            new Masonry(grid, { itemSelector: '.grid-item', columnWidth: '.grid-sizer', percentPosition: true });
+            paMasonry = new Masonry(grid, { itemSelector: '.grid-item', columnWidth: '.grid-sizer', percentPosition: true });
+            grid.querySelectorAll('video').forEach(v => {
+                if (v.readyState < 1) v.addEventListener('loadedmetadata', () => paMasonry && paMasonry.layout(), { once: true });
+            });
             grid.querySelectorAll('.gallery-item').forEach(item => {
                 const slides = item.querySelectorAll('.grid-slide');
                 if (slides.length < 2) return;
