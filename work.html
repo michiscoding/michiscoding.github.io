@@ -83,6 +83,7 @@
         .work-subtab.active { color: #444; }
         body.dark .work-subtab { color: #555; }
         body.dark .work-subtab.active { color: #aaa; }
+        #pa-text-list { max-width: var(--maxWidth); margin: 0 auto; }
     </style>
 </head>
 <body>
@@ -251,11 +252,10 @@
         if (textOnly.length) {
             paTextList.style.marginTop = filtered.some(e => e.media?.length) ? '2rem' : '0';
             textOnly.forEach(entry => {
-                const d = new Date(entry.created_at);
-                const dateLabel = `${months[d.getMonth()]} ${d.getDate()} ${d.getFullYear()}`;
+                const tagsLabel = (entry.tags || []).join(', ');
                 const record = document.createElement('div');
                 record.className = 'blog-record';
-                record.innerHTML = `<div style="display:flex;flex-direction:column;gap:0.3rem;"><div class="blog-details-1"><a href="/powerapps/view.html?slug=${entry.slug}" class="blog-link">${entry.title}</a></div><div class="blog-details-2">${dateLabel}</div></div>`;
+                record.innerHTML = `<div style="display:flex;flex-direction:column;gap:0.3rem;"><div class="blog-details-1"><a href="/powerapps/view.html?slug=${entry.slug}" class="blog-link">${entry.title}</a></div>${tagsLabel ? `<div class="blog-details-2">${tagsLabel}</div>` : ''}</div>`;
                 paTextList.appendChild(record);
             });
         }
