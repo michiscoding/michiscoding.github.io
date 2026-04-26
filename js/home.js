@@ -251,9 +251,11 @@ document.addEventListener('DOMContentLoaded', () => {
     filtered.forEach(photo => {
       const item = document.createElement('div');
       item.className = 'grid-item';
-      const img = document.createElement('img');
+      const isVid = /\.(mp4|webm|mov)$/i.test(photo.src);
+      const img = document.createElement(isVid ? 'video' : 'img');
       img.className = 'img';
       img.src = photo.src;
+      if (isVid) { img.muted = true; img.autoplay = true; img.loop = true; img.playsInline = true; }
       item.appendChild(img);
       fragment.appendChild(item);
     });
