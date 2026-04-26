@@ -88,7 +88,7 @@
 <body>
     <div class="work-tabs">
         <button type="button" class="work-tab" data-tab="powerapps">powerapps</button>
-        <button type="button" class="work-tab" data-tab="research">research</button>
+        <button type="button" class="work-tab" data-tab="writings">writings</button>
         <button type="button" class="work-tab" data-tab="resume">resume</button>
     </div>
     <div class="work-subtabs" id="pa-subtabs">
@@ -178,13 +178,13 @@
         paSubtabs.classList.toggle('visible', name === 'powerapps');
         history.replaceState(null, '', '#' + name);
         if (name === 'powerapps' && !paLoaded) { paLoaded = true; loadPa(); }
-        if (name === 'research' && !researchLoaded) { researchLoaded = true; loadResearch(); }
+        if (name === 'writings' && !researchLoaded) { researchLoaded = true; loadResearch(); }
     }
 
     tabs.forEach(tab => tab.addEventListener('click', () => showTab(tab.dataset.tab)));
 
     const hash = location.hash.replace('#', '');
-    const initialTab = ['powerapps', 'research', 'resume'].includes(hash) ? hash : 'powerapps';
+    const initialTab = ['powerapps', 'writings', 'resume'].includes(hash) ? hash : 'powerapps';
     tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === initialTab));
     const initialPanel = document.getElementById('panel-' + initialTab);
     initialPanel.classList.add('active');
@@ -193,7 +193,7 @@
         if (initialTab === 'powerapps') paSubtabs.classList.add('visible');
     }));
     if (initialTab === 'powerapps') { paLoaded = true; loadPa(); }
-    if (initialTab === 'research') { researchLoaded = true; loadResearch(); }
+    if (initialTab === 'writings') { researchLoaded = true; loadResearch(); }
 
     // --- powerapps ---
     const grid = document.querySelector('.grid');
@@ -259,7 +259,7 @@
         renderGrid();
     }
 
-    // --- research ---
+    // --- writings ---
     async function loadResearch() {
         const months = ['january','february','march','april','may','june','july','august','september','october','november','december'];
         const { data } = await db.from('research').select('slug, title, body, created_at').order('created_at', { ascending: false });
