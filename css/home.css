@@ -229,12 +229,8 @@ body.dark #eye-toggle:hover { color: #eee; }
     cursor: pointer;
     padding: 0;
     color: white;
-    opacity: 0;
-    transition: opacity 0.2s;
     z-index: 2;
 }
-
-.grid-item:hover .sound-btn { opacity: 1; }
 
 .burger-btn {
   background: none;
