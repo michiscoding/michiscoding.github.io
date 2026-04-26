@@ -23,12 +23,69 @@ body{
   pointer-events: auto;
   background: rgba(0,0,0,0.88);
 }
+.lb-wrap {
+  position: relative;
+  display: inline-block;
+  max-width: 85vw;
+  max-height: 85vh;
+}
 .lb-media {
+  display: block;
   max-width: 85vw;
   max-height: 85vh;
   object-fit: contain;
   border-radius: 4px;
-  display: block;
+}
+.lb-controls {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lb-wrap:hover .lb-controls { opacity: 1; }
+.lb-play-btn {
+  background: rgba(0,0,0,0.4);
+  border: none;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+.lb-scrubber {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 1rem;
+  right: 1rem;
+  width: calc(100% - 2rem);
+  height: 3px;
+  appearance: none;
+  background: rgba(255,255,255,0.3);
+  border-radius: 2px;
+  cursor: pointer;
+  outline: none;
+}
+.lb-scrubber::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+}
+.lb-scrubber::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  cursor: pointer;
 }
 
 body.transitions-enabled {

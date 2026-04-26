@@ -192,14 +192,53 @@ document.addEventListener('DOMContentLoaded', () => {
   lb.addEventListener('click', closeLb);
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
 
-  function openLb(src, isVid) {
+  const PLAY_ICON = `<svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
+  const PAUSE_ICON = `<svg width="20" height="20" viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
+
+  function openLb(src) {
     lb.innerHTML = '';
-    const media = document.createElement(isVid ? 'video' : 'img');
-    media.src = src;
-    media.className = 'lb-media';
-    if (isVid) { media.autoplay = true; media.loop = true; media.playsInline = true; media.controls = false; }
-    media.addEventListener('click', e => e.stopPropagation());
-    lb.appendChild(media);
+    const wrap = document.createElement('div');
+    wrap.className = 'lb-wrap';
+    wrap.addEventListener('click', e => e.stopPropagation());
+
+    const video = document.createElement('video');
+    video.src = src;
+    video.className = 'lb-media';
+    video.autoplay = true;
+    video.loop = true;
+    video.playsInline = true;
+    video.muted = false;
+
+    const controls = document.createElement('div');
+    controls.className = 'lb-controls';
+
+    const playBtn = document.createElement('button');
+    playBtn.className = 'lb-play-btn';
+    playBtn.innerHTML = PAUSE_ICON;
+    playBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      if (video.paused) { video.play(); } else { video.pause(); }
+    });
+    video.addEventListener('play', () => { playBtn.innerHTML = PAUSE_ICON; });
+    video.addEventListener('pause', () => { playBtn.innerHTML = PLAY_ICON; });
+
+    const scrubber = document.createElement('input');
+    scrubber.type = 'range';
+    scrubber.className = 'lb-scrubber';
+    scrubber.min = 0; scrubber.max = 100; scrubber.value = 0;
+    scrubber.addEventListener('click', e => e.stopPropagation());
+    scrubber.addEventListener('input', () => {
+      if (video.duration) video.currentTime = (scrubber.value / 100) * video.duration;
+    });
+    video.addEventListener('timeupdate', () => {
+      if (video.duration) scrubber.value = (video.currentTime / video.duration) * 100;
+    });
+
+    controls.appendChild(playBtn);
+    controls.appendChild(scrubber);
+    wrap.appendChild(video);
+    wrap.appendChild(controls);
+    lb.appendChild(wrap);
     requestAnimationFrame(() => lb.classList.add('open'));
   }
 
@@ -288,14 +327,16 @@ document.addEventListener('DOMContentLoaded', () => {
       wrap.className = 'media-wrap';
       wrap.appendChild(media);
 
-      const fsBtn = document.createElement('button');
-      fsBtn.className = 'fs-btn';
-      fsBtn.innerHTML = ICON_FS;
-      fsBtn.addEventListener('click', e => {
-        e.stopPropagation();
-        openLb(photo.src, isVid);
-      });
-      wrap.appendChild(fsBtn);
+      if (isVid) {
+        const fsBtn = document.createElement('button');
+        fsBtn.className = 'fs-btn';
+        fsBtn.innerHTML = ICON_FS;
+        fsBtn.addEventListener('click', e => {
+          e.stopPropagation();
+          openLb(photo.src);
+        });
+        wrap.appendChild(fsBtn);
+      }
 
       if (isVid) {
         const soundBtn = document.createElement('button');
