@@ -185,6 +185,29 @@ document.addEventListener('DOMContentLoaded', () => {
   let photosCache = null;
   let masonryInstance = null;
 
+  // custom lightbox
+  const lb = document.createElement('div');
+  lb.id = 'media-lb';
+  document.body.appendChild(lb);
+  lb.addEventListener('click', closeLb);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+
+  function openLb(src, isVid) {
+    lb.innerHTML = '';
+    const media = document.createElement(isVid ? 'video' : 'img');
+    media.src = src;
+    media.className = 'lb-media';
+    if (isVid) { media.autoplay = true; media.loop = true; media.playsInline = true; media.controls = false; }
+    media.addEventListener('click', e => e.stopPropagation());
+    lb.appendChild(media);
+    requestAnimationFrame(() => lb.classList.add('open'));
+  }
+
+  function closeLb() {
+    lb.classList.remove('open');
+    setTimeout(() => { lb.innerHTML = ''; }, 300);
+  }
+
   function setActive(filter) {
     pills.forEach(p => p.classList.toggle('active', p.dataset.filter === filter));
   }
@@ -270,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
       fsBtn.innerHTML = ICON_FS;
       fsBtn.addEventListener('click', e => {
         e.stopPropagation();
-        media.requestFullscreen();
+        openLb(photo.src, isVid);
       });
       wrap.appendChild(fsBtn);
 

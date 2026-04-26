@@ -6,6 +6,31 @@ body{
   transition: opacity 1s ease-in-out;
 }
 
+#media-lb {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, background 0.3s ease;
+}
+#media-lb.open {
+  opacity: 1;
+  pointer-events: auto;
+  background: rgba(0,0,0,0.88);
+}
+.lb-media {
+  max-width: 85vw;
+  max-height: 85vh;
+  object-fit: contain;
+  border-radius: 4px;
+  display: block;
+}
+
 body.transitions-enabled {
   transition: background-color 0.4s ease, opacity 1s ease-in-out;
 }
