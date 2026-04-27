@@ -8,12 +8,76 @@
     <link rel="stylesheet" href="/css/home.css">
     <link rel="stylesheet" href="/css/blog.css">
     <link rel="stylesheet" href="/css/entry.css">
-    <style>:root { --maxWidth: 67vw; }</style>
+    <style>
+        :root { --maxWidth: 67vw; }
+        .report-btn {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.45rem 1rem;
+            font-family: inherit;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            color: #555;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: none;
+            cursor: pointer;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .report-btn:hover { color: #111; border-color: #aaa; }
+        body.dark .report-btn { color: #888; border-color: #333; }
+        body.dark .report-btn:hover { color: #eee; border-color: #666; }
+
+        #report-overlay {
+            position: fixed;
+            inset: 0;
+            background: #0f0f0f;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        #report-overlay.open { opacity: 1; pointer-events: auto; }
+        #report-overlay-bar {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0.6rem 1.2rem;
+            background: #0f0f0f;
+            border-bottom: 1px solid #1e1e1e;
+            flex-shrink: 0;
+        }
+        #report-close-btn {
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 1.4rem;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0.2rem 0.4rem;
+        }
+        #report-close-btn:hover { color: #ccc; }
+        #report-frame {
+            flex: 1;
+            width: 100%;
+            border: none;
+        }
+    </style>
     <title></title>
 </head>
 <body>
   <button type="button" class="back-btn" onclick="history.back()">←</button>
   <div class="entry-container" id="r-body"></div>
+
+  <div id="report-overlay">
+    <div id="report-overlay-bar">
+      <button type="button" id="report-close-btn">×</button>
+    </div>
+    <iframe id="report-frame" src="about:blank" title="report"></iframe>
+  </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/js/supabase.js"></script>
@@ -33,7 +97,27 @@
     body.innerHTML = `
         <h1>${data.title}</h1>
         <div class="entry-content"><p>${lines}</p></div>
+        ${data.attachment_url ? `<button type="button" class="report-btn" id="report-open-btn">view report →</button>` : ''}
     `;
+
+    if (data.attachment_url) {
+        const overlay = document.getElementById('report-overlay');
+        const frame = document.getElementById('report-frame');
+
+        document.getElementById('report-open-btn').addEventListener('click', () => {
+            frame.src = data.attachment_url;
+            overlay.classList.add('open');
+        });
+
+        document.getElementById('report-close-btn').addEventListener('click', () => {
+            overlay.classList.remove('open');
+            setTimeout(() => { frame.src = 'about:blank'; }, 300);
+        });
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') document.getElementById('report-close-btn').click();
+        });
+    }
 })();
 </script>
 </html>

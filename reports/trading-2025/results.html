@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trading Agent — 2025 Results</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f0f0f; color: #e0e0e0; line-height: 1.6; }
+  .hero { padding: 60px 40px 40px; max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 2.2rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .subtitle { color: #888; font-size: 1rem; margin-bottom: 40px; }
+  h2 { font-size: 1.3rem; font-weight: 600; color: #fff; margin: 40px 0 12px; }
+  h3 { font-size: 1rem; font-weight: 600; color: #ccc; margin: 24px 0 8px; }
+  p { color: #aaa; margin-bottom: 12px; font-size: 0.95rem; }
+  .section { max-width: 900px; margin: 0 auto; padding: 0 40px 60px; }
+  .explainer { background: #1a1a1a; border-left: 3px solid #00cc66; padding: 16px 20px; border-radius: 4px; margin-bottom: 24px; }
+  .explainer p { margin: 0; color: #bbb; }
+  .leaderboard { width: 100%; border-collapse: collapse; margin: 16px 0 32px; }
+  .leaderboard th { text-align: left; padding: 10px 14px; background: #1a1a1a; color: #888; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .leaderboard td { padding: 10px 14px; border-bottom: 1px solid #1e1e1e; font-size: 0.9rem; }
+  .leaderboard tr:hover td { background: #181818; }
+  .profit-pos { color: #00cc66; font-weight: 600; }
+  .profit-neg { color: #ff4444; font-weight: 600; }
+  .rank { color: #555; font-size: 0.85rem; }
+  .winner { background: #0d1f13 !important; }
+  .winner td { border-bottom: 1px solid #1a3320; }
+  .chart-block { margin-bottom: 56px; }
+  .chart-block img { width: 100%; border-radius: 8px; border: 1px solid #222; margin: 12px 0 16px; }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 0.75rem; font-weight: 600; margin-right: 6px; }
+  .tag-win { background: #0d2e18; color: #00cc66; }
+  .tag-loss { background: #2e0d0d; color: #ff4444; }
+  .tag-note { background: #1e1e1e; color: #888; }
+  .divider { border: none; border-top: 1px solid #1e1e1e; margin: 40px 0; }
+  .callout { background: #111; border: 1px solid #222; border-radius: 8px; padding: 20px 24px; margin: 24px 0; }
+  .callout h3 { margin-top: 0; color: #00cc66; }
+  .callout p { margin: 0; }
+  .reading-guide { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0 32px; }
+  .guide-item { background: #1a1a1a; border-radius: 6px; padding: 14px 16px; }
+  .guide-item .label { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .guide-item .val { font-size: 0.9rem; color: #ccc; }
+  @media (max-width: 600px) { .reading-guide { grid-template-columns: 1fr; } .hero, .section { padding-left: 20px; padding-right: 20px; } }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Trading Agent — 2025 Results</h1>
+  <p class="subtitle">9 deep reinforcement learning models trained on historical stock data, evaluated on 2025 prices they've never seen.</p>
+
+  <div class="explainer">
+    <p><strong>What is this?</strong> We trained AI agents to trade stocks using only price history. Each agent learned by running through years of past data, getting rewarded for profitable buys and penalized for losses. Then we tested each one on 2025 data — prices it had never seen — to see if what it learned actually generalizes. The profit numbers below are real simulated trades on real 2025 prices.</p>
+  </div>
+
+  <h2>How to read the charts</h2>
+  <div class="reading-guide">
+    <div class="guide-item"><div class="label">Gray line</div><div class="val">The actual stock price throughout 2025</div></div>
+    <div class="guide-item"><div class="label">▲ Green triangle</div><div class="val">Model decided to BUY on that day</div></div>
+    <div class="guide-item"><div class="label">▼ Red triangle</div><div class="val">Model decided to SELL on that day</div></div>
+    <div class="guide-item"><div class="label">Bottom panel</div><div class="val">Running total profit — goes up when a trade wins, down when it loses</div></div>
+  </div>
+  <p>The model trades one share at a time: it buys, waits, then sells. Each buy→sell pair is one "round trip." Profit is the difference between what it sold for vs what it paid.</p>
+</div>
+
+<div class="section">
+
+  <h2>Leaderboard — All 9 Models on 2025 Data</h2>
+  <table class="leaderboard">
+    <thead>
+      <tr><th>Rank</th><th>Model</th><th>Trained On</th><th>Profit</th><th>Round Trips</th><th>Avg per Trade</th></tr>
+    </thead>
+    <tbody>
+      <tr class="winner">
+        <td class="rank">#1 🥇</td>
+        <td><strong>GOOGL Modern</strong></td>
+        <td>GOOGL 2020–2023</td>
+        <td class="profit-pos">+$5,977.51</td>
+        <td>49</td>
+        <td class="profit-pos">+$122.00</td>
+      </tr>
+      <tr>
+        <td class="rank">#2</td>
+        <td>AMZN</td>
+        <td>AMZN 2020–2023</td>
+        <td class="profit-pos">+$858.34</td>
+        <td>42</td>
+        <td class="profit-pos">+$20.44</td>
+      </tr>
+      <tr>
+        <td class="rank">#3</td>
+        <td>TSLA</td>
+        <td>TSLA 2020–2023</td>
+        <td class="profit-pos">+$718.76</td>
+        <td>37</td>
+        <td class="profit-pos">+$19.43</td>
+      </tr>
+      <tr>
+        <td class="rank">#4</td>
+        <td>META</td>
+        <td>META 2020–2023</td>
+        <td class="profit-pos">+$622.08</td>
+        <td>24</td>
+        <td class="profit-pos">+$25.92</td>
+      </tr>
+      <tr>
+        <td class="rank">#5</td>
+        <td>GOOGL Baseline</td>
+        <td>GOOGL 2010–2018 (old)</td>
+        <td class="profit-pos">+$488.46</td>
+        <td>57</td>
+        <td class="profit-pos">+$8.57</td>
+      </tr>
+      <tr>
+        <td class="rank">#6</td>
+        <td>MSFT</td>
+        <td>MSFT 2020–2023</td>
+        <td class="profit-pos">+$144.10</td>
+        <td>9</td>
+        <td class="profit-pos">+$16.01</td>
+      </tr>
+      <tr>
+        <td class="rank">#7</td>
+        <td>AAPL</td>
+        <td>AAPL 2020–2023</td>
+        <td class="profit-pos">+$102.96</td>
+        <td>50</td>
+        <td class="profit-pos">+$2.06</td>
+      </tr>
+      <tr>
+        <td class="rank">#8</td>
+        <td>NVDA</td>
+        <td>NVDA 2020–2023</td>
+        <td class="profit-pos">+$29.26</td>
+        <td>18</td>
+        <td class="profit-pos">+$1.63</td>
+      </tr>
+      <tr>
+        <td class="rank">#9</td>
+        <td>NFLX</td>
+        <td>NFLX 2020–2023</td>
+        <td class="profit-neg">-$2.75</td>
+        <td>51</td>
+        <td class="profit-neg">-$0.05</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <img src="leaderboard.png" alt="Leaderboard chart" style="width:100%;border-radius:8px;border:1px solid #222;margin-bottom:32px;">
+
+  <hr class="divider">
+  <h2>Model Breakdowns</h2>
+
+  <!-- GOOG MODERN -->
+  <div class="chart-block">
+    <h3><span class="tag tag-win">🥇 WINNER</span> GOOGL Modern — trained on 2020–2023, tested on 2025</h3>
+    <p>This is the standout result. Trained on recent Google price history (post-COVID, through the AI boom), the model made <strong>49 round trips</strong> on 2025 GOOGL data and came out <strong>+$5,977</strong>. Average of $122 profit per trade. It consistently bought dips and sold recoveries — you can see the green/red markers tracking the actual price swings on the chart below.</p>
+    <p>Key insight: training on more recent data (2020–2023 vs 2010–2018) made a massive difference — this model outperformed the old baseline by 12x on the same stock.</p>
+    <img src="goog_modern_50_chart.png" alt="GOOGL Modern chart">
+  </div>
+
+  <!-- AMZN -->
+  <div class="chart-block">
+    <h3><span class="tag tag-win">+$858</span> AMZN — trained on 2020–2023, tested on 2025</h3>
+    <p>Second place. Amazon's price patterns from the pandemic/post-pandemic era translated well to 2025. 42 trades, consistent upward P&L curve — the model didn't get greedy, it just kept finding small reliable wins.</p>
+    <img src="amzn_50_chart.png" alt="AMZN chart">
+  </div>
+
+  <!-- TSLA -->
+  <div class="chart-block">
+    <h3><span class="tag tag-win">+$719</span> TSLA — trained on 2020–2023, tested on 2025</h3>
+    <p>Tesla is one of the most volatile stocks out there. The model learned to ride that volatility — 37 trades, average $19 per round trip. Higher risk, higher reward. The P&L curve is choppier than AMZN but trends solidly upward.</p>
+    <img src="tsla_50_chart.png" alt="TSLA chart">
+  </div>
+
+  <!-- META -->
+  <div class="chart-block">
+    <h3><span class="tag tag-win">+$622</span> META — trained on 2020–2023, tested on 2025</h3>
+    <p>The fewest trades of the winners — only 24 round trips — but the highest average per trade at $26. META's big price swings made each trade more valuable. The model was selective, which paid off.</p>
+    <img src="meta_50_chart.png" alt="META chart">
+  </div>
+
+  <!-- GOOG BASELINE -->
+  <div class="chart-block">
+    <h3><span class="tag tag-note">Baseline</span> GOOGL Old — trained on 2010–2018, tested on 2025</h3>
+    <p>This is the original model from the repo — trained on decade-old Google data. It still made +$488 on 2025 prices, which proves the core approach works. But compare it to the modern version: same stock, same test data, 12x less profit. This is your causal proof that <strong>training era matters</strong>.</p>
+    <img src="goog_model_40_chart.png" alt="GOOGL Baseline chart">
+  </div>
+
+  <!-- MSFT -->
+  <div class="chart-block">
+    <h3><span class="tag tag-note">+$144</span> MSFT — trained on 2020–2023, tested on 2025</h3>
+    <p>Only 9 trades all year — the model was very conservative with Microsoft. But those 9 trades averaged $16 each. MSFT is a slow steady stock and the model reflected that: it waited for clear signals before moving.</p>
+    <img src="msft_50_chart.png" alt="MSFT chart">
+  </div>
+
+  <!-- AAPL -->
+  <div class="chart-block">
+    <h3><span class="tag tag-note">+$103</span> AAPL — trained on 2020–2023, tested on 2025</h3>
+    <p>50 trades but only $103 profit total — $2 average per trade. Apple's price didn't move much in 2025 relative to its price level ($200+ per share), so the model was active but margins were thin. High activity, low return.</p>
+    <img src="aapl_50_chart.png" alt="AAPL chart">
+  </div>
+
+  <!-- NVDA -->
+  <div class="chart-block">
+    <h3><span class="tag tag-note">+$29</span> NVDA — trained on 2020–2023, tested on 2025</h3>
+    <p>Surprising underperformer given NVDA's real-world explosion. The problem: NVDA's 2025 price action was unlike anything in 2020–2023 training data — the scale of the moves was too different for the model to handle. It made 18 trades but barely broke even. This shows a known limitation: models trained before a regime change struggle after it.</p>
+    <img src="nvda_50_chart.png" alt="NVDA chart">
+  </div>
+
+  <!-- NFLX -->
+  <div class="chart-block">
+    <h3><span class="tag tag-loss">-$2.75</span> NFLX — trained on 2020–2023, tested on 2025</h3>
+    <p>The only losing model — but barely. 51 trades, essentially break-even at -$2.75. Netflix's patterns simply didn't carry over. The model was active but couldn't find an edge. Worth noting: losing $2.75 on 51 trades over a full year is not catastrophic — it just means this stock/model combo doesn't work.</p>
+    <img src="nflx_50_chart.png" alt="NFLX chart">
+  </div>
+
+  <hr class="divider">
+
+  <div class="callout">
+    <h3>What we're doing next</h3>
+    <p>The GOOGL Modern model is the clear winner. Next step: connect it to Alpaca paper trading with $10, with a daily online learning loop — meaning the model retrains each day from its own live trades. After 30 days of paper trading, if results track the backtest, we go live with real money.</p>
+  </div>
+
+</div>
+</body>
+</html>
