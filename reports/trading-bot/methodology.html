@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trading Agent — How It Works</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f0f0f; color: #e0e0e0; line-height: 1.7; }
+  .hero { padding: 60px 40px 40px; max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 2.2rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .subtitle { color: #888; font-size: 1rem; margin-bottom: 40px; }
+  h2 { font-size: 1.4rem; font-weight: 600; color: #fff; margin: 48px 0 14px; }
+  h3 { font-size: 1rem; font-weight: 600; color: #ccc; margin: 28px 0 8px; }
+  p { color: #aaa; margin-bottom: 14px; font-size: 0.95rem; }
+  .section { max-width: 860px; margin: 0 auto; padding: 0 40px 80px; }
+  .phase-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin: 24px 0 36px; }
+  .phase { background: #141414; border-radius: 8px; padding: 20px; border-top: 3px solid #333; }
+  .phase.train { border-top-color: #4466ff; }
+  .phase.test  { border-top-color: #ffaa00; }
+  .phase.live  { border-top-color: #00cc66; }
+  .phase .num  { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+  .phase.train .num { color: #4466ff; }
+  .phase.test  .num { color: #ffaa00; }
+  .phase.live  .num { color: #00cc66; }
+  .phase .label { font-size: 1rem; font-weight: 600; color: #eee; margin-bottom: 8px; }
+  .phase p { font-size: 0.85rem; margin: 0; }
+  .explainer { background: #1a1a1a; border-left: 3px solid #4466ff; padding: 16px 20px; border-radius: 4px; margin: 20px 0; }
+  .explainer p { margin: 0; color: #bbb; font-size: 0.9rem; }
+  .callout { background: #111; border: 1px solid #222; border-radius: 8px; padding: 20px 24px; margin: 28px 0; }
+  .callout h3 { margin-top: 0; color: #00cc66; font-size: 0.95rem; }
+  .callout p { margin: 0; font-size: 0.9rem; }
+  .step-list { list-style: none; padding: 0; margin: 16px 0 28px; }
+  .step-list li { display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start; }
+  .step-num { background: #1e1e1e; color: #888; font-size: 0.75rem; font-weight: 700; min-width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: 2px; flex-shrink: 0; }
+  .step-list p { margin: 0; font-size: 0.9rem; }
+  .model-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0 28px; }
+  .model-card { background: #141414; border-radius: 6px; padding: 14px 16px; }
+  .model-card .name { font-size: 0.85rem; font-weight: 600; color: #ddd; margin-bottom: 4px; }
+  .model-card .detail { font-size: 0.8rem; color: #666; }
+  .divider { border: none; border-top: 1px solid #1e1e1e; margin: 44px 0; }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 0.75rem; font-weight: 600; margin-right: 6px; }
+  .tag-blue { background: #0d1533; color: #4466ff; }
+  .tag-green { background: #0d2e18; color: #00cc66; }
+  .tag-orange { background: #2e1d00; color: #ffaa00; }
+  .analogy { background: #181818; border-radius: 8px; padding: 18px 22px; margin: 20px 0; font-style: italic; color: #999; font-size: 0.9rem; }
+  .analogy strong { color: #ccc; font-style: normal; }
+  @media (max-width: 660px) {
+    .phase-grid { grid-template-columns: 1fr; }
+    .model-grid { grid-template-columns: 1fr; }
+    .hero, .section { padding-left: 20px; padding-right: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>How the Trading Agent Works</h1>
+  <p class="subtitle">A plain-English breakdown of training, backtesting, and live deployment — and how each phase differs from the next.</p>
+</div>
+
+<div class="section">
+
+  <h2>The Big Picture: Three Phases</h2>
+  <p>Everything we did falls into three distinct phases. The most important thing to understand is that the data in each phase is completely different — the model never "cheats" by seeing future prices during training.</p>
+
+  <div class="phase-grid">
+    <div class="phase train">
+      <div class="num">Phase 1</div>
+      <div class="label">Training</div>
+      <p>The agent learns from years of historical price data it's allowed to study. This is where the actual "learning" happens. Data: 2020–2023.</p>
+    </div>
+    <div class="phase test">
+      <div class="num">Phase 2</div>
+      <div class="label">Backtesting</div>
+      <p>We run the trained model on 2025 prices it has never seen. No learning happens here — we're just measuring whether it actually works. Data: 2025.</p>
+    </div>
+    <div class="phase live">
+      <div class="num">Phase 3</div>
+      <div class="label">Live Paper Trading</div>
+      <p>The model is deployed. It gets real prices daily, places real (fake-money) orders, and retrains slightly each day from its own live results. Data: 2026 onward.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <h2>Phase 1 — Training</h2>
+  <h3>What is the agent actually learning?</h3>
+  <p>The agent is a neural network that answers one question every day: given the last 10 days of price movements, should I <strong>BUY</strong>, <strong>SELL</strong>, or <strong>HOLD</strong>?</p>
+  <p>It learns by trial and error over thousands of simulated trading days. When it makes a profitable trade, it gets a positive reward. When it loses money, it gets a negative reward. Over time it updates its internal weights to make better decisions.</p>
+
+  <div class="analogy">
+    <strong>Analogy:</strong> Imagine playing a video game where you can only press three buttons (BUY, SELL, HOLD) and your score is your profit. After enough attempts, you start recognizing which patterns of price movement tend to be good signals. The agent does the same thing — but with math instead of intuition.
+  </div>
+
+  <h3>The algorithm: Deep Q-Learning (DQN)</h3>
+  <p>The specific technique is called Deep Q-Learning. "Deep" means we use a neural network. "Q" refers to Q-values — a number representing "how good is it to take action X in situation Y." The agent learns Q-values for all three actions (BUY/SELL/HOLD) across all market situations, then always picks the highest one.</p>
+
+  <p>Two key tricks that make it actually work:</p>
+  <ul style="color:#aaa; padding-left:20px; margin-bottom:14px; font-size:0.9rem; line-height:1.8;">
+    <li><strong style="color:#ccc;">Experience Replay:</strong> Instead of learning from each trade immediately (which causes instability), the agent stores its experiences in a memory bank and randomly samples from them later. This breaks correlations in the data and makes training more stable.</li>
+    <li><strong style="color:#ccc;">Double DQN:</strong> Uses two copies of the network — one that makes decisions, one that evaluates them. This prevents the agent from systematically overestimating how good its trades are.</li>
+  </ul>
+
+  <h3>What counts as one "training run"?</h3>
+  <ul class="step-list">
+    <li><span class="step-num">1</span><p>Load 3–4 years of daily closing prices for one ticker (e.g., GOOGL 2020–2023 = ~750 trading days).</p></li>
+    <li><span class="step-num">2</span><p>Run the agent through all 750 days, making a decision each day. This is called one <strong>episode</strong>.</p></li>
+    <li><span class="step-num">3</span><p>After enough experiences accumulate (≥32), sample a random batch and run gradient descent to update the network weights.</p></li>
+    <li><span class="step-num">4</span><p>Repeat for 50 episodes — 50 full passes through all 750 days. That's 37,500 decision points total, each one a learning opportunity.</p></li>
+    <li><span class="step-num">5</span><p>Save the trained model to disk. Done.</p></li>
+  </ul>
+
+  <h3>Why did it take so long?</h3>
+  <p>We trained 9 separate models — one per stock. Each ran 50 episodes through ~750 days of data, with a neural network update after each batch. TensorFlow (the deep learning framework) is doing thousands of matrix multiplications per second, but it still adds up. Longer training = more stable, well-converged weights. We also had to debug a platform issue (TensorFlow's x86 binaries used CPU instructions that don't work under Apple Silicon's Rosetta emulation), which cost time before we switched to the Apple Silicon-native build.</p>
+
+  <hr class="divider">
+
+  <h2>Phase 2 — Backtesting (the "test set")</h2>
+  <p>Once training is done, the model's weights are frozen — it can't learn anymore in this phase. We then run it against 2025 price data it has never seen, and record every BUY/SELL/HOLD decision it makes.</p>
+  <p>This is the most important evaluation. Training performance is meaningless — any model can memorize its training data. What matters is whether the patterns it learned actually generalize to new market conditions.</p>
+
+  <div class="explainer">
+    <p><strong>Why 2025 specifically?</strong> We trained on 2020–2023. We skipped 2024 entirely (keeping it as a buffer to reduce look-ahead bias), then tested on 2025 — a full year of data that postdates everything the model ever touched. This is sometimes called "walk-forward" analysis.</p>
+  </div>
+
+  <h3>Results summary</h3>
+  <p>8 out of 9 models were profitable on 2025 data they'd never seen. The GOOGL Modern model (trained on 2020–2023 Google prices) made +$5,977 over the year — 49 round trips at an average of $122 profit each. See <a href="results.html" style="color:#4466ff;">results.html</a> for the full breakdown with charts.</p>
+
+  <hr class="divider">
+
+  <h2>Phase 3 — Live Paper Trading (deployed)</h2>
+  <p>This is where we are now. The model is <em>deployed</em> — running in production, just with paper money instead of real money (Alpaca's paper trading environment uses real market prices but simulated funds).</p>
+
+  <h3>What happens every weekday at 4:15 PM ET</h3>
+  <ul class="step-list">
+    <li><span class="step-num">1</span><p>Fetch the last 10+ days of real closing prices from Alpaca's data API.</p></li>
+    <li><span class="step-num">2</span><p>Build the current market "state" — same format the model was trained on (10-day sigmoid-normalized price differences).</p></li>
+    <li><span class="step-num">3</span><p>The model outputs a decision: BUY, SELL, or HOLD.</p></li>
+    <li><span class="step-num">4</span><p>If BUY: place a $10,000 market order (fractional shares) on Alpaca paper account.</p></li>
+    <li><span class="step-num">5</span><p><strong>Online learning:</strong> feed yesterday's outcome back in as a training experience. If we bought and price went up, that's a positive reward. If price dropped, negative. The model retrains slightly from this — adapting to 2026 market conditions in real time.</p></li>
+    <li><span class="step-num">6</span><p>Log everything: action, price, P&amp;L, running total.</p></li>
+  </ul>
+
+  <h3>How is this different from the backtest?</h3>
+  <p>The backtest was a replay — we already had all of 2025's prices, so we could run through the whole year at once and calculate total profit. Live trading is real-time: the model only ever sees prices up to today, and actually places orders that fill at real bid/ask spreads. It also learns from each live trade, so the model you're running in month 2 is slightly different from month 1. The backtest model was static; the live model evolves.</p>
+
+  <hr class="divider">
+
+  <h2>The 9 Models</h2>
+  <p>We trained one model per stock, all on 2020–2023 data, plus one "baseline" model trained on older GOOGL data to test how much training era matters.</p>
+
+  <div class="model-grid">
+    <div class="model-card">
+      <div class="name">GOOGL Modern</div>
+      <div class="detail">Trained: GOOGL 2020–2023 · Trades: GOOGL live</div>
+    </div>
+    <div class="model-card">
+      <div class="name">GOOGL Baseline</div>
+      <div class="detail">Trained: GOOGL 2010–2018 · Trades: GOOGL live · Control group</div>
+    </div>
+    <div class="model-card">
+      <div class="name">AMZN</div>
+      <div class="detail">Trained: AMZN 2020–2023 · Trades: AMZN live</div>
+    </div>
+    <div class="model-card">
+      <div class="name">TSLA</div>
+      <div class="detail">Trained: TSLA 2020–2023 · Trades: TSLA live</div>
+    </div>
+    <div class="model-card">
+      <div class="name">META</div>
+      <div class="detail">Trained: META 2020–2023 · Trades: META live</div>
+    </div>
+    <div class="model-card">
+      <div class="name">MSFT</div>
+      <div class="detail">Trained: MSFT 2020–2023 · Trades: MSFT live</div>
+    </div>
+    <div class="model-card">
+      <div class="name">AAPL</div>
+      <div class="detail">Trained: AAPL 2020–2023 · Trades: AAPL live</div>
+    </div>
+    <div class="model-card">
+      <div class="name">NVDA</div>
+      <div class="detail">Trained: NVDA 2020–2023 · Trades: NVDA live</div>
+    </div>
+    <div class="model-card">
+      <div class="name">NFLX</div>
+      <div class="detail">Trained: NFLX 2020–2023 · Trades: NFLX live</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <h3>The key experiment baked into this setup</h3>
+    <p>Two models trade the same stock (GOOGL) — one trained on recent data (2020–2023), one on decade-old data (2010–2018). In the 2025 backtest, the modern model outperformed the baseline by 12x on identical test data. The live paper trading will tell us if that gap holds in real-time 2026 conditions, or if the online learning loop closes it.</p>
+  </div>
+
+  <hr class="divider">
+
+  <h2>What We're Watching For</h2>
+  <p>The paper trading period (targeting ~30 days) is meant to answer three questions:</p>
+  <ul style="color:#aaa; padding-left:20px; margin-bottom:14px; font-size:0.9rem; line-height:2;">
+    <li><strong style="color:#ccc;">Does the backtest ranking hold?</strong> GOOGL Modern was #1 in 2025 data. Is it still #1 on live 2026 data?</li>
+    <li><strong style="color:#ccc;">Does online learning help?</strong> The model adapts daily. Does it improve over the first 30 days, or does it drift?</li>
+    <li><strong style="color:#ccc;">Is the system ready for real money?</strong> If live results track the backtest directionally, we go live with real capital.</li>
+  </ul>
+
+</div>
+</body>
+</html>
