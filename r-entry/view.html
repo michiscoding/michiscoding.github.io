@@ -88,7 +88,7 @@
     <title></title>
 </head>
 <body>
-  <button type="button" class="back-btn" onclick="history.back()">←</button>
+  <button type="button" class="back-btn" id="back-btn">←</button>
   <div class="entry-container" id="r-body"></div>
 
   <div id="report-overlay">
@@ -145,6 +145,11 @@
 
     body.querySelectorAll('.overlay-link').forEach(a => {
         a.addEventListener('click', e => { e.preventDefault(); openOverlay(a.dataset.url); });
+    });
+
+    document.getElementById('back-btn').addEventListener('click', () => {
+        if (document.referrer) location.href = document.referrer;
+        else history.back();
     });
 
     document.getElementById('report-close-btn').addEventListener('click', closeOverlay);
