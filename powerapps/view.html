@@ -12,12 +12,63 @@
         .pa-meta { font-size: .8rem; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 2rem; }
         .pa-section { margin-bottom: 2rem; }
         .pa-section h2 { font-size: 1rem; font-weight: 700; margin-bottom: .5rem; }
+
+        .pa-slide, .pa-media { cursor: zoom-in; }
+
+        #pa-lb {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.92);
+            z-index: 1000;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        #pa-lb.open { opacity: 1; pointer-events: auto; }
+        #pa-lb-media { max-width: 92vw; max-height: 92vh; object-fit: contain; display: block; border-radius: 4px; }
+        #pa-lb-close {
+            position: absolute; top: 1rem; right: 1.2rem;
+            background: none; border: none; color: rgba(255,255,255,0.7);
+            font-size: 1.8rem; cursor: pointer; line-height: 1; padding: 0.2rem 0.4rem;
+        }
+        #pa-lb-close:hover { color: #fff; }
+        .pa-lb-arrow {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: none; border: none; color: rgba(255,255,255,0.7);
+            font-size: 1.5rem; cursor: pointer; padding: 0.75rem;
+            transition: color 0.15s;
+        }
+        .pa-lb-arrow:hover { color: #fff; }
+        #pa-lb-prev { left: 0.75rem; }
+        #pa-lb-next { right: 0.75rem; }
+        #pa-lb-controls {
+            position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+            display: flex; align-items: center; gap: 0.75rem;
+        }
+        #pa-lb-play {
+            background: none; border: none; color: rgba(255,255,255,0.8); cursor: pointer; padding: 0;
+        }
+        #pa-lb-play:hover { color: #fff; }
+        #pa-lb-scrubber {
+            width: 180px; accent-color: #fff; cursor: pointer;
+        }
+        #pa-lb-controls { display: none; }
     </style>
     <title></title>
 </head>
 <body>
   <button type="button" class="back-btn" onclick="history.back()">←</button>
   <div class="entry-container" id="pa-body"></div>
+
+  <div id="pa-lb">
+    <button type="button" id="pa-lb-close">×</button>
+    <button type="button" class="pa-lb-arrow" id="pa-lb-prev">←</button>
+    <button type="button" class="pa-lb-arrow" id="pa-lb-next">→</button>
+    <img id="pa-lb-media" src="" alt="">
+    <div id="pa-lb-controls">
+      <button type="button" id="pa-lb-play"></button>
+      <input type="range" id="pa-lb-scrubber" min="0" max="100" value="0">
+    </div>
+  </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/js/supabase.js"></script>
@@ -93,6 +144,76 @@
         slideshow.appendChild(prev);
         slideshow.appendChild(next);
     }
+
+    // lightbox
+    const lb = document.getElementById('pa-lb');
+    const lbMedia = document.getElementById('pa-lb-media');
+    const lbControls = document.getElementById('pa-lb-controls');
+    const lbPlay = document.getElementById('pa-lb-play');
+    const lbScrubber = document.getElementById('pa-lb-scrubber');
+    const PLAY_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
+    const PAUSE_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
+
+    let lbVideo = null;
+    let lbIndex = 0;
+    const allSrcs = srcs;
+
+    function openLb(idx) {
+        lbIndex = idx;
+        const src = allSrcs[idx];
+        const isVid = /\.(mp4|webm|mov)$/i.test(src);
+
+        if (lbVideo) { lbVideo.pause(); lbVideo.src = ''; lbVideo.remove(); lbVideo = null; }
+        lbMedia.style.display = isVid ? 'none' : 'block';
+        lbControls.style.display = isVid ? 'flex' : 'none';
+
+        if (isVid) {
+            lbVideo = document.createElement('video');
+            lbVideo.id = 'pa-lb-media';
+            lbVideo.src = src;
+            lbVideo.autoplay = true; lbVideo.loop = true; lbVideo.playsInline = true; lbVideo.muted = false;
+            lbVideo.style.cssText = 'max-width:92vw;max-height:92vh;object-fit:contain;display:block;border-radius:4px;';
+            lb.insertBefore(lbVideo, lbControls);
+            lbPlay.innerHTML = PAUSE_SVG;
+            lbVideo.addEventListener('play', () => { lbPlay.innerHTML = PAUSE_SVG; });
+            lbVideo.addEventListener('pause', () => { lbPlay.innerHTML = PLAY_SVG; });
+            lbVideo.addEventListener('timeupdate', () => {
+                if (lbVideo.duration) lbScrubber.value = (lbVideo.currentTime / lbVideo.duration) * 100;
+            });
+        } else {
+            lbMedia.src = src;
+        }
+
+        document.getElementById('pa-lb-prev').style.display = allSrcs.length < 2 ? 'none' : '';
+        document.getElementById('pa-lb-next').style.display = allSrcs.length < 2 ? 'none' : '';
+        lb.classList.add('open');
+    }
+
+    function closeLb() {
+        lb.classList.remove('open');
+        if (lbVideo) { lbVideo.pause(); lbVideo.src = ''; lbVideo.remove(); lbVideo = null; }
+        lbMedia.src = '';
+    }
+
+    lbPlay.addEventListener('click', () => { if (lbVideo) { lbVideo.paused ? lbVideo.play() : lbVideo.pause(); } });
+    lbScrubber.addEventListener('input', () => { if (lbVideo?.duration) lbVideo.currentTime = (lbScrubber.value / 100) * lbVideo.duration; });
+    document.getElementById('pa-lb-close').addEventListener('click', closeLb);
+    lb.addEventListener('click', e => { if (e.target === lb) closeLb(); });
+    document.getElementById('pa-lb-prev').addEventListener('click', e => { e.stopPropagation(); openLb((lbIndex - 1 + allSrcs.length) % allSrcs.length); });
+    document.getElementById('pa-lb-next').addEventListener('click', e => { e.stopPropagation(); openLb((lbIndex + 1) % allSrcs.length); });
+    document.addEventListener('keydown', e => {
+        if (!lb.classList.contains('open')) return;
+        if (e.key === 'Escape') closeLb();
+        if (e.key === 'ArrowLeft') openLb((lbIndex - 1 + allSrcs.length) % allSrcs.length);
+        if (e.key === 'ArrowRight') openLb((lbIndex + 1) % allSrcs.length);
+    });
+
+    // attach click to each slide + single media
+    body.querySelectorAll('.pa-slide').forEach((slide, i) => {
+        slide.addEventListener('click', () => openLb(i));
+    });
+    const singleMedia = body.querySelector('.pa-media');
+    if (singleMedia) singleMedia.addEventListener('click', () => openLb(0));
 })();
 </script>
 </html>
