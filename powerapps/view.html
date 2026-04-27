@@ -65,14 +65,33 @@
         </div>
     `;
 
-    const slides = body.querySelectorAll('.pa-slide');
+    const slides = Array.from(body.querySelectorAll('.pa-slide'));
     if (slides.length > 1) {
         let current = 0;
-        setInterval(() => {
+
+        function goTo(n) {
             slides[current].classList.remove('active');
-            current = (current + 1) % slides.length;
+            current = (n + slides.length) % slides.length;
             slides[current].classList.add('active');
-        }, 3000);
+        }
+
+        let timer = setInterval(() => goTo(current + 1), 3000);
+
+        function nudge(dir) {
+            clearInterval(timer);
+            goTo(current + dir);
+            timer = setInterval(() => goTo(current + 1), 3000);
+        }
+
+        const slideshow = body.querySelector('.pa-slideshow');
+        const prev = document.createElement('button');
+        prev.type = 'button'; prev.className = 'pa-arrow pa-arrow-prev'; prev.textContent = '←';
+        prev.addEventListener('click', () => nudge(-1));
+        const next = document.createElement('button');
+        next.type = 'button'; next.className = 'pa-arrow pa-arrow-next'; next.textContent = '→';
+        next.addEventListener('click', () => nudge(1));
+        slideshow.appendChild(prev);
+        slideshow.appendChild(next);
     }
 })();
 </script>
