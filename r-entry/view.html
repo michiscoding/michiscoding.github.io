@@ -10,24 +10,6 @@
     <link rel="stylesheet" href="/css/entry.css">
     <style>
         :root { --maxWidth: 67vw; }
-        .report-btn {
-            display: inline-block;
-            margin-top: 2rem;
-            padding: 0.45rem 1rem;
-            font-family: inherit;
-            font-size: 0.8rem;
-            font-weight: 600;
-            letter-spacing: 0.04em;
-            color: #555;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background: none;
-            cursor: pointer;
-            transition: color 0.2s, border-color 0.2s;
-        }
-        .report-btn:hover { color: #111; border-color: #aaa; }
-        body.dark .report-btn { color: #888; border-color: #333; }
-        body.dark .report-btn:hover { color: #eee; border-color: #666; }
 
         .overlay-link {
             color: inherit;
@@ -37,6 +19,26 @@
             cursor: pointer;
         }
         .overlay-link:hover { text-decoration-color: #555; }
+
+        .attachment-section {
+            margin-top: 2.5rem;
+        }
+        .attachment-label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #aaa;
+            margin-bottom: 0.5rem;
+        }
+        .attachment-iframe {
+            width: 100%;
+            height: 920px;
+            border: none;
+            border-radius: 12px;
+            display: block;
+        }
 
         #report-overlay {
             position: fixed;
@@ -111,17 +113,23 @@
     const body = document.getElementById('r-body');
 
     const lines = (data.body || '').split('\n').map(l => l.trimEnd()).join('<br>\n');
-    // parse [text](url) into overlay links
     const parsed = lines.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) =>
         `<a class="overlay-link" data-url="${url}">${text}</a>`
     );
 
+    const attachmentSection = data.attachment_url ? `
+        <div class="attachment-section">
+            <span class="attachment-label">dashboard</span>
+            <iframe class="attachment-iframe" src="${data.attachment_url}" title="dashboard"></iframe>
+        </div>` : '';
+
     body.innerHTML = `
         <h1>${data.title}</h1>
         <div class="entry-content"><p>${parsed}</p></div>
-        ${data.attachment_url ? `<button type="button" class="report-btn" id="report-open-btn">view report →</button>` : ''}
+        ${attachmentSection}
     `;
 
+    // overlay for inline [text](url) links
     const overlay = document.getElementById('report-overlay');
     const frame = document.getElementById('report-frame');
 
@@ -135,21 +143,12 @@
         setTimeout(() => { frame.src = 'about:blank'; }, 300);
     }
 
-    // inline [text](url) links
     body.querySelectorAll('.overlay-link').forEach(a => {
         a.addEventListener('click', e => { e.preventDefault(); openOverlay(a.dataset.url); });
     });
 
-    // attachment_url button (fallback / explicit button)
-    if (data.attachment_url) {
-        document.getElementById('report-open-btn')?.addEventListener('click', () => openOverlay(data.attachment_url));
-    }
-
     document.getElementById('report-close-btn').addEventListener('click', closeOverlay);
-
-    // click backdrop (outside modal) to close
     overlay.addEventListener('click', e => { if (e.target === overlay) closeOverlay(); });
-
     document.addEventListener('keydown', e => {
         if (e.key === 'Escape' && overlay.classList.contains('open')) closeOverlay();
     });
