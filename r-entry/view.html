@@ -29,37 +29,61 @@
         body.dark .report-btn { color: #888; border-color: #333; }
         body.dark .report-btn:hover { color: #eee; border-color: #666; }
 
+        .overlay-link {
+            color: inherit;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            text-decoration-color: #aaa;
+            cursor: pointer;
+        }
+        .overlay-link:hover { text-decoration-color: #555; }
+
         #report-overlay {
             position: fixed;
             inset: 0;
-            background: #0f0f0f;
+            background: rgba(0,0,0,0.55);
             z-index: 1000;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s ease;
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
         }
         #report-overlay.open { opacity: 1; pointer-events: auto; }
+        #report-modal {
+            width: 100%;
+            max-width: 1200px;
+            height: 90vh;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.35);
+        }
         #report-overlay-bar {
             display: flex;
             align-items: center;
-            justify-content: flex-end;
-            padding: 0.6rem 1.2rem;
-            background: #0f0f0f;
-            border-bottom: 1px solid #1e1e1e;
+            padding: 0.5rem 1rem;
+            background: #f5f5f5;
+            border-bottom: 1px solid #e0e0e0;
             flex-shrink: 0;
         }
         #report-close-btn {
             background: none;
             border: none;
-            color: #666;
-            font-size: 1.4rem;
+            color: #555;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
             cursor: pointer;
             line-height: 1;
             padding: 0.2rem 0.4rem;
         }
-        #report-close-btn:hover { color: #ccc; }
+        #report-close-btn:hover { color: #111; }
         #report-frame {
             flex: 1;
             width: 100%;
@@ -73,10 +97,12 @@
   <div class="entry-container" id="r-body"></div>
 
   <div id="report-overlay">
-    <div id="report-overlay-bar">
-      <button type="button" id="report-close-btn">×</button>
+    <div id="report-modal">
+      <div id="report-overlay-bar">
+        <button type="button" id="report-close-btn">← back</button>
+      </div>
+      <iframe id="report-frame" src="about:blank" title="report"></iframe>
     </div>
-    <iframe id="report-frame" src="about:blank" title="report"></iframe>
   </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -92,32 +118,50 @@
 
     document.title = data.title;
     const body = document.getElementById('r-body');
+
     const lines = (data.body || '').split('\n').map(l => l.trimEnd()).join('<br>\n');
+    // parse [text](url) into overlay links
+    const parsed = lines.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) =>
+        `<a class="overlay-link" data-url="${url}">${text}</a>`
+    );
 
     body.innerHTML = `
         <h1>${data.title}</h1>
-        <div class="entry-content"><p>${lines}</p></div>
+        <div class="entry-content"><p>${parsed}</p></div>
         ${data.attachment_url ? `<button type="button" class="report-btn" id="report-open-btn">view report →</button>` : ''}
     `;
 
-    if (data.attachment_url) {
-        const overlay = document.getElementById('report-overlay');
-        const frame = document.getElementById('report-frame');
+    const overlay = document.getElementById('report-overlay');
+    const frame = document.getElementById('report-frame');
 
-        document.getElementById('report-open-btn').addEventListener('click', () => {
-            frame.src = data.attachment_url;
-            overlay.classList.add('open');
-        });
-
-        document.getElementById('report-close-btn').addEventListener('click', () => {
-            overlay.classList.remove('open');
-            setTimeout(() => { frame.src = 'about:blank'; }, 300);
-        });
-
-        document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') document.getElementById('report-close-btn').click();
-        });
+    function openOverlay(url) {
+        frame.src = url;
+        overlay.classList.add('open');
     }
+
+    function closeOverlay() {
+        overlay.classList.remove('open');
+        setTimeout(() => { frame.src = 'about:blank'; }, 300);
+    }
+
+    // inline [text](url) links
+    body.querySelectorAll('.overlay-link').forEach(a => {
+        a.addEventListener('click', e => { e.preventDefault(); openOverlay(a.dataset.url); });
+    });
+
+    // attachment_url button (fallback / explicit button)
+    if (data.attachment_url) {
+        document.getElementById('report-open-btn')?.addEventListener('click', () => openOverlay(data.attachment_url));
+    }
+
+    document.getElementById('report-close-btn').addEventListener('click', closeOverlay);
+
+    // click backdrop (outside modal) to close
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeOverlay(); });
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && overlay.classList.contains('open')) closeOverlay();
+    });
 })();
 </script>
 </html>
