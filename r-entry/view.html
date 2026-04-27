@@ -15,10 +15,10 @@
             color: inherit;
             text-decoration: underline;
             text-underline-offset: 3px;
-            text-decoration-color: #aaa;
+            text-decoration-color: #888;
             cursor: pointer;
         }
-        .overlay-link:hover { text-decoration-color: #555; }
+        .overlay-link:hover { text-decoration-color: #333; }
 
         .attachment-section {
             margin-top: 2.5rem;
@@ -119,7 +119,7 @@
 
     const attachmentSection = data.attachment_url ? `
         <div class="attachment-section">
-            <span class="attachment-label">dashboard</span>
+            <span class="attachment-label">dashboard - updated daily</span>
             <iframe class="attachment-iframe" src="${data.attachment_url}" title="dashboard"></iframe>
         </div>` : '';
 
