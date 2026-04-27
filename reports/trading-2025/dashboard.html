@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Trading Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+       background: #0a0a0a; color: #e0e0e0; }
+header { padding: 28px 40px 20px; border-bottom: 1px solid #1e1e1e;
+         display: flex; align-items: baseline; gap: 20px; }
+header h1 { font-size: 1.5rem; font-weight: 700; color: #fff; }
+#status { font-size: 0.8rem; color: #555; }
+.live-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+            background: #00cc66; margin-right: 6px;
+            animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.main { max-width: 1100px; margin: 0 auto; padding: 28px 40px 60px; }
+
+/* leaderboard */
+.board { width: 100%; border-collapse: collapse; margin-bottom: 44px; }
+.board th { text-align: left; padding: 9px 14px; background: #111;
+            color: #555; font-size: 0.75rem; text-transform: uppercase;
+            letter-spacing: 0.06em; }
+.board td { padding: 11px 14px; border-bottom: 1px solid #161616; font-size: 0.9rem; }
+.board tr:hover td { background: #111; }
+.board tr.top td { background: #0a1f12; }
+.pos { color: #00cc66; font-weight: 600; }
+.neg { color: #ff4444; font-weight: 600; }
+.neu { color: #888; }
+.rank { color: #444; font-size: 0.8rem; width: 36px; }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; }
+.action-buy  { color: #00cc66; font-weight: 600; }
+.action-sell { color: #ff4444; font-weight: 600; }
+.action-hold { color: #888; }
+
+/* model cards */
+h2 { font-size: 1rem; font-weight: 600; color: #888; text-transform: uppercase;
+     letter-spacing: 0.06em; margin-bottom: 16px; }
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.card { background: #111; border-radius: 10px; padding: 16px 18px;
+        border: 1px solid #1a1a1a; }
+.card-header { display: flex; justify-content: space-between; align-items: flex-start;
+               margin-bottom: 12px; }
+.card-model { font-size: 0.8rem; color: #555; margin-bottom: 2px; }
+.card-ticker { font-size: 1rem; font-weight: 700; color: #eee; }
+.card-pnl { font-size: 1.15rem; font-weight: 700; text-align: right; }
+.card-meta { display: flex; gap: 16px; font-size: 0.75rem; color: #555;
+             margin-bottom: 10px; }
+canvas { width: 100% !important; height: 80px !important; }
+.no-data { height: 80px; display: flex; align-items: center; justify-content: center;
+           color: #333; font-size: 0.8rem; }
+
+@media (max-width: 720px) {
+  .cards { grid-template-columns: 1fr 1fr; }
+  .main, header { padding-left: 16px; padding-right: 16px; }
+}
+@media (max-width: 480px) { .cards { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1><span class="live-dot"></span>Live Trading Dashboard</h1>
+  <span id="status">Loading…</span>
+</header>
+<div class="main">
+  <table class="board" id="board">
+    <thead>
+      <tr><th></th><th>Model</th><th>Ticker</th><th>Total P&amp;L</th>
+          <th>Trades</th><th>Last Action</th><th>Last Run</th></tr>
+    </thead>
+    <tbody id="board-body"></tbody>
+  </table>
+
+  <h2>Cumulative P&amp;L per Model</h2>
+  <div class="cards" id="cards"></div>
+</div>
+
+<script>
+const charts = {};
+
+function fmt(n) {
+  const s = Math.abs(n).toFixed(2);
+  return (n >= 0 ? '+$' : '-$') + s;
+}
+
+function actionClass(a) {
+  if (!a || a === '—') return 'neu';
+  if (a === 'BUY')  return 'action-buy';
+  if (a === 'SELL') return 'action-sell';
+  return 'action-hold';
+}
+
+function render(data) {
+  // leaderboard
+  const tbody = document.getElementById('board-body');
+  tbody.innerHTML = data.map((m, i) => `
+    <tr class="${i === 0 ? 'top' : ''}">
+      <td class="rank">#${i+1}</td>
+      <td><span class="dot" style="background:${m.color}"></span>${m.model}</td>
+      <td>${m.ticker}</td>
+      <td class="${m.total_pnl >= 0 ? 'pos' : 'neg'}">${fmt(m.total_pnl)}</td>
+      <td>${m.trades}</td>
+      <td class="${actionClass(m.last_action)}">${m.last_action || '—'}</td>
+      <td style="color:#555;font-size:0.8rem">${m.last_time || '—'}</td>
+    </tr>`).join('');
+
+  // cards
+  const container = document.getElementById('cards');
+  container.innerHTML = data.map(m => `
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-model">${m.model}</div>
+          <div class="card-ticker">
+            <span class="dot" style="background:${m.color}"></span>${m.ticker}
+          </div>
+        </div>
+        <div class="card-pnl ${m.total_pnl >= 0 ? 'pos' : 'neg'}">${fmt(m.total_pnl)}</div>
+      </div>
+      <div class="card-meta">
+        <span>${m.trades} trade${m.trades !== 1 ? 's' : ''}</span>
+        <span>Day ${m.days}</span>
+        <span class="${actionClass(m.last_action)}">${m.last_action || '—'}</span>
+      </div>
+      ${m.pnl_series.length
+        ? `<canvas id="chart-${m.model}"></canvas>`
+        : `<div class="no-data">no trades yet</div>`}
+    </div>`).join('');
+
+  // draw/update charts
+  data.forEach(m => {
+    if (!m.pnl_series.length) return;
+    const ctx = document.getElementById(`chart-${m.model}`);
+    if (!ctx) return;
+    const labels = m.pnl_series.map(p => p.t);
+    const values = m.pnl_series.map(p => p.v);
+    if (charts[m.model]) {
+      charts[m.model].data.labels = labels;
+      charts[m.model].data.datasets[0].data = values;
+      charts[m.model].update();
+    } else {
+      charts[m.model] = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            data: values,
+            borderColor: m.color,
+            borderWidth: 1.5,
+            pointRadius: 0,
+            fill: true,
+            backgroundColor: m.color + '18',
+            tension: 0.3,
+          }]
+        },
+        options: {
+          animation: false,
+          plugins: { legend: { display: false }, tooltip: {
+            callbacks: { label: ctx => ' $' + ctx.parsed.y.toFixed(2) }
+          }},
+          scales: {
+            x: { display: false },
+            y: {
+              display: true,
+              grid: { color: '#1a1a1a' },
+              ticks: { color: '#444', font: { size: 9 },
+                       callback: v => '$' + v.toFixed(0) }
+            }
+          },
+          responsive: true,
+          maintainAspectRatio: false,
+        }
+      });
+    }
+  });
+}
+
+const __DATA__ = [
+  {
+    "model": "goog_modern_50",
+    "ticker": "GOOGL",
+    "color": "#00cc66",
+    "total_pnl": 0.0,
+    "trades": 0,
+    "last_action": "\u2014",
+    "last_price": null,
+    "last_time": null,
+    "days": 0,
+    "pnl_series": []
+  },
+  {
+    "model": "amzn_50",
+    "ticker": "AMZN",
+    "color": "#4488ff",
+    "total_pnl": 0.0,
+    "trades": 0,
+    "last_action": "\u2014",
+    "last_price": null,
+    "last_time": null,
+    "days": 0,
+    "pnl_series": []
+  },
+  {
+    "model": "tsla_50",
+    "ticker": "TSLA",
+    "color": "#ff4444",
+    "total_pnl": 0.0,
+    "trades": 0,
+    "last_action": "\u2014",
+    "last_price": null,
+    "last_time": null,
+    "days": 0,
+    "pnl_series": []
+  },
+  {
+    "model": "meta_50",
+    "ticker": "META",
+    "color": "#ffaa00",
+    "total_pnl": 0.0,
+    "trades": 0,
+    "last_action": "\u2014",
+    "last_price": null,
+    "last_time": null,
+    "days": 0,
+    "pnl_series": []
+  },
+  {
+    "model": "goog_model_40",
+    "ticker": "GOOGL",
+    "color": "#888888",
+    "total_pnl": 0.0,
+    "trades": 0,
+    "last_action": "\u2014",
+    "last_price": null,
+    "last_time": null,
+    "days": 0,
+    "pnl_series": []
+  },
+  {
+    "model": "msft_50",
+    "ticker": "MSFT",
+    "color": "#00ccff",
+    "total_pnl": 0.0,
+    "trades": 0,
+    "last_action": "\u2014",
+    "last_price": null,
+    "last_time": null,
+    "days": 0,
+    "pnl_series": []
+  },
+  {
+    "model": "aapl_50",
+    "ticker": "AAPL",
+    "color": "#ff88bb",
+    "total_pnl": 0.0,
+    "trades": 0,
+    "last_action": "\u2014",
+    "last_price": null,
+    "last_time": null,
+    "days": 0,
+    "pnl_series": []
+  },
+  {
+    "model": "nvda_50",
+    "ticker": "NVDA",
+    "color": "#aaff44",
+    "total_pnl": 0.0,
+    "trades": 0,
+    "last_action": "\u2014",
+    "last_price": null,
+    "last_time": null,
+    "days": 0,
+    "pnl_series": []
+  },
+  {
+    "model": "nflx_50",
+    "ticker": "NFLX",
+    "color": "#ff6600",
+    "total_pnl": 0.0,
+    "trades": 0,
+    "last_action": "\u2014",
+    "last_price": null,
+    "last_time": null,
+    "days": 0,
+    "pnl_series": []
+  }
+];
+
+function refresh() {
+  render(__DATA__);
+  document.getElementById('status').textContent = 'Snapshot — April 27, 2026 at 12:22 AM';
+}
+
+refresh();
+</script>
+</body>
+</html>
