@@ -137,7 +137,8 @@
     const frame = document.getElementById('report-frame');
 
     function openOverlay(url) {
-        frame.src = url;
+        const theme = document.body.classList.contains('dark') ? 'dark' : 'light';
+        frame.src = url + (url.includes('?') ? '&' : '?') + 'theme=' + theme;
         overlay.classList.add('open');
     }
 
