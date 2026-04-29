@@ -9,6 +9,29 @@
     <link rel="stylesheet" href="css/home.css">
     <link rel="stylesheet" href="css/blog.css">
     <title>thoughts</title>
+    <style>
+        .month-group { margin-bottom: 0.15rem; }
+        .month-header {
+            display: flex; align-items: center; gap: 0.5rem;
+            cursor: pointer; padding: 0.5rem 0;
+            font-size: 0.72rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.08em;
+            color: #bbb; -webkit-user-select: none; user-select: none;
+        }
+        .month-header:hover { color: #777; }
+        .month-arrow {
+            font-size: 0.65rem; display: inline-block;
+            transition: transform 0.2s ease; color: #ccc;
+        }
+        .month-header.open .month-arrow { transform: rotate(90deg); }
+        .month-count { margin-left: auto; font-weight: 400; letter-spacing: 0; color: #ccc; }
+        .month-entries { max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
+        .month-entries.open { max-height: 9999px; }
+        .blog-record.indented { padding-left: 1rem; }
+        body.dark .month-header { color: #555; }
+        body.dark .month-header:hover { color: #999; }
+        body.dark .month-arrow, body.dark .month-count { color: #444; }
+    </style>
 </head>
 
 <body>
@@ -36,21 +59,53 @@ async function loadEntries() {
     const { data } = await db.from('entries').select('date, content').order('date', { ascending: false });
     const container = document.getElementById('entries-list');
 
+    const groups = new Map();
     for (const row of (data || [])) {
-        const [yyyy, mm, dd] = row.date.split('-');
-        const dateLabel = `${mm}${dd}${yyyy.slice(2)}`;
-        const text = (row.content || '').replace(/\s+/g, ' ').trim();
-        const wordCount = text.split(' ').filter(w => w.length > 0).length;
+        const [yyyy, mm] = row.date.split('-');
+        const key = `${yyyy}-${mm}`;
+        if (!groups.has(key)) groups.set(key, { year: yyyy, month: mm, entries: [] });
+        groups.get(key).entries.push(row);
+    }
 
-        const record = document.createElement('div');
-        record.className = 'blog-record';
-        record.innerHTML = `
-            <div class="blog-details-1">
-                <a href="/entries/view.html?date=${row.date}" class="blog-link">${dateLabel}</a>
-                <div class="blog-details-2">word count ${wordCount}</div>
-            </div>
-        `;
-        container.appendChild(record);
+    let first = true;
+    for (const group of groups.values()) {
+        const monthName = months[parseInt(group.month) - 1];
+
+        const groupEl = document.createElement('div');
+        groupEl.className = 'month-group';
+
+        const header = document.createElement('div');
+        header.className = 'month-header' + (first ? ' open' : '');
+        header.innerHTML = `<span class="month-arrow">›</span><span>${monthName} ${group.year}</span><span class="month-count">${group.entries.length}</span>`;
+
+        const entriesEl = document.createElement('div');
+        entriesEl.className = 'month-entries' + (first ? ' open' : '');
+
+        for (const row of group.entries) {
+            const [yyyy, mm, dd] = row.date.split('-');
+            const dateLabel = `${mm}${dd}${yyyy.slice(2)}`;
+            const text = (row.content || '').replace(/\s+/g, ' ').trim();
+            const wordCount = text.split(' ').filter(w => w.length > 0).length;
+            const record = document.createElement('div');
+            record.className = 'blog-record indented';
+            record.innerHTML = `
+                <div class="blog-details-1">
+                    <a href="/entries/view.html?date=${row.date}" class="blog-link">${dateLabel}</a>
+                    <div class="blog-details-2">word count ${wordCount}</div>
+                </div>
+            `;
+            entriesEl.appendChild(record);
+        }
+
+        header.addEventListener('click', () => {
+            header.classList.toggle('open');
+            entriesEl.classList.toggle('open');
+        });
+
+        groupEl.appendChild(header);
+        groupEl.appendChild(entriesEl);
+        container.appendChild(groupEl);
+        first = false;
     }
 }
 
