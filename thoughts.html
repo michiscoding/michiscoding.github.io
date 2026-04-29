@@ -10,28 +10,28 @@
     <link rel="stylesheet" href="css/blog.css">
     <title>thoughts</title>
     <style>
-        .month-group { margin-bottom: 0.15rem; }
-        .month-header {
-            display: flex; align-items: center; gap: 0.5rem;
-            cursor: pointer; padding: 0.5rem 0;
-            font-size: 0.72rem; font-weight: 700;
-            text-transform: uppercase; letter-spacing: 0.08em;
-            color: #bbb; -webkit-user-select: none; user-select: none;
+        .month-group { margin-bottom: 0.5rem; }
+        .month-block {
+            cursor: pointer;
+            -webkit-user-select: none; user-select: none;
         }
-        .month-header:hover { color: #777; }
+        .month-block .blog-details-2 { display: flex; align-items: center; gap: 0.4rem; }
         .month-arrow {
-            font-size: 0.65rem; display: inline-block;
-            transition: transform 0.2s ease; color: #ccc;
+            display: inline-block; font-size: 0.65rem;
+            transition: transform 0.2s ease; color: inherit;
         }
-        .month-header.open .month-arrow { transform: rotate(90deg); }
-        .month-count { margin-left: auto; font-weight: 400; letter-spacing: 0; color: #ccc; }
+        .month-block.open .month-arrow { transform: rotate(90deg); }
         .month-entries { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.25s ease; }
         .month-entries.open { grid-template-rows: 1fr; }
-        .month-entries-inner { overflow: hidden; }
-        .blog-record.indented { padding-left: 1rem; }
-        body.dark .month-header { color: #555; }
-        body.dark .month-header:hover { color: #999; }
-        body.dark .month-arrow, body.dark .month-count { color: #444; }
+        .month-entries-inner { overflow: hidden; padding-left: 1rem; }
+        .entry-row {
+            display: flex; align-items: baseline; gap: 0.75rem;
+            padding: 0.3rem 0; border-bottom: 1px solid #f0f0f0;
+        }
+        .entry-row:last-child { border-bottom: none; }
+        .entry-row .blog-link { font-size: 0.85rem; }
+        .entry-row .blog-details-2 { font-size: 0.75rem; }
+        body.dark .entry-row { border-bottom-color: #2a2a2a; }
     </style>
 </head>
 
@@ -74,9 +74,14 @@ async function loadEntries() {
         const groupEl = document.createElement('div');
         groupEl.className = 'month-group';
 
-        const header = document.createElement('div');
-        header.className = 'month-header';
-        header.innerHTML = `<span class="month-arrow">›</span><span>${monthName} ${group.year}</span><span class="month-count">${group.entries.length}</span>`;
+        const block = document.createElement('div');
+        block.className = 'blog-record month-block';
+        block.innerHTML = `
+            <div class="blog-details-1">
+                <span class="blog-link">${monthName}</span>
+                <div class="blog-details-2"><span class="month-arrow">›</span>${group.entries.length}</div>
+            </div>
+        `;
 
         const entriesEl = document.createElement('div');
         entriesEl.className = 'month-entries';
@@ -88,28 +93,22 @@ async function loadEntries() {
             const dateLabel = `${mm}${dd}${yyyy.slice(2)}`;
             const text = (row.content || '').replace(/\s+/g, ' ').trim();
             const wordCount = text.split(' ').filter(w => w.length > 0).length;
-            const record = document.createElement('div');
-            record.className = 'blog-record indented';
-            record.innerHTML = `
-                <div class="blog-details-1">
-                    <a href="/entries/view.html?date=${row.date}" class="blog-link">${dateLabel}</a>
-                    <div class="blog-details-2">word count ${wordCount}</div>
-                </div>
-            `;
-            inner.appendChild(record);
+            const row_el = document.createElement('div');
+            row_el.className = 'entry-row';
+            row_el.innerHTML = `<a href="/entries/view.html?date=${row.date}" class="blog-link">${dateLabel}</a><span class="blog-details-2">word count ${wordCount}</span>`;
+            inner.appendChild(row_el);
         }
 
         entriesEl.appendChild(inner);
 
-        header.addEventListener('click', () => {
-            header.classList.toggle('open');
+        block.addEventListener('click', () => {
+            block.classList.toggle('open');
             entriesEl.classList.toggle('open');
         });
 
-        groupEl.appendChild(header);
+        groupEl.appendChild(block);
         groupEl.appendChild(entriesEl);
         container.appendChild(groupEl);
-        first = false;
     }
 }
 
