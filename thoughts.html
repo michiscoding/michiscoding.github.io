@@ -15,6 +15,7 @@
             cursor: pointer;
             -webkit-user-select: none; user-select: none;
             flex-direction: column; align-items: flex-start; gap: 0.1rem;
+            min-height: unset; padding: 0.6rem 1rem;
         }
         .month-arrow {
             display: inline-block; font-size: 0.65rem;
@@ -91,10 +92,12 @@ async function loadEntries() {
 
         const block = document.createElement('div');
         block.className = 'blog-record month-block';
+        const count = group.entries.length;
         block.innerHTML = `
             <div class="blog-details-1">
                 <span class="blog-link"><span class="month-arrow">›</span> ${monthName}</span>
             </div>
+            <div class="blog-details-2">${count} ${count === 1 ? 'entry' : 'entries'}</div>
         `;
 
         const entriesEl = document.createElement('div');
