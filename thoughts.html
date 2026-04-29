@@ -14,8 +14,8 @@
         .month-block {
             cursor: pointer;
             -webkit-user-select: none; user-select: none;
+            flex-direction: column; align-items: flex-start; gap: 0.1rem;
         }
-        .month-block .blog-details-2 { display: flex; align-items: center; gap: 0.4rem; }
         .month-arrow {
             display: inline-block; font-size: 0.65rem;
             transition: transform 0.2s ease; color: inherit;
@@ -31,6 +31,7 @@
         .entry-row:last-child { border-bottom: none; }
         .entry-row .blog-link { font-size: 0.85rem; }
         .entry-row .blog-details-2 { font-size: 0.75rem; }
+        .month-block .blog-details-2 { font-size: 0.7rem; font-weight: 400; color: #aaa; }
         body.dark .entry-row { border-bottom-color: #2a2a2a; }
         .year-divider {
             font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
@@ -90,12 +91,10 @@ async function loadEntries() {
 
         const block = document.createElement('div');
         block.className = 'blog-record month-block';
-        const count = group.entries.length;
         block.innerHTML = `
             <div class="blog-details-1">
                 <span class="blog-link"><span class="month-arrow">›</span> ${monthName}</span>
             </div>
-            <div class="blog-details-2">${count} ${count === 1 ? 'entry' : 'entries'}</div>
         `;
 
         const entriesEl = document.createElement('div');
