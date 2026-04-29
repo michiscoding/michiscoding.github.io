@@ -90,11 +90,12 @@ async function loadEntries() {
 
         const block = document.createElement('div');
         block.className = 'blog-record month-block';
+        const count = group.entries.length;
         block.innerHTML = `
             <div class="blog-details-1">
-                <span class="blog-link">${monthName}</span>
-                <div class="blog-details-2"><span class="month-arrow">›</span>${group.entries.length}</div>
+                <span class="blog-link"><span class="month-arrow">›</span> ${monthName}</span>
             </div>
+            <div class="blog-details-2">${count} ${count === 1 ? 'entry' : 'entries'}</div>
         `;
 
         const entriesEl = document.createElement('div');
