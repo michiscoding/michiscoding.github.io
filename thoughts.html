@@ -25,8 +25,9 @@
         }
         .month-header.open .month-arrow { transform: rotate(90deg); }
         .month-count { margin-left: auto; font-weight: 400; letter-spacing: 0; color: #ccc; }
-        .month-entries { max-height: 0; overflow: hidden; transition: max-height 0.25s ease; }
-        .month-entries.open { max-height: 9999px; }
+        .month-entries { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.25s ease; }
+        .month-entries.open { grid-template-rows: 1fr; }
+        .month-entries-inner { overflow: hidden; }
         .blog-record.indented { padding-left: 1rem; }
         body.dark .month-header { color: #555; }
         body.dark .month-header:hover { color: #999; }
@@ -67,7 +68,6 @@ async function loadEntries() {
         groups.get(key).entries.push(row);
     }
 
-    let first = true;
     for (const group of groups.values()) {
         const monthName = months[parseInt(group.month) - 1];
 
@@ -75,11 +75,13 @@ async function loadEntries() {
         groupEl.className = 'month-group';
 
         const header = document.createElement('div');
-        header.className = 'month-header' + (first ? ' open' : '');
+        header.className = 'month-header';
         header.innerHTML = `<span class="month-arrow">›</span><span>${monthName} ${group.year}</span><span class="month-count">${group.entries.length}</span>`;
 
         const entriesEl = document.createElement('div');
-        entriesEl.className = 'month-entries' + (first ? ' open' : '');
+        entriesEl.className = 'month-entries';
+        const inner = document.createElement('div');
+        inner.className = 'month-entries-inner';
 
         for (const row of group.entries) {
             const [yyyy, mm, dd] = row.date.split('-');
@@ -94,8 +96,10 @@ async function loadEntries() {
                     <div class="blog-details-2">word count ${wordCount}</div>
                 </div>
             `;
-            entriesEl.appendChild(record);
+            inner.appendChild(record);
         }
+
+        entriesEl.appendChild(inner);
 
         header.addEventListener('click', () => {
             header.classList.toggle('open');
