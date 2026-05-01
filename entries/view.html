@@ -8,7 +8,10 @@
     <link rel="stylesheet" href="/css/home.css">
     <link rel="stylesheet" href="/css/blog.css">
     <link rel="stylesheet" href="/css/entry.css">
-    <style>:root { --maxWidth: 67vw; }</style>
+    <style>
+        :root { --maxWidth: 67vw; }
+        .entry-music { margin-top: 1.5rem; }
+    </style>
     <title></title>
 </head>
 <body>
@@ -30,7 +33,7 @@
 
     const MEDIA_BASE = SUPABASE_URL + '/storage/v1/object/public/media/';
     const [{ data: entry }, { data: photos }] = await Promise.all([
-        db.from('entries').select('content').eq('date', date).single(),
+        db.from('entries').select('content, music_url').eq('date', date).single(),
         db.from('entry_photos').select('storage_path').eq('entry_date', date)
     ]);
 
@@ -42,6 +45,22 @@
     const lines = (entry?.content || '').split('\n').map(l => l.trimEnd()).join('<br>\n');
     content.innerHTML = `<p>${lines}</p>`;
     body.appendChild(content);
+
+    if (entry?.music_url) {
+        const musicEl = document.createElement('div');
+        musicEl.className = 'entry-music';
+        const url = entry.music_url;
+        const spotify = url.match(/spotify\.com\/(track|album|playlist|episode)\/([A-Za-z0-9]+)/);
+        const youtube = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]+)/);
+        if (spotify) {
+            musicEl.innerHTML = `<iframe style="border-radius:12px" src="https://open.spotify.com/embed/${spotify[1]}/${spotify[2]}?utm_source=generator" width="100%" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
+        } else if (youtube) {
+            musicEl.innerHTML = `<iframe width="100%" height="200" src="https://www.youtube.com/embed/${youtube[1]}" frameborder="0" allowfullscreen style="border-radius:12px"></iframe>`;
+        } else if (/\.(mp3|ogg|wav|m4a|aac)$/i.test(url)) {
+            musicEl.innerHTML = `<audio controls src="${url}" style="width:100%"></audio>`;
+        }
+        if (musicEl.innerHTML) body.appendChild(musicEl);
+    }
 
     if (photos?.length) {
         const gallery = document.createElement('div');
@@ -87,24 +106,35 @@
         });
         document.addEventListener('keydown', e => { if (e.key === 'Escape') lb.click(); });
 
-        const imgs = Array.from(gallery.querySelectorAll('.entry-gallery-item img'));
+        const mediaItems = Array.from(gallery.querySelectorAll('.entry-gallery-item'));
         let lbIndex = 0;
+
+        function lbHtml(item) {
+            const video = item.querySelector('video');
+            if (video) {
+                const src = video.querySelector('source')?.src || video.src;
+                return `<video class="lb-media" autoplay loop playsinline controls><source src="${src}" type="video/mp4"></video>`;
+            }
+            return `<img class="lb-media" src="${item.querySelector('img').src}">`;
+        }
 
         function openLbAt(i) {
             lbIndex = i;
-            lb.innerHTML = `<img class="lb-media" src="${imgs[i].src}">`;
+            lb.innerHTML = lbHtml(mediaItems[i]);
             requestAnimationFrame(() => lb.classList.add('open'));
         }
 
-        imgs.forEach((img, i) => {
-            img.style.cursor = 'pointer';
-            img.addEventListener('click', () => openLbAt(i));
+        mediaItems.forEach((item, i) => {
+            const el = item.querySelector('img, video');
+            if (!el) return;
+            el.style.cursor = 'pointer';
+            el.addEventListener('click', () => openLbAt(i));
         });
 
         document.addEventListener('keydown', e => {
             if (!lb.classList.contains('open')) return;
-            if (e.key === 'ArrowRight') { lbIndex = (lbIndex + 1) % imgs.length; lb.querySelector('img').src = imgs[lbIndex].src; }
-            if (e.key === 'ArrowLeft') { lbIndex = (lbIndex - 1 + imgs.length) % imgs.length; lb.querySelector('img').src = imgs[lbIndex].src; }
+            if (e.key === 'ArrowRight') { lbIndex = (lbIndex + 1) % mediaItems.length; lb.innerHTML = lbHtml(mediaItems[lbIndex]); }
+            if (e.key === 'ArrowLeft') { lbIndex = (lbIndex - 1 + mediaItems.length) % mediaItems.length; lb.innerHTML = lbHtml(mediaItems[lbIndex]); }
         });
     }
 })();
