@@ -162,7 +162,7 @@ function closeModal() {
 }
 
 document.getElementById('entries-list').addEventListener('click', e => {
-    const link = e.target.closest('.blog-link');
+    const link = e.target.closest('a.blog-link');
     if (!link) return;
     if (isOwner() || isViewer()) return;
     e.preventDefault();
