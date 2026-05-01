@@ -118,6 +118,7 @@ async function loadEntries() {
         entriesEl.appendChild(inner);
 
         block.addEventListener('click', () => {
+            if (!isUnlocked()) { openModal(block, entriesEl); return; }
             block.classList.toggle('open');
             entriesEl.classList.toggle('open');
         });
@@ -133,23 +134,21 @@ loadEntries();
 const OWNER_PW = 'pumkin';
 const VIEWER_PW = 'raymond';
 const OWNER_KEY = 'michi_owner';
-const VIEWER_KEY = 'michi_viewer';
+const UNLOCKED_KEY = 'michi_thoughts_unlocked';
 
 const modal = document.getElementById('password-modal');
 const input = document.getElementById('pw-input');
 const error = document.getElementById('pw-error');
-let pendingHref = null;
+let pendingBlock = null;
+let pendingEntries = null;
 
-function isOwner() {
-    return localStorage.getItem(OWNER_KEY) === 'yes';
+function isUnlocked() {
+    return localStorage.getItem(OWNER_KEY) === 'yes' || sessionStorage.getItem(UNLOCKED_KEY) === 'yes';
 }
 
-function isViewer() {
-    return sessionStorage.getItem(VIEWER_KEY) === 'yes';
-}
-
-function openModal(href) {
-    pendingHref = href;
+function openModal(block, entriesEl) {
+    pendingBlock = block;
+    pendingEntries = entriesEl;
     input.value = '';
     error.textContent = '';
     modal.classList.add('open');
@@ -158,36 +157,33 @@ function openModal(href) {
 
 function closeModal() {
     modal.classList.remove('open');
-    pendingHref = null;
+    pendingBlock = null;
+    pendingEntries = null;
 }
-
-document.getElementById('entries-list').addEventListener('click', e => {
-    const link = e.target.closest('a.blog-link');
-    if (!link) return;
-    if (isOwner() || isViewer()) return;
-    e.preventDefault();
-    openModal(link.href);
-});
 
 input.addEventListener('keydown', e => {
     if (e.key !== 'Enter') return;
     const val = input.value.trim().toLowerCase();
     if (val === OWNER_PW) {
         localStorage.setItem(OWNER_KEY, 'yes');
-        window.location.href = pendingHref;
     } else if (val === VIEWER_PW) {
-        sessionStorage.setItem(VIEWER_KEY, 'yes');
-        window.location.href = pendingHref;
+        sessionStorage.setItem(UNLOCKED_KEY, 'yes');
     } else {
         error.textContent = 'try again';
         input.value = '';
+        return;
     }
+    modal.classList.remove('open');
+    if (pendingBlock && pendingEntries) {
+        pendingBlock.classList.add('open');
+        pendingEntries.classList.add('open');
+    }
+    pendingBlock = null;
+    pendingEntries = null;
 });
 
 modal.addEventListener('click', e => {
     if (e.target === modal) closeModal();
 });
-
-window.addEventListener('pageshow', () => closeModal());
 </script>
 </html>
