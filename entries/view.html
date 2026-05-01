@@ -11,6 +11,50 @@
     <style>
         :root { --maxWidth: 67vw; }
         .entry-music { margin-top: 1.5rem; }
+        .music-player {
+            background: #ededed;
+            border-radius: 8px;
+            padding: 0.85rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+        body.dark .music-player { background: #1e1e1e; }
+        .music-art {
+            width: 44px; height: 44px;
+            border-radius: 4px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .music-meta { flex: 1; min-width: 0; }
+        .music-title {
+            font-size: 0.82rem; font-weight: 600;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            color: #111;
+        }
+        body.dark .music-title { color: #ddd; }
+        .music-artist { font-size: 0.72rem; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .music-right { display: flex; flex-direction: column; gap: 0.35rem; flex: 2; min-width: 0; }
+        .music-row { display: flex; align-items: center; gap: 0.6rem; }
+        .music-play {
+            background: none; border: none; cursor: pointer; padding: 0;
+            color: #111; font-size: 1rem; line-height: 1; flex-shrink: 0;
+        }
+        body.dark .music-play { color: #ddd; }
+        .music-play:hover { opacity: 0.6; }
+        .music-progress {
+            flex: 1; height: 3px;
+            -webkit-appearance: none; appearance: none;
+            background: #ccc; border-radius: 2px; outline: none; cursor: pointer;
+        }
+        body.dark .music-progress { background: #444; }
+        .music-progress::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 10px; height: 10px; border-radius: 50%; background: #111;
+        }
+        body.dark .music-progress::-webkit-slider-thumb { background: #ddd; }
+        .music-time { font-size: 0.68rem; color: #aaa; flex-shrink: 0; min-width: 2rem; text-align: right; }
+        .music-no-preview { font-size: 0.78rem; color: #aaa; }
     </style>
     <title></title>
 </head>
@@ -22,6 +66,102 @@
 <script src="/js/supabase.js"></script>
 <script src="/js/home.js"></script>
 <script>
+const SPOTIFY_CLIENT_ID = 'YOUR_CLIENT_ID';
+const SPOTIFY_CLIENT_SECRET = 'YOUR_CLIENT_SECRET';
+
+async function getSpotifyToken() {
+    const token = sessionStorage.getItem('sp_token');
+    const exp = parseInt(sessionStorage.getItem('sp_exp') || '0');
+    if (token && Date.now() < exp) return token;
+    const res = await fetch('https://accounts.spotify.com/api/token', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': 'Basic ' + btoa(SPOTIFY_CLIENT_ID + ':' + SPOTIFY_CLIENT_SECRET)
+        },
+        body: 'grant_type=client_credentials'
+    });
+    const data = await res.json();
+    sessionStorage.setItem('sp_token', data.access_token);
+    sessionStorage.setItem('sp_exp', Date.now() + (data.expires_in - 60) * 1000);
+    return data.access_token;
+}
+
+async function buildSpotifyPlayer(trackId) {
+    try {
+        const token = await getSpotifyToken();
+        const res = await fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const track = await res.json();
+
+        const art = track.album?.images?.[1]?.url || track.album?.images?.[0]?.url || '';
+        const title = track.name || '';
+        const artist = track.artists?.map(a => a.name).join(', ') || '';
+        const preview = track.preview_url || '';
+
+        const wrap = document.createElement('div');
+        wrap.className = 'entry-music';
+
+        if (!preview) {
+            wrap.innerHTML = `<div class="music-player">
+                ${art ? `<img class="music-art" src="${art}" alt="">` : ''}
+                <div class="music-meta">
+                    <div class="music-title">${title}</div>
+                    <div class="music-artist">${artist}</div>
+                </div>
+                <span class="music-no-preview">no preview</span>
+            </div>`;
+            return wrap;
+        }
+
+        wrap.innerHTML = `<div class="music-player">
+            ${art ? `<img class="music-art" src="${art}" alt="">` : ''}
+            <div class="music-meta">
+                <div class="music-title">${title}</div>
+                <div class="music-artist">${artist}</div>
+            </div>
+            <div class="music-right">
+                <div class="music-row">
+                    <button class="music-play" aria-label="play">▶</button>
+                    <input type="range" class="music-progress" value="0" min="0" max="100" step="0.1">
+                    <span class="music-time">0:30</span>
+                </div>
+            </div>
+        </div>`;
+
+        const audio = new Audio(preview);
+        const playBtn = wrap.querySelector('.music-play');
+        const progress = wrap.querySelector('.music-progress');
+        const timeEl = wrap.querySelector('.music-time');
+
+        function fmt(s) { return `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`; }
+
+        playBtn.addEventListener('click', () => {
+            if (audio.paused) { audio.play(); playBtn.textContent = '⏸'; }
+            else { audio.pause(); playBtn.textContent = '▶'; }
+        });
+        audio.addEventListener('timeupdate', () => {
+            if (!audio.duration) return;
+            progress.value = (audio.currentTime / audio.duration) * 100;
+            timeEl.textContent = fmt(audio.duration - audio.currentTime);
+        });
+        audio.addEventListener('ended', () => {
+            playBtn.textContent = '▶';
+            progress.value = 0;
+            timeEl.textContent = fmt(audio.duration || 30);
+        });
+        progress.addEventListener('input', () => {
+            if (audio.duration) audio.currentTime = (progress.value / 100) * audio.duration;
+        });
+
+        return wrap;
+    } catch(e) {
+        console.error('spotify player error', e);
+        return null;
+    }
+}
+
 (async () => {
     const date = new URLSearchParams(location.search).get('date');
     if (!date) return;
@@ -47,19 +187,11 @@
     body.appendChild(content);
 
     if (entry?.music_url) {
-        const musicEl = document.createElement('div');
-        musicEl.className = 'entry-music';
-        const url = entry.music_url;
-        const spotify = url.match(/spotify\.com\/(track|album|playlist|episode)\/([A-Za-z0-9]+)/);
-        const youtube = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]+)/);
-        if (spotify) {
-            musicEl.innerHTML = `<iframe style="border-radius:12px" src="https://open.spotify.com/embed/${spotify[1]}/${spotify[2]}?utm_source=generator" width="100%" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
-        } else if (youtube) {
-            musicEl.innerHTML = `<iframe width="100%" height="200" src="https://www.youtube.com/embed/${youtube[1]}" frameborder="0" allowfullscreen style="border-radius:12px"></iframe>`;
-        } else if (/\.(mp3|ogg|wav|m4a|aac)$/i.test(url)) {
-            musicEl.innerHTML = `<audio controls src="${url}" style="width:100%"></audio>`;
+        const spotifyMatch = entry.music_url.match(/spotify\.com\/track\/([A-Za-z0-9]+)/);
+        if (spotifyMatch) {
+            const player = await buildSpotifyPlayer(spotifyMatch[1]);
+            if (player) body.appendChild(player);
         }
-        if (musicEl.innerHTML) body.appendChild(musicEl);
     }
 
     if (photos?.length) {
