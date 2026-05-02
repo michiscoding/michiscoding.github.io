@@ -336,7 +336,12 @@ function starsHtml(rating) {
 
 async function renderMedia(type) {
     document.getElementById('c-content').innerHTML = '<div id="c-loading">loading...</div>';
-    const { data } = await db.from('media').select('*').eq('type', type).order('date', { ascending: false });
+    const { data, error } = await db.from('media').select('*').eq('type', type).order('date', { ascending: false });
+    if (error) {
+        document.getElementById('c-content').innerHTML = `<div class="c-empty">error: ${error.message}</div>`;
+        fadeIn();
+        return;
+    }
     if (!data?.length) {
         document.getElementById('c-content').innerHTML = '<div class="c-empty">nothing here yet</div>';
         fadeIn();
