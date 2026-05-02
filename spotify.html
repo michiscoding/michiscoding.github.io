@@ -128,6 +128,31 @@
         body.dark .sp-range-tab.active { background: #ddd; color: #111; border-color: #ddd; }
 
         #sp-loading { color: #aaa; font-size: 0.85rem; margin-top: 2rem; }
+
+        .sp-art-wrap {
+            position: relative;
+            width: 40px; height: 40px;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        .sp-art-wrap .sp-art { width: 100%; height: 100%; }
+        .sp-play-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 0.75rem;
+            opacity: 0;
+            transition: opacity 0.15s;
+        }
+        .sp-art-wrap:hover .sp-play-overlay,
+        .sp-art-wrap.playing .sp-play-overlay { opacity: 1; }
+        .sp-track.playing .sp-name { color: #1db954; }
+        body.dark .sp-track.playing .sp-name { color: #1db954; }
     </style>
 </head>
 <body>
@@ -231,9 +256,13 @@ async function spFetch(path) {
 // --- render ---
 function trackRow(t, i, maxPop) {
     const pop = t.popularity ?? 50;
-    return `<div class="sp-track">
+    const preview = t.preview_url || '';
+    return `<div class="sp-track" data-preview="${preview}">
         <span class="sp-rank">${i + 1}</span>
-        <img class="sp-art" src="${t.album.images[2]?.url || t.album.images[0]?.url}" alt="">
+        <div class="sp-art-wrap">
+            <img class="sp-art" src="${t.album.images[2]?.url || t.album.images[0]?.url}" alt="">
+            <div class="sp-play-overlay">${preview ? '▶' : '—'}</div>
+        </div>
         <div class="sp-info">
             <div class="sp-name">${t.name}</div>
             <div class="sp-sub">${t.artists.map(a => a.name).join(', ')}</div>
@@ -294,6 +323,31 @@ async function renderTops(range) {
     document.querySelectorAll('.sp-range-tab').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.range === range);
         btn.onclick = () => renderTops(btn.dataset.range);
+    });
+
+    let currentAudio = null;
+    let currentRow = null;
+
+    document.querySelectorAll('.sp-track[data-preview]').forEach(row => {
+        const preview = row.dataset.preview;
+        if (!preview) return;
+        const wrap = row.querySelector('.sp-art-wrap');
+        const overlay = row.querySelector('.sp-play-overlay');
+        wrap.addEventListener('click', () => {
+            if (currentRow === row) {
+                if (currentAudio.paused) { currentAudio.play(); overlay.textContent = '⏸'; wrap.classList.add('playing'); row.classList.add('playing'); }
+                else { currentAudio.pause(); overlay.textContent = '▶'; wrap.classList.remove('playing'); row.classList.remove('playing'); }
+                return;
+            }
+            if (currentAudio) { currentAudio.pause(); currentRow?.querySelector('.sp-art-wrap')?.classList.remove('playing'); currentRow?.classList.remove('playing'); currentRow?.querySelector('.sp-play-overlay') && (currentRow.querySelector('.sp-play-overlay').textContent = '▶'); }
+            currentAudio = new Audio(preview);
+            currentRow = row;
+            currentAudio.play();
+            overlay.textContent = '⏸';
+            wrap.classList.add('playing');
+            row.classList.add('playing');
+            currentAudio.addEventListener('ended', () => { overlay.textContent = '▶'; wrap.classList.remove('playing'); row.classList.remove('playing'); currentAudio = null; currentRow = null; });
+        });
     });
 }
 
