@@ -449,16 +449,23 @@ document.addEventListener('DOMContentLoaded', () => {
       const track = document.createElement('div');
       track.className = 'card-365-track';
       photos.forEach((src, i) => {
-        const img = document.createElement('img');
-        if (i === 0) {
-          const onLoad = () => card.classList.add('loaded');
-          img.addEventListener('load', onLoad, { once: true });
-          img.src = src;
-          if (img.complete && img.naturalWidth) onLoad();
+        const isVid = /\.(mp4|webm|mov)$/i.test(src);
+        const el = document.createElement(isVid ? 'video' : 'img');
+        if (isVid) {
+          el.muted = true;
+          el.autoplay = true;
+          el.loop = true;
+          el.playsInline = true;
+          if (i === 0) el.addEventListener('loadeddata', () => card.classList.add('loaded'), { once: true });
         } else {
-          img.src = src;
+          if (i === 0) {
+            const onLoad = () => card.classList.add('loaded');
+            el.addEventListener('load', onLoad, { once: true });
+            if (el.complete && el.naturalWidth) onLoad();
+          }
         }
-        track.appendChild(img);
+        el.src = src;
+        track.appendChild(el);
       });
 
       const prev = document.createElement('button');
