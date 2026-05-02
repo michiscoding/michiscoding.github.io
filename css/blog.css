@@ -36,9 +36,11 @@ body.dark .blog-link:hover { color: #fff; }
 }
 
 .blog-details-2 {
-    font-size: 15px;
-    font-weight: 600;
+    font-size: 0.78rem;
+    font-weight: 400;
+    color: #888;
 }
+body.dark .blog-details-2 { color: #666; }
 
 .blog-link {
   text-decoration: none;   /* no underline */
