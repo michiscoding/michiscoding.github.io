@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/home.css">
+    <title>consumption</title>
+    <style>
+        :root { --maxWidth: 67vw; }
+        .c-container {
+            max-width: var(--maxWidth);
+            margin: 3rem auto;
+            padding: 0 1.5rem 4rem;
+        }
+        @media (max-width: 768px) { .c-container { max-width: 92vw; margin: 2rem auto; } }
+        .c-container h1 { margin-bottom: 2.5rem; }
+
+        .c-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+        .c-tab {
+            font-size: 0.75rem; padding: 0.25rem 0.7rem; border-radius: 50px;
+            border: 1px solid #ddd; background: none; cursor: pointer;
+            font-family: inherit; color: #888;
+        }
+        body.dark .c-tab { border-color: #333; color: #666; }
+        .c-tab.active { background: #111; color: #fff; border-color: #111; }
+        body.dark .c-tab.active { background: #ddd; color: #111; border-color: #ddd; }
+
+        /* spotify */
+        .sp-section { margin-bottom: 2.5rem; }
+        .sp-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #aaa; margin-bottom: 0.85rem; }
+        .sp-track, .sp-artist { display: flex; align-items: center; gap: 0.85rem; padding: 0.55rem 0; border-bottom: 1px solid #f0f0f0; }
+        body.dark .sp-track, body.dark .sp-artist { border-bottom-color: #2a2a2a; }
+        .sp-track:last-child, .sp-artist:last-child { border-bottom: none; }
+        .sp-rank { font-size: 0.72rem; color: #ccc; width: 1.2rem; flex-shrink: 0; text-align: right; }
+        .sp-art { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; flex-shrink: 0; }
+        .sp-art.round { border-radius: 50%; }
+        .sp-info { flex: 1; min-width: 0; }
+        .sp-name { font-size: 0.88rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #111; }
+        body.dark .sp-name { color: #ddd; }
+        .sp-sub { font-size: 0.75rem; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sp-login-btn { display: inline-block; padding: 0.6rem 1.4rem; background: #1db954; color: #fff; border: none; border-radius: 50px; font-size: 0.85rem; font-weight: 600; cursor: pointer; font-family: inherit; margin-top: 1rem; }
+        .sp-login-btn:hover { background: #17a349; }
+        .sp-nothing { color: #aaa; font-size: 0.85rem; padding: 2rem 0; text-align: center; }
+        .sp-track[data-url] { cursor: pointer; }
+        .sp-track[data-url]:hover .sp-name { color: #1db954; }
+        @keyframes vinyl-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .sp-vinyl-wrap { display: flex; flex-direction: column; align-items: center; padding: 3rem 2rem; gap: 1rem; background: #ededed; border-radius: 12px; margin-top: 0.5rem; }
+        body.dark .sp-vinyl-wrap { background: #1a1a1a; }
+        .sp-vinyl { width: 160px; height: 160px; border-radius: 50%; object-fit: cover; animation: vinyl-spin 8s linear infinite; cursor: pointer; box-shadow: 0 8px 32px rgba(0,0,0,0.18); }
+        .sp-vinyl.paused { animation-play-state: paused; }
+        body.dark .sp-vinyl { box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+        .sp-vinyl-info { text-align: center; }
+        .sp-vinyl-status { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #1db954; margin-bottom: 0.3rem; }
+        .sp-vinyl-status.paused { color: #aaa; }
+        .sp-progress-wrap { width: 260px; display: flex; flex-direction: column; gap: 0.3rem; }
+        .sp-progress-bar { width: 100%; height: 3px; background: #ddd; border-radius: 2px; overflow: hidden; }
+        body.dark .sp-progress-bar { background: #333; }
+        .sp-progress-fill { height: 100%; background: #1db954; border-radius: 2px; transition: width 1s linear; }
+        .sp-progress-times { display: flex; justify-content: space-between; font-size: 0.68rem; color: #aaa; }
+
+        /* media grid */
+        .media-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; }
+        @media (max-width: 1024px) { .media-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 768px) { .media-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; } }
+        .media-card { cursor: pointer; }
+        .media-cover-wrap { aspect-ratio: 2/3; overflow: hidden; border-radius: 6px; background: #e0e0e0; margin-bottom: 0.5rem; }
+        body.dark .media-cover-wrap { background: #2a2a2a; }
+        .media-cover-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s ease; }
+        .media-card:hover .media-cover-wrap img { transform: scale(1.04); }
+        .media-card-title { font-size: 0.8rem; font-weight: 600; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        body.dark .media-card-title { color: #ddd; }
+        .media-card-meta { font-size: 0.7rem; color: #aaa; }
+        .media-card-rating { font-size: 0.7rem; color: #aaa; letter-spacing: 0.05em; }
+
+        /* detail modal */
+        #media-detail { position: fixed; inset: 0; background: rgba(0,0,0,0); display: flex; align-items: center; justify-content: center; z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.25s ease, background 0.25s ease; }
+        #media-detail.open { opacity: 1; pointer-events: auto; background: rgba(0,0,0,0.75); }
+        .md-box { background: #fff; border-radius: 12px; max-width: 520px; width: 90vw; display: flex; gap: 1.5rem; padding: 1.5rem; position: relative; }
+        body.dark .md-box { background: #1e1e1e; }
+        .md-cover { width: 110px; flex-shrink: 0; border-radius: 6px; object-fit: cover; aspect-ratio: 2/3; }
+        .md-info { flex: 1; min-width: 0; }
+        .md-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.2rem; color: #111; }
+        body.dark .md-title { color: #eee; }
+        .md-meta { font-size: 0.75rem; color: #aaa; margin-bottom: 0.75rem; }
+        .md-rating { font-size: 0.85rem; color: #aaa; margin-bottom: 0.6rem; letter-spacing: 0.05em; }
+        .md-notes { font-size: 0.85rem; color: #555; line-height: 1.6; white-space: pre-wrap; }
+        body.dark .md-notes { color: #aaa; }
+        .md-close { position: absolute; top: 0.75rem; right: 1rem; background: none; border: none; font-size: 1.3rem; color: #aaa; cursor: pointer; line-height: 1; padding: 0; }
+        .md-close:hover { color: #333; }
+        body.dark .md-close:hover { color: #eee; }
+
+        @keyframes c-fade-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        .c-fade { animation: c-fade-in 0.25s ease forwards; }
+        #c-loading { color: #aaa; font-size: 0.85rem; margin-top: 2rem; }
+        .c-empty { color: #aaa; font-size: 0.85rem; padding: 3rem 0; text-align: center; }
+    </style>
+</head>
+<body>
+<div class="c-container">
+    <h1>consumption</h1>
+    <div class="c-tabs" id="c-tabs">
+        <button class="c-tab" data-view="spotify">spotify</button>
+        <button class="c-tab active" data-view="books">books</button>
+        <button class="c-tab" data-view="movies">movies</button>
+    </div>
+    <div id="c-content"></div>
+</div>
+
+<div id="media-detail">
+    <div class="md-box" id="md-box">
+        <button class="md-close" id="md-close">×</button>
+        <img class="md-cover" id="md-cover" src="" alt="">
+        <div class="md-info">
+            <div class="md-title" id="md-title"></div>
+            <div class="md-meta" id="md-meta"></div>
+            <div class="md-rating" id="md-rating"></div>
+            <div class="md-notes" id="md-notes"></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/js/supabase.js"></script>
+<script src="/js/home.js"></script>
+<script>
+const CLIENT_ID = 'd3ab93ff0a8248d79171391eb077f43d';
+const REDIRECT_URI = 'https://michiscoding.github.io/consumption.html';
+const SCOPES = 'user-top-read user-read-recently-played user-read-currently-playing';
+
+function randomStr(len) {
+    const arr = new Uint8Array(len);
+    crypto.getRandomValues(arr);
+    return btoa(String.fromCharCode(...arr)).replace(/[+/=]/g, c => ({'+':'-','/':'_','=':''}[c])).slice(0, len);
+}
+async function sha256(str) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/[+/=]/g, c => ({'+':'-','/':'_','=':''}[c]));
+}
+async function login() {
+    const verifier = randomStr(64);
+    const challenge = await sha256(verifier);
+    localStorage.setItem('sp_verifier', verifier);
+    location.href = 'https://accounts.spotify.com/authorize?' + new URLSearchParams({
+        client_id: CLIENT_ID, response_type: 'code', redirect_uri: REDIRECT_URI,
+        scope: SCOPES, code_challenge_method: 'S256', code_challenge: challenge,
+    });
+}
+async function exchangeCode(code) {
+    const res = await fetch('https://accounts.spotify.com/api/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+            grant_type: 'authorization_code', code, redirect_uri: REDIRECT_URI,
+            client_id: CLIENT_ID, code_verifier: localStorage.getItem('sp_verifier'),
+        }),
+    });
+    const data = await res.json();
+    if (data.access_token) {
+        localStorage.setItem('sp_access_token', data.access_token);
+        localStorage.setItem('sp_refresh_token', data.refresh_token);
+        localStorage.setItem('sp_token_exp', Date.now() + (data.expires_in - 60) * 1000);
+        localStorage.removeItem('sp_verifier');
+        history.replaceState({}, '', location.pathname);
+    }
+    return data.access_token;
+}
+async function refreshToken() {
+    const refresh = localStorage.getItem('sp_refresh_token');
+    if (!refresh) return null;
+    const res = await fetch('https://accounts.spotify.com/api/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ grant_type: 'refresh_token', refresh_token: refresh, client_id: CLIENT_ID }),
+    });
+    const data = await res.json();
+    if (data.access_token) {
+        localStorage.setItem('sp_access_token', data.access_token);
+        localStorage.setItem('sp_token_exp', Date.now() + (data.expires_in - 60) * 1000);
+        if (data.refresh_token) localStorage.setItem('sp_refresh_token', data.refresh_token);
+    }
+    return data.access_token;
+}
+async function getToken() {
+    const exp = parseInt(localStorage.getItem('sp_token_exp') || '0');
+    if (Date.now() < exp) return localStorage.getItem('sp_access_token');
+    return refreshToken();
+}
+async function spFetch(path) {
+    const token = await getToken();
+    const res = await fetch('https://api.spotify.com/v1' + path, { headers: { 'Authorization': 'Bearer ' + token } });
+    if (res.status === 204) return null;
+    return res.json();
+}
+
+function trackRow(t, i) {
+    return `<div class="sp-track" data-url="${t.external_urls?.spotify || ''}">
+        <span class="sp-rank">${i + 1}</span>
+        <img class="sp-art" src="${t.album.images[2]?.url || t.album.images[0]?.url}" alt="">
+        <div class="sp-info">
+            <div class="sp-name">${t.name}</div>
+            <div class="sp-sub">${t.artists.map(a => a.name).join(', ')}</div>
+        </div>
+    </div>`;
+}
+function artistRow(a, i) {
+    return `<div class="sp-artist">
+        <span class="sp-rank">${i + 1}</span>
+        <img class="sp-art round" src="${a.images[2]?.url || a.images[0]?.url || ''}" alt="">
+        <div class="sp-info">
+            <div class="sp-name">${a.name}</div>
+            <div class="sp-sub">${(a.genres || []).slice(0, 2).join(', ')}</div>
+        </div>
+    </div>`;
+}
+
+let npTimer = null;
+
+function spSubTabsHtml(active) {
+    return [
+        { label: '4 weeks', range: 'short_term' },
+        { label: '6 months', range: 'medium_term' },
+        { label: 'all time', range: 'long_term' },
+        { label: 'now playing', range: 'now' },
+    ].map(r => `<button class="c-tab${r.range === active ? ' active' : ''}" data-range="${r.range}">${r.label}</button>`).join('');
+}
+
+function bindSubTabs() {
+    document.querySelectorAll('#sp-sub-tabs .c-tab').forEach(btn => {
+        btn.onclick = () => btn.dataset.range === 'now' ? renderNowPlaying() : renderTops(btn.dataset.range);
+    });
+}
+
+async function renderTops(range) {
+    if (npTimer) { clearInterval(npTimer); npTimer = null; }
+    document.getElementById('c-content').innerHTML = `
+        <div class="c-tabs" id="sp-sub-tabs" style="margin-bottom:1.5rem">${spSubTabsHtml(range)}</div>
+        <div id="sp-tops"><div id="c-loading">loading...</div></div>`;
+    bindSubTabs();
+
+    const [tracks, artists] = await Promise.all([
+        spFetch(`/me/top/tracks?limit=10&time_range=${range}`),
+        spFetch(`/me/top/artists?limit=8&time_range=${range}`),
+    ]);
+
+    document.getElementById('sp-tops').innerHTML = `
+        <div class="sp-section">
+            <div class="sp-label">top tracks</div>
+            ${(tracks?.items || []).map((t, i) => trackRow(t, i)).join('')}
+        </div>
+        <div class="sp-section">
+            <div class="sp-label">top artists</div>
+            ${(artists?.items || []).map((a, i) => artistRow(a, i)).join('')}
+        </div>`;
+    fadeIn();
+
+    document.querySelectorAll('.sp-track[data-url]').forEach(row => {
+        row.addEventListener('click', () => { if (row.dataset.url) window.open(row.dataset.url, '_blank'); });
+    });
+}
+
+async function renderNowPlaying() {
+    if (npTimer) { clearInterval(npTimer); npTimer = null; }
+    document.getElementById('c-content').innerHTML = `
+        <div class="c-tabs" id="sp-sub-tabs" style="margin-bottom:1.5rem">${spSubTabsHtml('now')}</div>
+        <div id="sp-tops"><div id="c-loading">loading...</div></div>`;
+    bindSubTabs();
+
+    const data = await spFetch('/me/player/currently-playing');
+    const tops = document.getElementById('sp-tops');
+    const t = data?.item;
+    if (!t) { tops.innerHTML = '<div class="sp-nothing">nothing playing right now</div>'; fadeIn(); return; }
+
+    const url = t.external_urls?.spotify || '';
+    const isPlaying = data.is_playing;
+    const duration = t.duration_ms;
+    const fmt = ms => { const s = Math.floor(ms / 1000); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
+
+    tops.innerHTML = `<div class="sp-vinyl-wrap">
+        <img class="sp-vinyl${isPlaying ? '' : ' paused'}" src="${t.album.images[0]?.url || ''}" alt="" title="open in spotify">
+        <div class="sp-vinyl-info">
+            <div class="sp-vinyl-status${isPlaying ? '' : ' paused'}">${isPlaying ? 'now playing' : 'paused'}</div>
+            <div class="sp-name">${t.name}</div>
+            <div class="sp-sub">${t.artists.map(a => a.name).join(', ')}</div>
+        </div>
+        <div class="sp-progress-wrap">
+            <div class="sp-progress-bar"><div class="sp-progress-fill" id="sp-fill"></div></div>
+            <div class="sp-progress-times"><span id="sp-elapsed"></span><span>${fmt(duration)}</span></div>
+        </div>
+    </div>`;
+    if (url) tops.querySelector('.sp-vinyl').addEventListener('click', () => window.open(url, '_blank'));
+    fadeIn();
+
+    let progress = data.progress_ms;
+    function updateProgress() {
+        const fill = document.getElementById('sp-fill');
+        const elapsed = document.getElementById('sp-elapsed');
+        if (!fill || !elapsed) { clearInterval(npTimer); return; }
+        fill.style.width = `${Math.min(100, (progress / duration) * 100)}%`;
+        elapsed.textContent = fmt(progress);
+        if (isPlaying) progress += 1000;
+    }
+    updateProgress();
+    if (isPlaying) npTimer = setInterval(updateProgress, 1000);
+}
+
+async function renderSpotify() {
+    if (npTimer) { clearInterval(npTimer); npTimer = null; }
+    const token = await getToken();
+    if (!token) {
+        document.getElementById('c-content').innerHTML = `<button class="sp-login-btn" id="sp-login">connect spotify</button>`;
+        document.getElementById('sp-login').addEventListener('click', login);
+        fadeIn();
+        return;
+    }
+    await renderTops('short_term');
+}
+
+// media
+function starsHtml(rating) {
+    if (!rating) return '';
+    return '★'.repeat(rating) + '☆'.repeat(5 - rating);
+}
+
+async function renderMedia(type) {
+    document.getElementById('c-content').innerHTML = '<div id="c-loading">loading...</div>';
+    const { data } = await db.from('media').select('*').eq('type', type).order('date', { ascending: false });
+    if (!data?.length) {
+        document.getElementById('c-content').innerHTML = '<div class="c-empty">nothing here yet</div>';
+        fadeIn();
+        return;
+    }
+    document.getElementById('c-content').innerHTML = `<div class="media-grid">${data.map(item => `
+        <div class="media-card" data-id="${item.id}">
+            <div class="media-cover-wrap"><img src="${item.cover_url || ''}" alt="${item.title}" loading="lazy"></div>
+            <div class="media-card-title">${item.title}</div>
+            <div class="media-card-meta">${item.date ? item.date.slice(0, 4) : ''}</div>
+            ${item.rating ? `<div class="media-card-rating">${starsHtml(item.rating)}</div>` : ''}
+        </div>`).join('')}</div>`;
+    fadeIn();
+
+    document.querySelectorAll('.media-card').forEach(card => {
+        const item = data.find(d => d.id === card.dataset.id);
+        card.addEventListener('click', () => item && openDetail(item));
+    });
+}
+
+function openDetail(item) {
+    document.getElementById('md-cover').src = item.cover_url || '';
+    document.getElementById('md-title').textContent = item.title;
+    document.getElementById('md-meta').textContent = item.date
+        ? new Date(item.date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+        : '';
+    document.getElementById('md-rating').textContent = starsHtml(item.rating || 0);
+    document.getElementById('md-notes').textContent = item.notes || '';
+    document.getElementById('media-detail').classList.add('open');
+}
+
+document.getElementById('media-detail').addEventListener('click', e => {
+    if (!document.getElementById('md-box').contains(e.target)) closeDetail();
+});
+document.getElementById('md-close').addEventListener('click', closeDetail);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetail(); });
+function closeDetail() { document.getElementById('media-detail').classList.remove('open'); }
+
+// tabs + fade
+function fadeIn() {
+    const el = document.getElementById('c-content');
+    if (!el) return;
+    el.classList.remove('c-fade');
+    void el.offsetWidth;
+    el.classList.add('c-fade');
+}
+
+document.querySelectorAll('#c-tabs .c-tab').forEach(btn => {
+    btn.onclick = () => {
+        if (npTimer) { clearInterval(npTimer); npTimer = null; }
+        document.querySelectorAll('#c-tabs .c-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const view = btn.dataset.view;
+        if (view === 'spotify') renderSpotify();
+        else renderMedia(view);
+    };
+});
+
+(async () => {
+    const params = new URLSearchParams(location.search);
+    const code = params.get('code');
+    if (code) await exchangeCode(code);
+
+    const hash = location.hash.slice(1);
+    const startView = ['spotify', 'books', 'movies'].includes(hash) ? hash : 'books';
+    document.querySelectorAll('#c-tabs .c-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.view === startView);
+    });
+    if (startView === 'spotify') renderSpotify();
+    else renderMedia(startView);
+})();
+</script>
+</body>
+</html>
