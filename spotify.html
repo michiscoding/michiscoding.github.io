@@ -249,7 +249,7 @@ function artistRow(a, i) {
         <img class="sp-art round" src="${a.images[2]?.url || a.images[0]?.url || ''}" alt="">
         <div class="sp-info">
             <div class="sp-name">${a.name}</div>
-            <div class="sp-sub">${a.genres.slice(0, 2).join(', ')}</div>
+            <div class="sp-sub">${(a.genres || []).slice(0, 2).join(', ')}</div>
         </div>
     </div>`;
 }
