@@ -416,8 +416,7 @@ li{
 }
 
 @media (hover: hover) {
-    .nav-menu li:has(#work-sub):hover #work-sub,
-    .nav-menu li:has(#consumption-sub):hover #consumption-sub {
+    .nav-menu li:has(.nav-sub):hover .nav-sub {
         opacity: 1;
         pointer-events: auto;
         transform: translateY(-50%) translateX(0);
