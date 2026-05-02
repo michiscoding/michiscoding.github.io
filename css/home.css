@@ -815,6 +815,7 @@ body.dark .card-365 { background: #555; }
 }
 
 .card-365:hover .card-365-label { opacity: 1; }
+.card-365:hover .sound-btn { opacity: 1; }
 
 
 @media (max-width: 768px) {
