@@ -14,7 +14,6 @@
             padding: 0 1.5rem 4rem;
         }
         @media (max-width: 768px) { .c-container { max-width: 92vw; margin: 2rem auto; } }
-        .c-container h1 { margin-bottom: 2.5rem; }
 
         .c-tabs { display: flex; gap: 2rem; margin-bottom: 1.5rem; }
         .c-tab {
@@ -112,10 +111,9 @@
 </head>
 <body>
 <div class="c-container">
-    <h1>consumption</h1>
     <div class="c-tabs" id="c-tabs">
-        <button type="button" class="c-tab" data-view="spotify">spotify</button>
-        <button type="button" class="c-tab active" data-view="books">books</button>
+        <button type="button" class="c-tab active" data-view="spotify">spotify</button>
+        <button type="button" class="c-tab" data-view="books">books</button>
         <button type="button" class="c-tab" data-view="movies">movies</button>
     </div>
     <div id="c-content"></div>
@@ -403,7 +401,7 @@ document.querySelectorAll('#c-tabs .c-tab').forEach(btn => {
     if (code) await exchangeCode(code);
 
     const hash = location.hash.slice(1);
-    const startView = ['spotify', 'books', 'movies'].includes(hash) ? hash : 'books';
+    const startView = ['spotify', 'books', 'movies'].includes(hash) ? hash : 'spotify';
     document.querySelectorAll('#c-tabs .c-tab').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.view === startView);
     });
