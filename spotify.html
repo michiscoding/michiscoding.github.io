@@ -338,6 +338,7 @@ async function renderTops(range) {
 
     document.querySelectorAll('.sp-track[data-preview]').forEach(row => {
         const preview = row.dataset.preview;
+        console.log('track preview:', preview || 'NONE');
         if (!preview) return;
         const wrap = row.querySelector('.sp-art-wrap');
         const overlay = row.querySelector('.sp-play-overlay');
