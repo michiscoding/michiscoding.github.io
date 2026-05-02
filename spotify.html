@@ -182,6 +182,12 @@
             font-size: 0.68rem; color: #aaa;
         }
         .sp-nothing { color: #aaa; font-size: 0.85rem; padding: 2rem 0; text-align: center; }
+
+        @keyframes sp-fade-in {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .sp-fade { animation: sp-fade-in 0.25s ease forwards; }
     </style>
 </head>
 <body>
@@ -282,6 +288,14 @@ async function spFetch(path) {
     return res.json();
 }
 
+function fadeIn() {
+    const el = document.getElementById('sp-tops');
+    if (!el) return;
+    el.classList.remove('sp-fade');
+    void el.offsetWidth;
+    el.classList.add('sp-fade');
+}
+
 // --- render ---
 function trackRow(t, i) {
     const pop = t.popularity ?? 50;
@@ -334,6 +348,7 @@ async function renderTops(range) {
     document.querySelectorAll('.sp-track[data-url]').forEach(row => {
         row.addEventListener('click', () => { if (row.dataset.url) window.open(row.dataset.url, '_blank'); });
     });
+    fadeIn();
 }
 
 let npTimer = null;
@@ -380,6 +395,7 @@ async function renderNowPlaying() {
         </div>`;
 
     if (url) tops.querySelector('.sp-vinyl').addEventListener('click', () => window.open(url, '_blank'));
+    fadeIn();
 
     let progress = data.progress_ms;
     function updateProgress() {
