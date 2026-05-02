@@ -390,6 +390,7 @@ document.querySelectorAll('#c-tabs .c-tab').forEach(btn => {
         document.querySelectorAll('#c-tabs .c-tab').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         const view = btn.dataset.view;
+        history.replaceState(null, '', '#' + view);
         if (view === 'spotify') renderSpotify();
         else renderMedia(view);
     };
