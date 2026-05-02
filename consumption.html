@@ -16,15 +16,29 @@
         @media (max-width: 768px) { .c-container { max-width: 92vw; margin: 2rem auto; } }
         .c-container h1 { margin-bottom: 2.5rem; }
 
-        .c-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+        .c-tabs { display: flex; gap: 2rem; margin-bottom: 1.5rem; }
         .c-tab {
-            font-size: 0.75rem; padding: 0.25rem 0.7rem; border-radius: 50px;
-            border: 1px solid #ddd; background: none; cursor: pointer;
-            font-family: inherit; color: #888;
+            background: none; border: none; padding: 0.4rem 0;
+            font-family: inherit; font-size: 0.85rem; font-weight: 600;
+            color: #aaa; cursor: pointer; outline: none;
+            transition: color 0.2s; letter-spacing: 0.05em;
         }
-        body.dark .c-tab { border-color: #333; color: #666; }
-        .c-tab.active { background: #111; color: #fff; border-color: #111; }
-        body.dark .c-tab.active { background: #ddd; color: #111; border-color: #ddd; }
+        .c-tab:focus, .c-tab:focus-visible { outline: none; }
+        .c-tab.active { color: #222; }
+        body.dark .c-tab { color: #555; }
+        body.dark .c-tab.active { color: #eee; }
+
+        .c-subtabs { display: flex; gap: 1.5rem; margin-bottom: 1.25rem; }
+        .c-subtab {
+            background: none; border: none; padding: 0.2rem 0;
+            font-family: inherit; font-size: 0.75rem; font-weight: 600;
+            color: #bbb; cursor: pointer; outline: none;
+            transition: color 0.2s; letter-spacing: 0.05em;
+        }
+        .c-subtab:focus, .c-subtab:focus-visible { outline: none; }
+        .c-subtab.active { color: #444; }
+        body.dark .c-subtab { color: #555; }
+        body.dark .c-subtab.active { color: #aaa; }
 
         /* spotify */
         .sp-section { margin-bottom: 2.5rem; }
@@ -100,9 +114,9 @@
 <div class="c-container">
     <h1>consumption</h1>
     <div class="c-tabs" id="c-tabs">
-        <button class="c-tab" data-view="spotify">spotify</button>
-        <button class="c-tab active" data-view="books">books</button>
-        <button class="c-tab" data-view="movies">movies</button>
+        <button type="button" class="c-tab" data-view="spotify">spotify</button>
+        <button type="button" class="c-tab active" data-view="books">books</button>
+        <button type="button" class="c-tab" data-view="movies">movies</button>
     </div>
     <div id="c-content"></div>
 </div>
@@ -222,11 +236,11 @@ function spSubTabsHtml(active) {
         { label: '6 months', range: 'medium_term' },
         { label: 'all time', range: 'long_term' },
         { label: 'now playing', range: 'now' },
-    ].map(r => `<button class="c-tab${r.range === active ? ' active' : ''}" data-range="${r.range}">${r.label}</button>`).join('');
+    ].map(r => `<button type="button" class="c-subtab${r.range === active ? ' active' : ''}" data-range="${r.range}">${r.label}</button>`).join('');
 }
 
 function bindSubTabs() {
-    document.querySelectorAll('#sp-sub-tabs .c-tab').forEach(btn => {
+    document.querySelectorAll('#sp-sub-tabs .c-subtab').forEach(btn => {
         btn.onclick = () => btn.dataset.range === 'now' ? renderNowPlaying() : renderTops(btn.dataset.range);
     });
 }
@@ -234,7 +248,7 @@ function bindSubTabs() {
 async function renderTops(range) {
     if (npTimer) { clearInterval(npTimer); npTimer = null; }
     document.getElementById('c-content').innerHTML = `
-        <div class="c-tabs" id="sp-sub-tabs" style="margin-bottom:1.5rem">${spSubTabsHtml(range)}</div>
+        <div class="c-subtabs" id="sp-sub-tabs">${spSubTabsHtml(range)}</div>
         <div id="sp-tops"><div id="c-loading">loading...</div></div>`;
     bindSubTabs();
 
@@ -262,7 +276,7 @@ async function renderTops(range) {
 async function renderNowPlaying() {
     if (npTimer) { clearInterval(npTimer); npTimer = null; }
     document.getElementById('c-content').innerHTML = `
-        <div class="c-tabs" id="sp-sub-tabs" style="margin-bottom:1.5rem">${spSubTabsHtml('now')}</div>
+        <div class="c-subtabs" id="sp-sub-tabs">${spSubTabsHtml('now')}</div>
         <div id="sp-tops"><div id="c-loading">loading...</div></div>`;
     bindSubTabs();
 
