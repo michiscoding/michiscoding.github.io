@@ -334,7 +334,8 @@ function starsHtml(rating) {
     return '★'.repeat(rating) + '☆'.repeat(5 - rating);
 }
 
-async function renderMedia(type) {
+async function renderMedia(view) {
+    const type = view === 'books' ? 'book' : 'movie';
     document.getElementById('c-content').innerHTML = '<div id="c-loading">loading...</div>';
     const { data, error } = await db.from('media').select('*').eq('type', type).order('date', { ascending: false });
     if (error) {
