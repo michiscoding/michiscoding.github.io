@@ -157,8 +157,26 @@
             cursor: pointer;
             box-shadow: 0 8px 32px rgba(0,0,0,0.18);
         }
+        .sp-vinyl.paused { animation-play-state: paused; }
         body.dark .sp-vinyl { box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
         .sp-vinyl-info { text-align: center; }
+        .sp-vinyl-status {
+            font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.1em; color: #1db954; margin-bottom: 0.3rem;
+        }
+        .sp-vinyl-status.paused { color: #aaa; }
+        .sp-progress-wrap {
+            width: 260px; display: flex; flex-direction: column; gap: 0.3rem;
+        }
+        .sp-progress-bar {
+            width: 100%; height: 3px; background: #ddd; border-radius: 2px; overflow: hidden;
+        }
+        body.dark .sp-progress-bar { background: #333; }
+        .sp-progress-fill { height: 100%; background: #1db954; border-radius: 2px; transition: width 1s linear; }
+        .sp-progress-times {
+            display: flex; justify-content: space-between;
+            font-size: 0.68rem; color: #aaa;
+        }
         .sp-nothing { color: #aaa; font-size: 0.85rem; padding: 2rem 0; text-align: center; }
     </style>
 </head>
@@ -289,6 +307,7 @@ function artistRow(a, i) {
 let currentRange = 'short_term';
 
 async function renderTops(range) {
+    if (npTimer) { clearInterval(npTimer); npTimer = null; }
     currentRange = range;
     document.getElementById('sp-tops').innerHTML = '<div id="sp-loading">loading...</div>';
     document.querySelectorAll('.sp-range-tab').forEach(btn => btn.classList.toggle('active', btn.dataset.range === range));
@@ -314,27 +333,62 @@ async function renderTops(range) {
     });
 }
 
+let npTimer = null;
+
 async function renderNowPlaying() {
     document.querySelectorAll('.sp-range-tab').forEach(btn => btn.classList.toggle('active', btn.dataset.view === 'now'));
     const tops = document.getElementById('sp-tops');
     tops.innerHTML = '<div id="sp-loading">loading...</div>';
+
+    if (npTimer) { clearInterval(npTimer); npTimer = null; }
+
     const data = await spFetch('/me/player/currently-playing');
     const t = data?.item;
     if (!t) {
         tops.innerHTML = '<div class="sp-nothing">nothing playing right now</div>';
         return;
     }
+
     const url = t.external_urls?.spotify || '';
     const art = t.album.images[0]?.url || '';
+    const isPlaying = data.is_playing;
+    const duration = t.duration_ms;
+
+    function fmt(ms) {
+        const s = Math.floor(ms / 1000);
+        return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+    }
+
     tops.innerHTML = `
         <div class="sp-vinyl-wrap">
-            <img class="sp-vinyl" src="${art}" alt="" title="open in spotify">
+            <img class="sp-vinyl${isPlaying ? '' : ' paused'}" src="${art}" alt="" title="open in spotify">
             <div class="sp-vinyl-info">
+                <div class="sp-vinyl-status${isPlaying ? '' : ' paused'}">${isPlaying ? 'now playing' : 'paused'}</div>
                 <div class="sp-name">${t.name}</div>
                 <div class="sp-sub">${t.artists.map(a => a.name).join(', ')}</div>
             </div>
+            <div class="sp-progress-wrap">
+                <div class="sp-progress-bar"><div class="sp-progress-fill" id="sp-fill"></div></div>
+                <div class="sp-progress-times">
+                    <span id="sp-elapsed"></span>
+                    <span>${fmt(duration)}</span>
+                </div>
+            </div>
         </div>`;
+
     if (url) tops.querySelector('.sp-vinyl').addEventListener('click', () => window.open(url, '_blank'));
+
+    let progress = data.progress_ms;
+    function updateProgress() {
+        const fill = document.getElementById('sp-fill');
+        const elapsed = document.getElementById('sp-elapsed');
+        if (!fill || !elapsed) { clearInterval(npTimer); return; }
+        fill.style.width = `${Math.min(100, (progress / duration) * 100)}%`;
+        elapsed.textContent = fmt(progress);
+        if (isPlaying) progress += 1000;
+    }
+    updateProgress();
+    if (isPlaying) npTimer = setInterval(updateProgress, 1000);
 }
 
 async function renderPage() {
