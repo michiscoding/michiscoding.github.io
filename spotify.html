@@ -5,13 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/home.css">
-    <title>spotify</title>
+    <title>mich's spotify stats</title>
     <style>
+        :root { --maxWidth: 67vw; }
         .spotify-container {
-            max-width: 620px;
+            max-width: var(--maxWidth);
             margin: 3rem auto;
             padding: 0 1.5rem 4rem;
         }
+        @media (max-width: 768px) { .spotify-container { max-width: 92vw; margin: 2rem auto; } }
         .spotify-container h1 { margin-bottom: 2.5rem; }
 
         .sp-section { margin-bottom: 2.5rem; }
@@ -62,10 +64,15 @@
         }
 
         .sp-bar-wrap {
-            flex: 0 0 60px;
+            flex-grow: 0;
+            flex-shrink: 0;
+            flex-basis: 60px;
+            width: 60px;
+            max-width: 60px;
             height: 3px;
             background: #eee;
             border-radius: 2px;
+            overflow: hidden;
         }
         body.dark .sp-bar-wrap { background: #333; }
         .sp-bar {
@@ -153,6 +160,7 @@
         .sp-art-wrap.playing .sp-play-overlay { opacity: 1; }
         .sp-track.playing .sp-name { color: #1db954; }
         body.dark .sp-track.playing .sp-name { color: #1db954; }
+        .sp-track[data-preview]:not([data-preview=""]) { cursor: pointer; }
     </style>
 </head>
 <body>
@@ -342,7 +350,7 @@ async function renderTops(range) {
             if (currentAudio) { currentAudio.pause(); currentRow?.querySelector('.sp-art-wrap')?.classList.remove('playing'); currentRow?.classList.remove('playing'); currentRow?.querySelector('.sp-play-overlay') && (currentRow.querySelector('.sp-play-overlay').textContent = '▶'); }
             currentAudio = new Audio(preview);
             currentRow = row;
-            currentAudio.play();
+            currentAudio.play().catch(e => console.error('play failed', e));
             overlay.textContent = '⏸';
             wrap.classList.add('playing');
             row.classList.add('playing');
