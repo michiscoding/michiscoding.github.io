@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/home.css">
+    <title>spotify</title>
+    <style>
+        .spotify-container {
+            max-width: 620px;
+            margin: 3rem auto;
+            padding: 0 1.5rem 4rem;
+        }
+        .spotify-container h1 { margin-bottom: 2.5rem; }
+
+        .sp-section { margin-bottom: 2.5rem; }
+        .sp-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #aaa;
+            margin-bottom: 0.85rem;
+        }
+
+        .sp-track, .sp-artist {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            padding: 0.55rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        body.dark .sp-track, body.dark .sp-artist { border-bottom-color: #2a2a2a; }
+        .sp-track:last-child, .sp-artist:last-child { border-bottom: none; }
+
+        .sp-rank { font-size: 0.72rem; color: #ccc; width: 1.2rem; flex-shrink: 0; text-align: right; }
+        .sp-art {
+            width: 40px; height: 40px;
+            border-radius: 4px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .sp-art.round { border-radius: 50%; }
+
+        .sp-info { flex: 1; min-width: 0; }
+        .sp-name {
+            font-size: 0.88rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #111;
+        }
+        body.dark .sp-name { color: #ddd; }
+        .sp-sub {
+            font-size: 0.75rem;
+            color: #888;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sp-bar-wrap {
+            width: 80px;
+            height: 3px;
+            background: #eee;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        body.dark .sp-bar-wrap { background: #333; }
+        .sp-bar {
+            height: 100%;
+            background: #1db954;
+            border-radius: 2px;
+        }
+
+        .sp-login-btn {
+            display: inline-block;
+            padding: 0.6rem 1.4rem;
+            background: #1db954;
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            margin-top: 1rem;
+        }
+        .sp-login-btn:hover { background: #17a349; }
+
+        .sp-now {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            background: #ededed;
+            border-radius: 8px;
+            padding: 0.85rem 1rem;
+        }
+        body.dark .sp-now { background: #1e1e1e; }
+        .sp-now-info { flex: 1; min-width: 0; }
+        .sp-now-playing {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #1db954;
+            margin-bottom: 0.2rem;
+        }
+
+        .sp-range-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .sp-range-tab {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.7rem;
+            border-radius: 50px;
+            border: 1px solid #ddd;
+            background: none;
+            cursor: pointer;
+            font-family: inherit;
+            color: #888;
+        }
+        body.dark .sp-range-tab { border-color: #333; color: #666; }
+        .sp-range-tab.active { background: #111; color: #fff; border-color: #111; }
+        body.dark .sp-range-tab.active { background: #ddd; color: #111; border-color: #ddd; }
+
+        #sp-loading { color: #aaa; font-size: 0.85rem; margin-top: 2rem; }
+    </style>
+</head>
+<body>
+<div class="spotify-container">
+    <h1>spotify</h1>
+    <div id="sp-root"></div>
+</div>
+
+<script src="js/home.js"></script>
+<script>
+const CLIENT_ID = 'd3ab93ff0a8248d79171391eb077f43d';
+const REDIRECT_URI = 'https://michiscoding.github.io/spotify.html';
+const SCOPES = 'user-top-read user-read-recently-played user-read-currently-playing';
+
+// --- PKCE helpers ---
+function randomStr(len) {
+    const arr = new Uint8Array(len);
+    crypto.getRandomValues(arr);
+    return btoa(String.fromCharCode(...arr)).replace(/[+/=]/g, c => ({'+':'-','/':'_','=':''}[c])).slice(0, len);
+}
+async function sha256(str) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/[+/=]/g, c => ({'+':'-','/':'_','=':''}[c]));
+}
+
+async function login() {
+    const verifier = randomStr(64);
+    const challenge = await sha256(verifier);
+    localStorage.setItem('sp_verifier', verifier);
+    const params = new URLSearchParams({
+        client_id: CLIENT_ID,
+        response_type: 'code',
+        redirect_uri: REDIRECT_URI,
+        scope: SCOPES,
+        code_challenge_method: 'S256',
+        code_challenge: challenge,
+    });
+    location.href = 'https://accounts.spotify.com/authorize?' + params;
+}
+
+async function exchangeCode(code) {
+    const verifier = localStorage.getItem('sp_verifier');
+    const res = await fetch('https://accounts.spotify.com/api/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+            grant_type: 'authorization_code',
+            code,
+            redirect_uri: REDIRECT_URI,
+            client_id: CLIENT_ID,
+            code_verifier: verifier,
+        }),
+    });
+    const data = await res.json();
+    if (data.access_token) {
+        localStorage.setItem('sp_access_token', data.access_token);
+        localStorage.setItem('sp_refresh_token', data.refresh_token);
+        localStorage.setItem('sp_token_exp', Date.now() + (data.expires_in - 60) * 1000);
+        localStorage.removeItem('sp_verifier');
+        history.replaceState({}, '', location.pathname);
+    }
+    return data.access_token;
+}
+
+async function refreshToken() {
+    const refresh = localStorage.getItem('sp_refresh_token');
+    if (!refresh) return null;
+    const res = await fetch('https://accounts.spotify.com/api/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+            grant_type: 'refresh_token',
+            refresh_token: refresh,
+            client_id: CLIENT_ID,
+        }),
+    });
+    const data = await res.json();
+    if (data.access_token) {
+        localStorage.setItem('sp_access_token', data.access_token);
+        localStorage.setItem('sp_token_exp', Date.now() + (data.expires_in - 60) * 1000);
+        if (data.refresh_token) localStorage.setItem('sp_refresh_token', data.refresh_token);
+    }
+    return data.access_token;
+}
+
+async function getToken() {
+    const exp = parseInt(localStorage.getItem('sp_token_exp') || '0');
+    if (Date.now() < exp) return localStorage.getItem('sp_access_token');
+    return refreshToken();
+}
+
+async function spFetch(path) {
+    const token = await getToken();
+    const res = await fetch('https://api.spotify.com/v1' + path, {
+        headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (res.status === 204) return null;
+    return res.json();
+}
+
+// --- render ---
+function trackRow(t, i, maxPop) {
+    const pop = t.popularity ?? 50;
+    return `<div class="sp-track">
+        <span class="sp-rank">${i + 1}</span>
+        <img class="sp-art" src="${t.album.images[2]?.url || t.album.images[0]?.url}" alt="">
+        <div class="sp-info">
+            <div class="sp-name">${t.name}</div>
+            <div class="sp-sub">${t.artists.map(a => a.name).join(', ')}</div>
+        </div>
+        <div class="sp-bar-wrap"><div class="sp-bar" style="width:${Math.round(pop/maxPop*100)}%"></div></div>
+    </div>`;
+}
+
+function artistRow(a, i) {
+    return `<div class="sp-artist">
+        <span class="sp-rank">${i + 1}</span>
+        <img class="sp-art round" src="${a.images[2]?.url || a.images[0]?.url || ''}" alt="">
+        <div class="sp-info">
+            <div class="sp-name">${a.name}</div>
+            <div class="sp-sub">${a.genres.slice(0, 2).join(', ')}</div>
+        </div>
+    </div>`;
+}
+
+function nowPlayingHtml(item) {
+    if (!item) return '';
+    const t = item.item;
+    if (!t) return '';
+    return `<div class="sp-section">
+        <div class="sp-now">
+            <img class="sp-art" src="${t.album.images[2]?.url || t.album.images[0]?.url}" alt="" style="width:48px;height:48px">
+            <div class="sp-now-info">
+                <div class="sp-now-playing">now playing</div>
+                <div class="sp-name">${t.name}</div>
+                <div class="sp-sub">${t.artists.map(a => a.name).join(', ')}</div>
+            </div>
+        </div>
+    </div>`;
+}
+
+let currentRange = 'short_term';
+
+async function renderTops(range) {
+    currentRange = range;
+    const [tracks, artists] = await Promise.all([
+        spFetch(`/me/top/tracks?limit=10&time_range=${range}`),
+        spFetch(`/me/top/artists?limit=8&time_range=${range}`),
+    ]);
+
+    const maxPop = Math.max(...(tracks?.items || []).map(t => t.popularity || 0), 1);
+
+    document.getElementById('sp-tops').innerHTML = `
+        <div class="sp-section">
+            <div class="sp-label">top tracks</div>
+            ${(tracks?.items || []).map((t, i) => trackRow(t, i, maxPop)).join('')}
+        </div>
+        <div class="sp-section">
+            <div class="sp-label">top artists</div>
+            ${(artists?.items || []).map((a, i) => artistRow(a, i)).join('')}
+        </div>
+    `;
+
+    document.querySelectorAll('.sp-range-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.range === range);
+        btn.onclick = () => renderTops(btn.dataset.range);
+    });
+}
+
+async function renderPage() {
+    const root = document.getElementById('sp-root');
+    root.innerHTML = '<div id="sp-loading">loading...</div>';
+
+    const [now, _] = await Promise.all([
+        spFetch('/me/player/currently-playing'),
+        Promise.resolve(),
+    ]);
+
+    root.innerHTML = `
+        ${nowPlayingHtml(now)}
+        <div class="sp-range-tabs">
+            <button class="sp-range-tab active" data-range="short_term">4 weeks</button>
+            <button class="sp-range-tab" data-range="medium_term">6 months</button>
+            <button class="sp-range-tab" data-range="long_term">all time</button>
+        </div>
+        <div id="sp-tops"></div>
+    `;
+
+    document.querySelectorAll('.sp-range-tab').forEach(btn => {
+        btn.onclick = () => renderTops(btn.dataset.range);
+    });
+
+    await renderTops('short_term');
+}
+
+// --- init ---
+(async () => {
+    const params = new URLSearchParams(location.search);
+    const code = params.get('code');
+
+    if (code) {
+        await exchangeCode(code);
+    }
+
+    const token = await getToken();
+    const root = document.getElementById('sp-root');
+
+    if (!token) {
+        root.innerHTML = `<button class="sp-login-btn" id="sp-login">connect spotify</button>`;
+        document.getElementById('sp-login').addEventListener('click', login);
+        return;
+    }
+
+    await renderPage();
+})();
+</script>
+</body>
+</html>
