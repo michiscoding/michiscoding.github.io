@@ -471,20 +471,30 @@ document.addEventListener('DOMContentLoaded', () => {
       const ICON_MUTED_365 = `<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15" stroke="white" stroke-width="2" stroke-linecap="round"/><line x1="17" y1="9" x2="23" y2="15" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>`;
       const ICON_SOUND_365 = `<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`;
 
-      const videos365 = track.querySelectorAll('video');
-      if (videos365.length) {
-        const soundBtn = document.createElement('button');
+      const allMedia = Array.from(track.children);
+      const hasAnyVideo = allMedia.some(el => el.tagName === 'VIDEO');
+      let soundBtn = null;
+      if (hasAnyVideo) {
+        soundBtn = document.createElement('button');
         soundBtn.className = 'sound-btn';
         soundBtn.innerHTML = ICON_MUTED_365;
         soundBtn.addEventListener('click', e => {
           e.stopPropagation();
-          const currentVid = track.querySelectorAll('video')[idx] || videos365[0];
-          currentVid.muted = !currentVid.muted;
-          soundBtn.innerHTML = currentVid.muted ? ICON_MUTED_365 : ICON_SOUND_365;
-          videos365.forEach(v => { v.muted = currentVid.muted; });
+          const vid = allMedia[idx];
+          if (vid?.tagName !== 'VIDEO') return;
+          vid.muted = !vid.muted;
+          soundBtn.innerHTML = vid.muted ? ICON_MUTED_365 : ICON_SOUND_365;
         });
         card.appendChild(soundBtn);
       }
+
+      function updateSoundBtn() {
+        if (!soundBtn) return;
+        const current = allMedia[idx];
+        soundBtn.style.display = current?.tagName === 'VIDEO' ? '' : 'none';
+        if (current?.tagName === 'VIDEO') soundBtn.innerHTML = current.muted ? ICON_MUTED_365 : ICON_SOUND_365;
+      }
+      updateSoundBtn();
 
       const prev = document.createElement('button');
       prev.className = 'card-365-btn card-365-prev';
@@ -493,6 +503,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.stopPropagation();
         idx = (idx - 1 + photos.length) % photos.length;
         track.style.transform = `translateX(-${idx * 100}%)`;
+        updateSoundBtn();
       });
 
       const next = document.createElement('button');
@@ -502,6 +513,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.stopPropagation();
         idx = (idx + 1) % photos.length;
         track.style.transform = `translateX(-${idx * 100}%)`;
+        updateSoundBtn();
       });
 
       const label = document.createElement('div');
