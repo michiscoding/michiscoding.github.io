@@ -284,12 +284,13 @@
     // --- writings ---
     async function loadResearch() {
         const months = ['january','february','march','april','may','june','july','august','september','october','november','december'];
-        const { data } = await db.from('research').select('slug, title, sort_order').order('sort_order', { ascending: true });
+        const { data } = await db.from('research').select('slug, title, body, sort_order').order('sort_order', { ascending: true });
         const container = document.getElementById('research-list');
         for (const row of (data || [])) {
+            const wordCount = (row.body || '').trim().split(/\s+/).filter(w => w.length > 0).length;
             const record = document.createElement('div');
             record.className = 'blog-record';
-            record.innerHTML = `<div class="blog-details-1"><a href="/r-entry/view.html?slug=${row.slug}" class="blog-link">${row.title}</a></div>`;
+            record.innerHTML = `<div style="display:flex;flex-direction:column;gap:0.3rem;"><div class="blog-details-1"><a href="/r-entry/view.html?slug=${row.slug}" class="blog-link">${row.title}</a></div><div class="blog-details-2">${wordCount} words</div></div>`;
             container.appendChild(record);
         }
     }
