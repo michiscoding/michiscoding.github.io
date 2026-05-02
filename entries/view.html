@@ -66,38 +66,16 @@
 <script src="/js/supabase.js"></script>
 <script src="/js/home.js"></script>
 <script>
-const SPOTIFY_CLIENT_ID = 'YOUR_CLIENT_ID';
-const SPOTIFY_CLIENT_SECRET = 'YOUR_CLIENT_SECRET';
-
-async function getSpotifyToken() {
-    const token = sessionStorage.getItem('sp_token');
-    const exp = parseInt(sessionStorage.getItem('sp_exp') || '0');
-    if (token && Date.now() < exp) return token;
-    const res = await fetch('https://accounts.spotify.com/api/token', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Basic ' + btoa(SPOTIFY_CLIENT_ID + ':' + SPOTIFY_CLIENT_SECRET)
-        },
-        body: 'grant_type=client_credentials'
-    });
-    const data = await res.json();
-    sessionStorage.setItem('sp_token', data.access_token);
-    sessionStorage.setItem('sp_exp', Date.now() + (data.expires_in - 60) * 1000);
-    return data.access_token;
-}
-
 async function buildSpotifyPlayer(trackId) {
     try {
-        const token = await getSpotifyToken();
-        const res = await fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
-            headers: { 'Authorization': 'Bearer ' + token }
+        const res = await fetch(`${SUPABASE_URL}/functions/v1/spotify-track?id=${trackId}`, {
+            headers: { 'apikey': SUPABASE_ANON_KEY }
         });
         const track = await res.json();
 
-        const art = track.album?.images?.[1]?.url || track.album?.images?.[0]?.url || '';
-        const title = track.name || '';
-        const artist = track.artists?.map(a => a.name).join(', ') || '';
+        const art = track.art || '';
+        const title = track.title || '';
+        const artist = track.artist || '';
         const preview = track.preview_url || '';
 
         const wrap = document.createElement('div');
