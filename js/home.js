@@ -87,6 +87,8 @@ fetch('/nav.html')
         hideButton(navMenu);
         const workSub = document.getElementById('work-sub');
         if (workSub) workSub.classList.remove('open');
+        const consumptionSub = document.getElementById('consumption-sub');
+        if (consumptionSub) consumptionSub.classList.remove('open');
       }
     });
 

@@ -409,7 +409,8 @@ li{
 }
 
 @media (hover: hover) {
-    .nav-menu li:has(#work-sub):hover #work-sub {
+    .nav-menu li:has(#work-sub):hover #work-sub,
+    .nav-menu li:has(#consumption-sub):hover #consumption-sub {
         max-height: 200px;
         opacity: 1;
         transition-delay: 0.08s;
