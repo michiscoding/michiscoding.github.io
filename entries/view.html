@@ -69,7 +69,7 @@
 async function buildSpotifyPlayer(trackId) {
     try {
         const res = await fetch(`${SUPABASE_URL}/functions/v1/spotify-track?id=${trackId}`, {
-            headers: { 'apikey': SUPABASE_ANON_KEY }
+            headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
         });
         const track = await res.json();
 
