@@ -135,32 +135,31 @@
         body.dark .sp-range-tab.active { background: #ddd; color: #111; border-color: #ddd; }
 
         #sp-loading { color: #aaa; font-size: 0.85rem; margin-top: 2rem; }
+        .sp-track[data-url] { cursor: pointer; }
+        .sp-track[data-url]:hover .sp-name { color: #1db954; }
 
-        .sp-art-wrap {
-            position: relative;
-            width: 40px; height: 40px;
-            flex-shrink: 0;
-            cursor: pointer;
+        @keyframes vinyl-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
-        .sp-art-wrap .sp-art { width: 100%; height: 100%; }
-        .sp-play-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            border-radius: 4px;
+        .sp-vinyl-wrap {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-size: 0.75rem;
-            opacity: 0;
-            transition: opacity 0.15s;
+            padding: 2rem 0 1rem;
+            gap: 1rem;
         }
-        .sp-art-wrap:hover .sp-play-overlay,
-        .sp-art-wrap.playing .sp-play-overlay { opacity: 1; }
-        .sp-track.playing .sp-name { color: #1db954; }
-        body.dark .sp-track.playing .sp-name { color: #1db954; }
-        .sp-track[data-preview]:not([data-preview=""]) { cursor: pointer; }
+        .sp-vinyl {
+            width: 160px; height: 160px;
+            border-radius: 50%;
+            object-fit: cover;
+            animation: vinyl-spin 8s linear infinite;
+            cursor: pointer;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+        }
+        body.dark .sp-vinyl { box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+        .sp-vinyl-info { text-align: center; }
+        .sp-nothing { color: #aaa; font-size: 0.85rem; padding: 2rem 0; text-align: center; }
     </style>
 </head>
 <body>
@@ -262,20 +261,17 @@ async function spFetch(path) {
 }
 
 // --- render ---
-function trackRow(t, i, maxPop) {
+function trackRow(t, i) {
     const pop = t.popularity ?? 50;
-    const preview = t.preview_url || '';
-    return `<div class="sp-track" data-preview="${preview}">
+    const url = t.external_urls?.spotify || '';
+    return `<div class="sp-track" data-url="${url}">
         <span class="sp-rank">${i + 1}</span>
-        <div class="sp-art-wrap">
-            <img class="sp-art" src="${t.album.images[2]?.url || t.album.images[0]?.url}" alt="">
-            <div class="sp-play-overlay">${preview ? '▶' : '—'}</div>
-        </div>
+        <img class="sp-art" src="${t.album.images[2]?.url || t.album.images[0]?.url}" alt="">
         <div class="sp-info">
             <div class="sp-name">${t.name}</div>
             <div class="sp-sub">${t.artists.map(a => a.name).join(', ')}</div>
         </div>
-        <div class="sp-bar-wrap"><div class="sp-bar" style="width:${Math.round(pop/maxPop*100)}%"></div></div>
+        <div class="sp-bar-wrap"><div class="sp-bar" style="width:${pop}%"></div></div>
     </div>`;
 }
 
@@ -290,37 +286,22 @@ function artistRow(a, i) {
     </div>`;
 }
 
-function nowPlayingHtml(item) {
-    if (!item) return '';
-    const t = item.item;
-    if (!t) return '';
-    return `<div class="sp-section">
-        <div class="sp-now">
-            <img class="sp-art" src="${t.album.images[2]?.url || t.album.images[0]?.url}" alt="" style="width:48px;height:48px">
-            <div class="sp-now-info">
-                <div class="sp-now-playing">now playing</div>
-                <div class="sp-name">${t.name}</div>
-                <div class="sp-sub">${t.artists.map(a => a.name).join(', ')}</div>
-            </div>
-        </div>
-    </div>`;
-}
-
 let currentRange = 'short_term';
 
 async function renderTops(range) {
     currentRange = range;
+    document.getElementById('sp-tops').innerHTML = '<div id="sp-loading">loading...</div>';
+    document.querySelectorAll('.sp-range-tab').forEach(btn => btn.classList.toggle('active', btn.dataset.range === range));
+
     const [tracks, artists] = await Promise.all([
         spFetch(`/me/top/tracks?limit=10&time_range=${range}`),
         spFetch(`/me/top/artists?limit=8&time_range=${range}`),
     ]);
 
-    const maxPop = Math.max(...(tracks?.items || []).map(t => t.popularity || 0), 1);
-
     document.getElementById('sp-tops').innerHTML = `
         <div class="sp-section">
             <div class="sp-label">top tracks</div>
-            ${(tracks?.items || []).map((t, i) => trackRow(t, i, maxPop)).join('')}
+            ${(tracks?.items || []).map((t, i) => trackRow(t, i)).join('')}
         </div>
         <div class="sp-section">
             <div class="sp-label">top artists</div>
@@ -328,50 +309,39 @@ async function renderTops(range) {
         </div>
     `;
 
-    document.querySelectorAll('.sp-range-tab').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.range === range);
-        btn.onclick = () => renderTops(btn.dataset.range);
+    document.querySelectorAll('.sp-track[data-url]').forEach(row => {
+        row.addEventListener('click', () => { if (row.dataset.url) window.open(row.dataset.url, '_blank'); });
     });
+}
 
-    let currentAudio = null;
-    let currentRow = null;
-
-    document.querySelectorAll('.sp-track[data-preview]').forEach(row => {
-        const preview = row.dataset.preview;
-        console.log('track preview:', preview || 'NONE');
-        if (!preview) return;
-        const wrap = row.querySelector('.sp-art-wrap');
-        const overlay = row.querySelector('.sp-play-overlay');
-        wrap.addEventListener('click', () => {
-            if (currentRow === row) {
-                if (currentAudio.paused) { currentAudio.play(); overlay.textContent = '⏸'; wrap.classList.add('playing'); row.classList.add('playing'); }
-                else { currentAudio.pause(); overlay.textContent = '▶'; wrap.classList.remove('playing'); row.classList.remove('playing'); }
-                return;
-            }
-            if (currentAudio) { currentAudio.pause(); currentRow?.querySelector('.sp-art-wrap')?.classList.remove('playing'); currentRow?.classList.remove('playing'); currentRow?.querySelector('.sp-play-overlay') && (currentRow.querySelector('.sp-play-overlay').textContent = '▶'); }
-            currentAudio = new Audio(preview);
-            currentRow = row;
-            currentAudio.play().catch(e => console.error('play failed', e));
-            overlay.textContent = '⏸';
-            wrap.classList.add('playing');
-            row.classList.add('playing');
-            currentAudio.addEventListener('ended', () => { overlay.textContent = '▶'; wrap.classList.remove('playing'); row.classList.remove('playing'); currentAudio = null; currentRow = null; });
-        });
-    });
+async function renderNowPlaying() {
+    document.querySelectorAll('.sp-range-tab').forEach(btn => btn.classList.toggle('active', btn.dataset.view === 'now'));
+    const tops = document.getElementById('sp-tops');
+    tops.innerHTML = '<div id="sp-loading">loading...</div>';
+    const data = await spFetch('/me/player/currently-playing');
+    const t = data?.item;
+    if (!t) {
+        tops.innerHTML = '<div class="sp-nothing">nothing playing right now</div>';
+        return;
+    }
+    const url = t.external_urls?.spotify || '';
+    const art = t.album.images[0]?.url || '';
+    tops.innerHTML = `
+        <div class="sp-vinyl-wrap">
+            <img class="sp-vinyl" src="${art}" alt="" title="open in spotify">
+            <div class="sp-vinyl-info">
+                <div class="sp-name">${t.name}</div>
+                <div class="sp-sub">${t.artists.map(a => a.name).join(', ')}</div>
+            </div>
+        </div>`;
+    if (url) tops.querySelector('.sp-vinyl').addEventListener('click', () => window.open(url, '_blank'));
 }
 
 async function renderPage() {
     const root = document.getElementById('sp-root');
-    root.innerHTML = '<div id="sp-loading">loading...</div>';
-
-    const [now, _] = await Promise.all([
-        spFetch('/me/player/currently-playing'),
-        Promise.resolve(),
-    ]);
-
     root.innerHTML = `
-        ${nowPlayingHtml(now)}
         <div class="sp-range-tabs">
+            <button class="sp-range-tab" data-view="now">now playing</button>
             <button class="sp-range-tab active" data-range="short_term">4 weeks</button>
             <button class="sp-range-tab" data-range="medium_term">6 months</button>
             <button class="sp-range-tab" data-range="long_term">all time</button>
@@ -380,7 +350,7 @@ async function renderPage() {
     `;
 
     document.querySelectorAll('.sp-range-tab').forEach(btn => {
-        btn.onclick = () => renderTops(btn.dataset.range);
+        btn.onclick = () => btn.dataset.view === 'now' ? renderNowPlaying() : renderTops(btn.dataset.range);
     });
 
     await renderTops('short_term');
