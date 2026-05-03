@@ -289,7 +289,7 @@
         for (const row of (data || [])) {
             const tagsLabel = (row.tags || []).join(', ');
             const wordCount = (row.body || '').trim().split(/\s+/).filter(w => w.length > 0).length;
-            const subtitle = tagsLabel || `${wordCount} words`;
+            const subtitle = [tagsLabel, `${wordCount} words`].filter(Boolean).join(' · ');
             const record = document.createElement('div');
             record.className = 'blog-record';
             record.innerHTML = `<div style="display:flex;flex-direction:column;gap:0.3rem;"><div class="blog-details-1"><a href="/r-entry/view.html?slug=${row.slug}" class="blog-link">${row.title}</a></div><div class="blog-details-2">${subtitle}</div></div>`;
