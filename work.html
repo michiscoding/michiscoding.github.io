@@ -284,7 +284,7 @@
     // --- writings ---
     async function loadResearch() {
         const months = ['january','february','march','april','may','june','july','august','september','october','november','december'];
-        const { data } = await db.from('records').select('slug, title, body, tags, sort_order').order('sort_order', { ascending: true });
+        const { data } = await db.from('records').select('slug, title, body, tags').order('created_at', { ascending: false });
         const container = document.getElementById('research-list');
         for (const row of (data || [])) {
             const tagsLabel = (row.tags || []).join(', ');
