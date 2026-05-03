@@ -103,6 +103,21 @@
         .md-close:hover { color: #333; }
         body.dark .md-close:hover { color: #eee; }
 
+        /* food */
+        .food-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+        @media (max-width: 1024px) { .food-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .food-grid { grid-template-columns: 1fr; gap: 0.75rem; } }
+        .food-card { cursor: pointer; }
+        .food-photo-wrap { aspect-ratio: 4/3; overflow: hidden; border-radius: 8px; background: #e8e8e8; margin-bottom: 0.5rem; }
+        body.dark .food-photo-wrap { background: #2a2a2a; }
+        .food-photo-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s ease; }
+        .food-card:hover .food-photo-wrap img { transform: scale(1.04); }
+        .food-no-photo { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 2rem; }
+        .food-card-name { font-size: 0.85rem; font-weight: 600; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        body.dark .food-card-name { color: #ddd; }
+        .food-card-meta { font-size: 0.72rem; color: #aaa; }
+        .food-card-rating { font-size: 0.7rem; color: #aaa; }
+
         @keyframes c-fade-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
         .c-fade { animation: c-fade-in 0.25s ease forwards; }
         #c-loading { color: #aaa; font-size: 0.85rem; margin-top: 2rem; }
@@ -115,6 +130,7 @@
         <button type="button" class="c-tab active" data-view="spotify">spotify</button>
         <button type="button" class="c-tab" data-view="books">books</button>
         <button type="button" class="c-tab" data-view="movies">movies</button>
+        <button type="button" class="c-tab" data-view="food">food</button>
     </div>
     <div id="c-content"></div>
 </div>
@@ -381,6 +397,41 @@ document.getElementById('md-close').addEventListener('click', closeDetail);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetail(); });
 function closeDetail() { document.getElementById('media-detail').classList.remove('open'); }
 
+// food
+async function renderFood() {
+    document.getElementById('c-content').innerHTML = '<div id="c-loading">loading...</div>';
+    const { data, error } = await db.from('food').select('*').order('created_at', { ascending: false });
+    if (error) { document.getElementById('c-content').innerHTML = `<div class="c-empty">error: ${error.message}</div>`; fadeIn(); return; }
+    if (!data?.length) { document.getElementById('c-content').innerHTML = '<div class="c-empty">nothing here yet</div>'; fadeIn(); return; }
+    document.getElementById('c-content').innerHTML = `<div class="food-grid">${data.map(item => `
+        <div class="food-card" data-id="${item.id}">
+            <div class="food-photo-wrap">
+                ${item.photo_url ? `<img src="${item.photo_url}" alt="${item.name}" loading="lazy">` : '<div class="food-no-photo">🍽</div>'}
+            </div>
+            <div class="food-card-name">${item.name}</div>
+            <div class="food-card-meta">${[item.location, item.date ? item.date.slice(0, 7) : ''].filter(Boolean).join(' · ')}</div>
+            ${item.rating ? `<div class="food-card-rating">${starsHtml(item.rating)}</div>` : ''}
+        </div>`).join('')}</div>`;
+    fadeIn();
+    document.querySelectorAll('.food-card').forEach(card => {
+        const item = data.find(d => d.id === card.dataset.id);
+        card.addEventListener('click', () => item && openFoodDetail(item));
+    });
+}
+
+function openFoodDetail(item) {
+    const cover = document.getElementById('md-cover');
+    cover.src = item.photo_url || '';
+    cover.style.display = item.photo_url ? '' : 'none';
+    cover.style.aspectRatio = '4/3';
+    cover.style.width = '100%';
+    document.getElementById('md-title').textContent = item.name;
+    document.getElementById('md-meta').textContent = [item.location, item.date ? new Date(item.date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : ''].filter(Boolean).join(' · ');
+    document.getElementById('md-rating').textContent = starsHtml(item.rating || 0);
+    document.getElementById('md-notes').textContent = item.notes || '';
+    document.getElementById('media-detail').classList.add('open');
+}
+
 // tabs + fade
 function fadeIn() {
     const el = document.getElementById('c-content');
@@ -398,6 +449,7 @@ document.querySelectorAll('#c-tabs .c-tab').forEach(btn => {
         const view = btn.dataset.view;
         history.replaceState(null, '', '#' + view);
         if (view === 'spotify') renderSpotify();
+        else if (view === 'food') renderFood();
         else renderMedia(view);
     };
 });
@@ -408,11 +460,12 @@ document.querySelectorAll('#c-tabs .c-tab').forEach(btn => {
     if (code) await exchangeCode(code);
 
     const hash = location.hash.slice(1);
-    const startView = ['spotify', 'books', 'movies'].includes(hash) ? hash : 'spotify';
+    const startView = ['spotify', 'books', 'movies', 'food'].includes(hash) ? hash : 'spotify';
     document.querySelectorAll('#c-tabs .c-tab').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.view === startView);
     });
     if (startView === 'spotify') renderSpotify();
+    else if (startView === 'food') renderFood();
     else renderMedia(startView);
 })();
 </script>
