@@ -89,7 +89,7 @@
 <body>
     <div class="work-tabs">
         <button type="button" class="work-tab" data-tab="powerapps">powerapps</button>
-        <button type="button" class="work-tab" data-tab="writings">projects</button>
+        <button type="button" class="work-tab" data-tab="records">records</button>
         <button type="button" class="work-tab" data-tab="resume">resume</button>
     </div>
     <div class="work-subtabs" id="pa-subtabs">
@@ -106,7 +106,7 @@
         <div id="pa-text-list"></div>
     </div>
 
-    <div class="work-panel" id="panel-writings">
+    <div class="work-panel" id="panel-records">
         <div class="blog-container">
             <div id="research-list"></div>
         </div>
@@ -180,13 +180,13 @@
         paSubtabs.classList.toggle('visible', name === 'powerapps');
         history.replaceState(null, '', '#' + name);
         if (name === 'powerapps' && !paLoaded) { paLoaded = true; loadPa(); }
-        if (name === 'writings' && !researchLoaded) { researchLoaded = true; loadResearch(); }
+        if (name === 'records' && !researchLoaded) { researchLoaded = true; loadResearch(); }
     }
 
     tabs.forEach(tab => tab.addEventListener('click', () => showTab(tab.dataset.tab)));
 
     const hash = location.hash.replace('#', '');
-    const initialTab = ['powerapps', 'writings', 'resume'].includes(hash) ? hash : 'powerapps';
+    const initialTab = ['powerapps', 'records', 'resume'].includes(hash) ? hash : 'powerapps';
     tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === initialTab));
     const initialPanel = document.getElementById('panel-' + initialTab);
     initialPanel.classList.add('active');
@@ -195,7 +195,7 @@
         if (initialTab === 'powerapps') paSubtabs.classList.add('visible');
     }));
     if (initialTab === 'powerapps') { paLoaded = true; loadPa(); }
-    if (initialTab === 'writings') { researchLoaded = true; loadResearch(); }
+    if (initialTab === 'records') { researchLoaded = true; loadResearch(); }
 
     // --- powerapps ---
     const grid = document.querySelector('.grid');
@@ -284,13 +284,13 @@
     // --- writings ---
     async function loadResearch() {
         const months = ['january','february','march','april','may','june','july','august','september','october','november','december'];
-        const { data } = await db.from('research').select('slug, title, body, sort_order').order('sort_order', { ascending: true });
+        const { data } = await db.from('research').select('slug, title, tags, sort_order').order('sort_order', { ascending: true });
         const container = document.getElementById('research-list');
         for (const row of (data || [])) {
-            const wordCount = (row.body || '').trim().split(/\s+/).filter(w => w.length > 0).length;
+            const tagsLabel = (row.tags || []).join(', ');
             const record = document.createElement('div');
             record.className = 'blog-record';
-            record.innerHTML = `<div style="display:flex;flex-direction:column;gap:0.3rem;"><div class="blog-details-1"><a href="/r-entry/view.html?slug=${row.slug}" class="blog-link">${row.title}</a></div><div class="blog-details-2">${wordCount} words</div></div>`;
+            record.innerHTML = `<div style="display:flex;flex-direction:column;gap:0.3rem;"><div class="blog-details-1"><a href="/r-entry/view.html?slug=${row.slug}" class="blog-link">${row.title}</a></div>${tagsLabel ? `<div class="blog-details-2">${tagsLabel}</div>` : ''}</div>`;
             container.appendChild(record);
         }
     }
