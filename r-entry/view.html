@@ -109,7 +109,7 @@
     const slug = new URLSearchParams(location.search).get('slug');
     if (!slug) return;
 
-    const { data, error } = await db.from('research').select('*').eq('slug', slug).single();
+    const { data, error } = await db.from('records').select('*').eq('slug', slug).single();
     if (error || !data) return;
 
     document.title = data.title;
