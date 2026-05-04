@@ -149,6 +149,13 @@
         .food-lb-next { right: 1rem; }
         .food-lb-prev:hover, .food-lb-next:hover { background: rgba(255,255,255,0.22); }
 
+        /* food tag filter */
+        .food-tag-filter { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1rem; }
+        .food-tag-pill { background: #f0f0f0; border: none; border-radius: 999px; padding: 0.28rem 0.75rem; font-family: inherit; font-size: 0.72rem; font-weight: 600; color: #888; cursor: pointer; transition: background 0.15s, color 0.15s; }
+        .food-tag-pill.active { background: #222; color: #fff; }
+        body.dark .food-tag-pill { background: #2a2a2a; color: #555; }
+        body.dark .food-tag-pill.active { background: #ddd; color: #111; }
+
         /* food map */
         .food-view-toggle { display: flex; gap: 1rem; margin-bottom: 1rem; }
         .fv-btn { background: none; border: none; font-family: inherit; font-size: 0.75rem; font-weight: 700; color: #bbb; cursor: pointer; padding: 0 0 0.15rem; letter-spacing: 0.06em; text-transform: uppercase; border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s; }
@@ -480,15 +487,10 @@ function closeDetail() {
 // food
 let foodLeafletMap = null;
 const geocodeCache = {};
+let foodAllData = [], activeFoodTag = 'all';
 
-async function renderFood() {
-    if (foodLeafletMap) { foodLeafletMap.remove(); foodLeafletMap = null; }
-    document.getElementById('c-content').innerHTML = '<div id="c-loading">loading...</div>';
-    const { data, error } = await db.from('food').select('*').order('created_at', { ascending: false });
-    if (error) { document.getElementById('c-content').innerHTML = `<div class="c-empty">error: ${error.message}</div>`; fadeIn(); return; }
-    if (!data?.length) { document.getElementById('c-content').innerHTML = '<div class="c-empty">nothing here yet</div>'; fadeIn(); return; }
-
-    const gridHtml = data.map(item => `
+function foodGridHtml(data) {
+    return data.map(item => `
         <div class="food-card" data-id="${item.id}">
             <div class="food-photo-wrap">
                 ${item.photo_url ? `<img src="${item.photo_url}" alt="${item.name}" loading="lazy">` : '<div class="food-no-photo">🍽</div>'}
@@ -498,13 +500,50 @@ async function renderFood() {
             ${item.rating ? `<div class="food-card-rating">${starsHtml(item.rating)}</div>` : ''}
             ${item.tags?.length ? `<div class="food-card-tags">${item.tags.map(t => `<span class="food-card-tag">${t}</span>`).join('')}</div>` : ''}
         </div>`).join('');
+}
+
+function renderFoodGrid(data) {
+    document.getElementById('food-grid').innerHTML = foodGridHtml(data);
+    document.querySelectorAll('.food-card').forEach(card => {
+        const item = foodAllData.find(d => d.id === card.dataset.id);
+        card.addEventListener('click', () => item && openFoodDetail(item));
+    });
+}
+
+function applyFoodTagFilter(tag) {
+    activeFoodTag = tag;
+    document.querySelectorAll('.food-tag-pill').forEach(p => p.classList.toggle('active', p.dataset.tag === tag));
+    const filtered = tag === 'all' ? foodAllData : foodAllData.filter(d => d.tags?.includes(tag));
+    renderFoodGrid(filtered);
+    if (document.getElementById('food-map-wrap')?.style.display === 'block') {
+        if (foodLeafletMap) { foodLeafletMap.remove(); foodLeafletMap = null; }
+        showFoodMap(filtered);
+    }
+}
+
+async function renderFood() {
+    if (foodLeafletMap) { foodLeafletMap.remove(); foodLeafletMap = null; }
+    activeFoodTag = 'all';
+    document.getElementById('c-content').innerHTML = '<div id="c-loading">loading...</div>';
+    const { data, error } = await db.from('food').select('*').order('created_at', { ascending: false });
+    if (error) { document.getElementById('c-content').innerHTML = `<div class="c-empty">error: ${error.message}</div>`; fadeIn(); return; }
+    if (!data?.length) { document.getElementById('c-content').innerHTML = '<div class="c-empty">nothing here yet</div>'; fadeIn(); return; }
+
+    foodAllData = data;
+    const allTags = [...new Set(data.flatMap(d => d.tags || []))].sort();
+    const tagFilterHtml = allTags.length ? `
+        <div class="food-tag-filter" id="food-tag-filter">
+            <button class="food-tag-pill active" data-tag="all">all</button>
+            ${allTags.map(t => `<button class="food-tag-pill" data-tag="${t}">${t}</button>`).join('')}
+        </div>` : '';
 
     document.getElementById('c-content').innerHTML = `
         <div class="food-view-toggle">
             <button class="fv-btn active" id="fv-grid">grid</button>
             <button class="fv-btn" id="fv-map">map</button>
         </div>
-        <div class="food-grid" id="food-grid">${gridHtml}</div>
+        ${tagFilterHtml}
+        <div class="food-grid" id="food-grid">${foodGridHtml(data)}</div>
         <div class="food-map-wrap" id="food-map-wrap"><div id="food-map-inner" style="height:100%"></div></div>`;
     fadeIn();
 
@@ -519,8 +558,13 @@ async function renderFood() {
         document.getElementById('food-map-wrap').style.display = 'block';
         document.getElementById('fv-grid').classList.remove('active');
         document.getElementById('fv-map').classList.add('active');
-        showFoodMap(data);
+        const filtered = activeFoodTag === 'all' ? foodAllData : foodAllData.filter(d => d.tags?.includes(activeFoodTag));
+        showFoodMap(filtered);
     };
+
+    document.querySelectorAll('.food-tag-pill').forEach(pill => {
+        pill.addEventListener('click', () => applyFoodTagFilter(pill.dataset.tag));
+    });
 
     document.querySelectorAll('.food-card').forEach(card => {
         const item = data.find(d => d.id === card.dataset.id);
