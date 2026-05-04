@@ -41,12 +41,6 @@
     const body = document.getElementById('entry-body');
     body.innerHTML = `<h1>${dateTitle}</h1>`;
 
-    const content = document.createElement('div');
-    content.className = 'entry-content';
-    const lines = (entry?.content || '').split('\n').map(l => l.trimEnd()).join('<br>\n');
-    content.innerHTML = `<p>${lines}</p>`;
-    body.appendChild(content);
-
     if (entry?.music_url) {
         const spotifyMatch = entry.music_url.match(/spotify\.com\/(track|album|playlist|episode)\/([A-Za-z0-9]+)/);
         if (spotifyMatch) {
@@ -56,6 +50,12 @@
             body.appendChild(musicEl);
         }
     }
+
+    const content = document.createElement('div');
+    content.className = 'entry-content';
+    const lines = (entry?.content || '').split('\n').map(l => l.trimEnd()).join('<br>\n');
+    content.innerHTML = `<p>${lines}</p>`;
+    body.appendChild(content);
 
     if (photos?.length) {
         const gallery = document.createElement('div');
