@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <title>consumption</title>
     <style>
         :root { --maxWidth: 67vw; }
@@ -128,6 +129,25 @@
         .food-card-meta { font-size: 0.72rem; color: #aaa; }
         .food-card-rating { font-size: 0.7rem; color: #aaa; }
 
+        /* food map */
+        .food-view-toggle { display: flex; gap: 1rem; margin-bottom: 1rem; }
+        .fv-btn { background: none; border: none; font-family: inherit; font-size: 0.75rem; font-weight: 700; color: #bbb; cursor: pointer; padding: 0 0 0.15rem; letter-spacing: 0.06em; text-transform: uppercase; border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s; }
+        .fv-btn.active { color: #222; border-bottom-color: #222; }
+        body.dark .fv-btn { color: #555; }
+        body.dark .fv-btn.active { color: #ddd; border-bottom-color: #ddd; }
+        .food-map-wrap { display: none; height: 460px; border-radius: 12px; overflow: hidden; }
+        .food-map-wrap .leaflet-container { height: 100%; border-radius: 12px; }
+        /* map link in food detail modal */
+        .md-map-link { display: none; font-size: 0.75rem; color: #888; text-decoration: none; margin-top: 0.6rem; }
+        .md-map-link:hover { color: #333; }
+        body.dark .md-map-link { color: #555; }
+        body.dark .md-map-link:hover { color: #ccc; }
+        /* map popup */
+        .food-popup { min-width: 120px; font-family: 'Montserrat', sans-serif; }
+        .food-popup-name { font-weight: 700; font-size: 0.83rem; color: #111; margin-bottom: 0.1rem; }
+        .food-popup-loc { font-size: 0.7rem; color: #888; }
+        .food-popup-view { display: block; margin-top: 0.45rem; font-size: 0.72rem; font-weight: 700; color: #111; text-decoration: underline; cursor: pointer; background: none; border: none; padding: 0; font-family: inherit; text-align: left; }
+
         @keyframes c-fade-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
         .c-fade { animation: c-fade-in 0.25s ease forwards; }
         #c-loading { color: #aaa; font-size: 0.85rem; margin-top: 2rem; }
@@ -154,10 +174,12 @@
             <div class="md-meta" id="md-meta"></div>
             <div class="md-rating" id="md-rating"></div>
             <div class="md-notes" id="md-notes"></div>
+            <a class="md-map-link" id="md-map-link" target="_blank" rel="noopener noreferrer">📍 open in maps</a>
         </div>
     </div>
 </div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/js/supabase.js"></script>
 <script src="/js/home.js"></script>
@@ -401,6 +423,7 @@ function openDetail(item) {
     box.classList.remove('food-detail');
     cover.style.display = '';
     cover.src = item.cover_url || '';
+    document.getElementById('md-map-link').style.display = 'none';
     document.getElementById('md-title').textContent = item.title;
     document.getElementById('md-meta').textContent = item.date
         ? new Date(item.date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
@@ -418,15 +441,21 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetail(
 function closeDetail() {
     document.getElementById('media-detail').classList.remove('open');
     document.getElementById('md-box').classList.remove('food-detail');
+    document.getElementById('md-map-link').style.display = 'none';
 }
 
 // food
+let foodLeafletMap = null;
+const geocodeCache = {};
+
 async function renderFood() {
+    if (foodLeafletMap) { foodLeafletMap.remove(); foodLeafletMap = null; }
     document.getElementById('c-content').innerHTML = '<div id="c-loading">loading...</div>';
     const { data, error } = await db.from('food').select('*').order('created_at', { ascending: false });
     if (error) { document.getElementById('c-content').innerHTML = `<div class="c-empty">error: ${error.message}</div>`; fadeIn(); return; }
     if (!data?.length) { document.getElementById('c-content').innerHTML = '<div class="c-empty">nothing here yet</div>'; fadeIn(); return; }
-    document.getElementById('c-content').innerHTML = `<div class="food-grid">${data.map(item => `
+
+    const gridHtml = data.map(item => `
         <div class="food-card" data-id="${item.id}">
             <div class="food-photo-wrap">
                 ${item.photo_url ? `<img src="${item.photo_url}" alt="${item.name}" loading="lazy">` : '<div class="food-no-photo">🍽</div>'}
@@ -434,12 +463,84 @@ async function renderFood() {
             <div class="food-card-name">${item.name}</div>
             <div class="food-card-meta">${[item.location, item.date ? item.date.slice(0, 7) : ''].filter(Boolean).join(' · ')}</div>
             ${item.rating ? `<div class="food-card-rating">${starsHtml(item.rating)}</div>` : ''}
-        </div>`).join('')}</div>`;
+        </div>`).join('');
+
+    document.getElementById('c-content').innerHTML = `
+        <div class="food-view-toggle">
+            <button class="fv-btn active" id="fv-grid">grid</button>
+            <button class="fv-btn" id="fv-map">map</button>
+        </div>
+        <div class="food-grid" id="food-grid">${gridHtml}</div>
+        <div class="food-map-wrap" id="food-map-wrap"><div id="food-map-inner" style="height:100%"></div></div>`;
     fadeIn();
+
+    document.getElementById('fv-grid').onclick = () => {
+        document.getElementById('food-grid').style.display = '';
+        document.getElementById('food-map-wrap').style.display = 'none';
+        document.getElementById('fv-grid').classList.add('active');
+        document.getElementById('fv-map').classList.remove('active');
+    };
+    document.getElementById('fv-map').onclick = () => {
+        document.getElementById('food-grid').style.display = 'none';
+        document.getElementById('food-map-wrap').style.display = 'block';
+        document.getElementById('fv-grid').classList.remove('active');
+        document.getElementById('fv-map').classList.add('active');
+        showFoodMap(data);
+    };
+
     document.querySelectorAll('.food-card').forEach(card => {
         const item = data.find(d => d.id === card.dataset.id);
         card.addEventListener('click', () => item && openFoodDetail(item));
     });
+}
+
+async function showFoodMap(data) {
+    if (foodLeafletMap) { foodLeafletMap.invalidateSize(); return; }
+
+    const mapEl = document.getElementById('food-map-inner');
+    foodLeafletMap = L.map(mapEl).setView([40.758, -73.985], 11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>', maxZoom: 19
+    }).addTo(foodLeafletMap);
+
+    // geocode items not yet cached
+    for (const item of data.filter(d => d.location && !(d.location in geocodeCache))) {
+        try {
+            const q = encodeURIComponent(`${item.name} ${item.location}`);
+            const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1`, {
+                headers: { 'User-Agent': 'michiscoding.github.io' }
+            });
+            const results = await res.json();
+            geocodeCache[item.location] = results[0]
+                ? [parseFloat(results[0].lat), parseFloat(results[0].lon)]
+                : null;
+        } catch { geocodeCache[item.location] = null; }
+        await new Promise(r => setTimeout(r, 220));
+    }
+
+    const bounds = [];
+    data.forEach(item => {
+        const coords = geocodeCache[item.location];
+        if (!coords) return;
+
+        const popupEl = document.createElement('div');
+        popupEl.className = 'food-popup';
+        popupEl.innerHTML = `
+            <div class="food-popup-name">${item.name}</div>
+            ${item.location ? `<div class="food-popup-loc">${item.location}</div>` : ''}
+            ${item.rating ? `<div style="margin-top:0.25rem;font-size:0.78rem">${starsHtml(item.rating)}</div>` : ''}`;
+        const viewBtn = document.createElement('button');
+        viewBtn.className = 'food-popup-view';
+        viewBtn.textContent = 'view →';
+        viewBtn.addEventListener('click', () => openFoodDetail(item));
+        popupEl.appendChild(viewBtn);
+
+        L.marker(coords).addTo(foodLeafletMap).bindPopup(popupEl);
+        bounds.push(coords);
+    });
+
+    if (bounds.length > 1) foodLeafletMap.fitBounds(bounds, { padding: [50, 50] });
+    else if (bounds.length === 1) foodLeafletMap.setView(bounds[0], 15);
 }
 
 function openFoodDetail(item) {
@@ -452,6 +553,12 @@ function openFoodDetail(item) {
     document.getElementById('md-meta').textContent = [item.location, item.date ? new Date(item.date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : ''].filter(Boolean).join(' · ');
     document.getElementById('md-rating').innerHTML = starsHtml(item.rating || 0);
     document.getElementById('md-notes').textContent = item.notes || '';
+    const mapLink = document.getElementById('md-map-link');
+    const mapsUrl = item.place_id
+        ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.name)}&query_place_id=${item.place_id}`
+        : `https://maps.google.com/?q=${encodeURIComponent([item.name, item.location].filter(Boolean).join(' '))}`;
+    mapLink.href = mapsUrl;
+    mapLink.style.display = 'block';
     document.getElementById('media-detail').classList.add('open');
 }
 
