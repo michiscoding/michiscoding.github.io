@@ -129,6 +129,26 @@
         .food-card-meta { font-size: 0.72rem; color: #aaa; }
         .food-card-rating { font-size: 0.7rem; color: #aaa; }
 
+        /* food detail tags */
+        .md-photo-strip { display: none; }
+        .md-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.5rem; }
+        .md-tag { background: #f0f0f0; border-radius: 999px; padding: 0.2rem 0.6rem; font-size: 0.7rem; font-weight: 600; color: #666; }
+        body.dark .md-tag { background: #2a2a2a; color: #999; }
+        .food-card-tags { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.25rem; }
+        .food-card-tag { background: #f0f0f0; border-radius: 999px; padding: 0.15rem 0.5rem; font-size: 0.63rem; color: #888; }
+        body.dark .food-card-tag { background: #222; color: #666; }
+
+        /* food photo lightbox */
+        #food-photo-lb { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 1100; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+        #food-photo-lb.open { opacity: 1; pointer-events: auto; }
+        .food-lb-img { max-width: 88vw; max-height: 82vh; object-fit: contain; border-radius: 8px; display: block; }
+        .food-lb-close { position: absolute; top: 1rem; right: 1.25rem; background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer; line-height: 1; padding: 0; opacity: 0.7; }
+        .food-lb-close:hover { opacity: 1; }
+        .food-lb-prev, .food-lb-next { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.12); border: none; color: #fff; font-size: 1.4rem; cursor: pointer; padding: 0.9rem 0.7rem; border-radius: 8px; line-height: 1; }
+        .food-lb-prev { left: 1rem; }
+        .food-lb-next { right: 1rem; }
+        .food-lb-prev:hover, .food-lb-next:hover { background: rgba(255,255,255,0.22); }
+
         /* food map */
         .food-view-toggle { display: flex; gap: 1rem; margin-bottom: 1rem; }
         .fv-btn { background: none; border: none; font-family: inherit; font-size: 0.75rem; font-weight: 700; color: #bbb; cursor: pointer; padding: 0 0 0.15rem; letter-spacing: 0.06em; text-transform: uppercase; border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s; }
@@ -172,11 +192,20 @@
         <div class="md-info">
             <div class="md-title" id="md-title"></div>
             <div class="md-meta" id="md-meta"></div>
+            <div class="md-tags" id="md-tags"></div>
+            <div class="md-photo-strip" id="md-photo-strip"></div>
             <div class="md-rating" id="md-rating"></div>
             <div class="md-notes" id="md-notes"></div>
             <a class="md-map-link" id="md-map-link" target="_blank" rel="noopener noreferrer">📍 open in maps</a>
         </div>
     </div>
+</div>
+
+<div id="food-photo-lb">
+    <button type="button" class="food-lb-close" id="food-lb-close">×</button>
+    <button type="button" class="food-lb-prev" id="food-lb-prev">&#8592;</button>
+    <img class="food-lb-img" id="food-lb-img" src="" alt="">
+    <button type="button" class="food-lb-next" id="food-lb-next">&#8594;</button>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -424,6 +453,8 @@ function openDetail(item) {
     cover.style.display = '';
     cover.src = item.cover_url || '';
     document.getElementById('md-map-link').style.display = 'none';
+    document.getElementById('md-tags').innerHTML = '';
+    document.getElementById('md-photo-strip').innerHTML = '';
     document.getElementById('md-title').textContent = item.title;
     document.getElementById('md-meta').textContent = item.date
         ? new Date(item.date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
@@ -442,6 +473,8 @@ function closeDetail() {
     document.getElementById('media-detail').classList.remove('open');
     document.getElementById('md-box').classList.remove('food-detail');
     document.getElementById('md-map-link').style.display = 'none';
+    document.getElementById('md-tags').innerHTML = '';
+    document.getElementById('md-photo-strip').innerHTML = '';
 }
 
 // food
@@ -463,6 +496,7 @@ async function renderFood() {
             <div class="food-card-name">${item.name}</div>
             <div class="food-card-meta">${[item.location, item.date ? item.date.slice(0, 7) : ''].filter(Boolean).join(' · ')}</div>
             ${item.rating ? `<div class="food-card-rating">${starsHtml(item.rating)}</div>` : ''}
+            ${item.tags?.length ? `<div class="food-card-tags">${item.tags.map(t => `<span class="food-card-tag">${t}</span>`).join('')}</div>` : ''}
         </div>`).join('');
 
     document.getElementById('c-content').innerHTML = `
@@ -543,14 +577,20 @@ async function showFoodMap(data) {
     else if (bounds.length === 1) foodLeafletMap.setView(bounds[0], 15);
 }
 
-function openFoodDetail(item) {
+async function openFoodDetail(item) {
     const cover = document.getElementById('md-cover');
     const box = document.getElementById('md-box');
     box.classList.add('food-detail');
+
+    const dateList = item.dates?.length ? item.dates : (item.date ? [item.date] : []);
+    const dateStr = dateList.map(d => new Date(d + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long' })).join(', ');
+
+    document.getElementById('md-title').textContent = item.name;
+    document.getElementById('md-meta').textContent = [item.location, dateStr].filter(Boolean).join(' · ');
+    document.getElementById('md-tags').innerHTML = (item.tags || []).map(t => `<span class="md-tag">${t}</span>`).join('');
+    document.getElementById('md-photo-strip').innerHTML = '';
     cover.style.display = item.photo_url ? '' : 'none';
     cover.src = item.photo_url || '';
-    document.getElementById('md-title').textContent = item.name;
-    document.getElementById('md-meta').textContent = [item.location, item.date ? new Date(item.date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : ''].filter(Boolean).join(' · ');
     document.getElementById('md-rating').innerHTML = starsHtml(item.rating || 0);
     document.getElementById('md-notes').textContent = item.notes || '';
     const mapLink = document.getElementById('md-map-link');
@@ -560,6 +600,17 @@ function openFoodDetail(item) {
     mapLink.href = mapsUrl;
     mapLink.style.display = 'block';
     document.getElementById('media-detail').classList.add('open');
+
+    const { data: photos } = await db.from('food_photos').select('storage_path').eq('food_id', item.id);
+    cover.onclick = null;
+    cover.style.cursor = '';
+    if (photos?.length) {
+        const base = SUPABASE_URL + '/storage/v1/object/public/media/';
+        const urls = photos.map(p => base + p.storage_path);
+        cover.style.cursor = 'pointer';
+        cover.title = `${urls.length} photo${urls.length > 1 ? 's' : ''} — click to view`;
+        cover.onclick = () => openFoodLb(urls, 0);
+    }
 }
 
 // tabs + fade
@@ -598,6 +649,28 @@ document.querySelectorAll('#c-tabs .c-tab').forEach(btn => {
     else if (startView === 'food') renderFood();
     else renderMedia(startView);
 })();
+
+// food photo lightbox
+let foodLbPhotos = [], foodLbIdx = 0;
+function openFoodLb(photos, idx) {
+    foodLbPhotos = photos; foodLbIdx = idx;
+    document.getElementById('food-lb-img').src = photos[idx];
+    const lb = document.getElementById('food-photo-lb');
+    lb.classList.add('open');
+    document.getElementById('food-lb-prev').style.display = photos.length > 1 ? '' : 'none';
+    document.getElementById('food-lb-next').style.display = photos.length > 1 ? '' : 'none';
+}
+function closeFoodLb() { document.getElementById('food-photo-lb').classList.remove('open'); }
+document.getElementById('food-lb-close').onclick = closeFoodLb;
+document.getElementById('food-photo-lb').addEventListener('click', e => { if (e.target === e.currentTarget) closeFoodLb(); });
+document.getElementById('food-lb-prev').onclick = () => { foodLbIdx = (foodLbIdx - 1 + foodLbPhotos.length) % foodLbPhotos.length; document.getElementById('food-lb-img').src = foodLbPhotos[foodLbIdx]; };
+document.getElementById('food-lb-next').onclick = () => { foodLbIdx = (foodLbIdx + 1) % foodLbPhotos.length; document.getElementById('food-lb-img').src = foodLbPhotos[foodLbIdx]; };
+document.addEventListener('keydown', e => {
+    if (!document.getElementById('food-photo-lb').classList.contains('open')) return;
+    if (e.key === 'Escape') closeFoodLb();
+    if (e.key === 'ArrowLeft') document.getElementById('food-lb-prev').click();
+    if (e.key === 'ArrowRight') document.getElementById('food-lb-next').click();
+});
 </script>
 </body>
 </html>
