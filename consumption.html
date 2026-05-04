@@ -103,6 +103,16 @@
         .md-close:hover { color: #333; }
         body.dark .md-close:hover { color: #eee; }
 
+        /* half-star display */
+        .star-full { color: #f5c518; }
+        .star-half { display: inline-block; position: relative; color: #ddd; }
+        .star-half::after { content: '★'; position: absolute; left: 0; top: 0; width: 50%; overflow: hidden; color: #f5c518; pointer-events: none; }
+        .star-empty { color: #ddd; }
+
+        /* food modal layout */
+        .md-box.food-detail { flex-direction: column; max-width: 420px; }
+        .md-box.food-detail .md-cover { width: 100%; aspect-ratio: 4/3; height: auto; }
+
         /* food */
         .food-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
         @media (max-width: 1024px) { .food-grid { grid-template-columns: repeat(2, 1fr); } }
@@ -347,7 +357,13 @@ async function renderSpotify() {
 // media
 function starsHtml(rating) {
     if (!rating) return '';
-    return '★'.repeat(rating) + '☆'.repeat(5 - rating);
+    let html = '';
+    for (let i = 1; i <= 5; i++) {
+        if (rating >= i) html += '<span class="star-full">★</span>';
+        else if (rating >= i - 0.5) html += '<span class="star-half">★</span>';
+        else html += '<span class="star-empty">☆</span>';
+    }
+    return html;
 }
 
 async function renderMedia(view) {
@@ -380,12 +396,16 @@ async function renderMedia(view) {
 }
 
 function openDetail(item) {
-    document.getElementById('md-cover').src = item.cover_url || '';
+    const cover = document.getElementById('md-cover');
+    const box = document.getElementById('md-box');
+    box.classList.remove('food-detail');
+    cover.style.display = '';
+    cover.src = item.cover_url || '';
     document.getElementById('md-title').textContent = item.title;
     document.getElementById('md-meta').textContent = item.date
         ? new Date(item.date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
         : '';
-    document.getElementById('md-rating').textContent = starsHtml(item.rating || 0);
+    document.getElementById('md-rating').innerHTML = starsHtml(item.rating || 0);
     document.getElementById('md-notes').textContent = item.notes || '';
     document.getElementById('media-detail').classList.add('open');
 }
@@ -395,7 +415,10 @@ document.getElementById('media-detail').addEventListener('click', e => {
 });
 document.getElementById('md-close').addEventListener('click', closeDetail);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetail(); });
-function closeDetail() { document.getElementById('media-detail').classList.remove('open'); }
+function closeDetail() {
+    document.getElementById('media-detail').classList.remove('open');
+    document.getElementById('md-box').classList.remove('food-detail');
+}
 
 // food
 async function renderFood() {
@@ -421,13 +444,13 @@ async function renderFood() {
 
 function openFoodDetail(item) {
     const cover = document.getElementById('md-cover');
-    cover.src = item.photo_url || '';
+    const box = document.getElementById('md-box');
+    box.classList.add('food-detail');
     cover.style.display = item.photo_url ? '' : 'none';
-    cover.style.aspectRatio = '4/3';
-    cover.style.width = '100%';
+    cover.src = item.photo_url || '';
     document.getElementById('md-title').textContent = item.name;
     document.getElementById('md-meta').textContent = [item.location, item.date ? new Date(item.date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : ''].filter(Boolean).join(' · ');
-    document.getElementById('md-rating').textContent = starsHtml(item.rating || 0);
+    document.getElementById('md-rating').innerHTML = starsHtml(item.rating || 0);
     document.getElementById('md-notes').textContent = item.notes || '';
     document.getElementById('media-detail').classList.add('open');
 }
