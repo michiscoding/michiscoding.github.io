@@ -188,6 +188,7 @@
         <button type="button" class="c-tab" data-view="books">books</button>
         <button type="button" class="c-tab" data-view="movies">movies</button>
         <button type="button" class="c-tab" data-view="food">food</button>
+        <button type="button" class="c-tab" data-view="venues">venues</button>
     </div>
     <div id="c-content"></div>
 </div>
@@ -675,6 +676,7 @@ document.querySelectorAll('#c-tabs .c-tab').forEach(btn => {
         history.replaceState(null, '', '#' + view);
         if (view === 'spotify') renderSpotify();
         else if (view === 'food') renderFood();
+        else if (view === 'venues') renderVenues();
         else renderMedia(view);
     };
 });
@@ -685,14 +687,183 @@ document.querySelectorAll('#c-tabs .c-tab').forEach(btn => {
     if (code) await exchangeCode(code);
 
     const hash = location.hash.slice(1);
-    const startView = ['spotify', 'books', 'movies', 'food'].includes(hash) ? hash : 'spotify';
+    const startView = ['spotify', 'books', 'movies', 'food', 'venues'].includes(hash) ? hash : 'spotify';
     document.querySelectorAll('#c-tabs .c-tab').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.view === startView);
     });
     if (startView === 'spotify') renderSpotify();
     else if (startView === 'food') renderFood();
+    else if (startView === 'venues') renderVenues();
     else renderMedia(startView);
 })();
+
+// venues
+let venueLeafletMap = null;
+let venueAllData = [], activeVenueTag = 'all';
+
+function venueGridHtml(data) {
+    return data.map(item => `
+        <div class="venue-card" data-id="${item.id}">
+            <div class="food-photo-wrap">
+                ${item.photo_url ? `<img src="${item.photo_url}" alt="${item.name}" loading="lazy">` : '<div class="food-no-photo">🎧</div>'}
+            </div>
+            <div class="food-card-name">${item.name}</div>
+            <div class="food-card-meta">${[item.location, item.date ? item.date.slice(0, 7) : ''].filter(Boolean).join(' · ')}</div>
+            ${item.rating ? `<div class="food-card-rating">${starsHtml(item.rating)}</div>` : ''}
+            ${item.tags?.length ? `<div class="food-card-tags">${item.tags.map(t => `<span class="food-card-tag">${t}</span>`).join('')}</div>` : ''}
+        </div>`).join('');
+}
+
+function renderVenueGrid(data) {
+    document.getElementById('venue-grid').innerHTML = venueGridHtml(data);
+    document.querySelectorAll('.venue-card').forEach(card => {
+        const item = venueAllData.find(d => d.id === card.dataset.id);
+        card.addEventListener('click', () => item && openVenueDetail(item));
+    });
+}
+
+function applyVenueTagFilter(tag) {
+    activeVenueTag = tag;
+    document.querySelectorAll('#venue-tag-filter .food-tag-pill').forEach(p => p.classList.toggle('active', p.dataset.tag === tag));
+    const filtered = tag === 'all' ? venueAllData : venueAllData.filter(d => d.tags?.includes(tag));
+    renderVenueGrid(filtered);
+    if (document.getElementById('venue-map-wrap')?.style.display === 'block') {
+        if (venueLeafletMap) { venueLeafletMap.remove(); venueLeafletMap = null; }
+        showVenueMap(filtered);
+    }
+}
+
+async function renderVenues() {
+    if (venueLeafletMap) { venueLeafletMap.remove(); venueLeafletMap = null; }
+    activeVenueTag = 'all';
+    document.getElementById('c-content').innerHTML = '<div id="c-loading">loading...</div>';
+    const { data, error } = await db.from('venues').select('*').order('created_at', { ascending: false });
+    if (error) { document.getElementById('c-content').innerHTML = `<div class="c-empty">error: ${error.message}</div>`; fadeIn(); return; }
+    if (!data?.length) { document.getElementById('c-content').innerHTML = '<div class="c-empty">nothing here yet</div>'; fadeIn(); return; }
+
+    venueAllData = data;
+    const allTags = [...new Set(data.flatMap(d => d.tags || []))].sort();
+    const tagFilterHtml = allTags.length ? `
+        <div class="food-tag-filter" id="venue-tag-filter">
+            <button class="food-tag-pill active" data-tag="all">all</button>
+            ${allTags.map(t => `<button class="food-tag-pill" data-tag="${t}">${t}</button>`).join('')}
+        </div>` : '';
+
+    document.getElementById('c-content').innerHTML = `
+        <div class="food-view-toggle">
+            <button class="fv-btn active" id="fv-venue-grid">grid</button>
+            <button class="fv-btn" id="fv-venue-map">map</button>
+        </div>
+        ${tagFilterHtml}
+        <div class="food-grid" id="venue-grid">${venueGridHtml(data)}</div>
+        <div class="food-map-wrap" id="venue-map-wrap"><div id="venue-map-inner" style="height:100%"></div></div>`;
+    fadeIn();
+
+    document.getElementById('fv-venue-grid').onclick = () => {
+        document.getElementById('venue-grid').style.display = '';
+        document.getElementById('venue-map-wrap').style.display = 'none';
+        document.getElementById('fv-venue-grid').classList.add('active');
+        document.getElementById('fv-venue-map').classList.remove('active');
+    };
+    document.getElementById('fv-venue-map').onclick = () => {
+        document.getElementById('venue-grid').style.display = 'none';
+        document.getElementById('venue-map-wrap').style.display = 'block';
+        document.getElementById('fv-venue-grid').classList.remove('active');
+        document.getElementById('fv-venue-map').classList.add('active');
+        const filtered = activeVenueTag === 'all' ? venueAllData : venueAllData.filter(d => d.tags?.includes(activeVenueTag));
+        showVenueMap(filtered);
+    };
+
+    document.querySelectorAll('#venue-tag-filter .food-tag-pill').forEach(pill => {
+        pill.addEventListener('click', () => applyVenueTagFilter(pill.dataset.tag));
+    });
+
+    document.querySelectorAll('.venue-card').forEach(card => {
+        const item = data.find(d => d.id === card.dataset.id);
+        card.addEventListener('click', () => item && openVenueDetail(item));
+    });
+}
+
+async function showVenueMap(data) {
+    if (venueLeafletMap) { venueLeafletMap.invalidateSize(); return; }
+    const mapEl = document.getElementById('venue-map-inner');
+    venueLeafletMap = L.map(mapEl).setView([40.758, -73.985], 11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>', maxZoom: 19
+    }).addTo(venueLeafletMap);
+
+    for (const item of data.filter(d => d.location && !(d.location in geocodeCache))) {
+        try {
+            const q = encodeURIComponent(`${item.name} ${item.location}`);
+            const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1`, {
+                headers: { 'User-Agent': 'michiscoding.github.io' }
+            });
+            const results = await res.json();
+            geocodeCache[item.location] = results[0]
+                ? [parseFloat(results[0].lat), parseFloat(results[0].lon)]
+                : null;
+        } catch { geocodeCache[item.location] = null; }
+        await new Promise(r => setTimeout(r, 220));
+    }
+
+    const bounds = [];
+    data.forEach(item => {
+        const coords = geocodeCache[item.location];
+        if (!coords) return;
+        const popupEl = document.createElement('div');
+        popupEl.className = 'food-popup';
+        popupEl.innerHTML = `
+            <div class="food-popup-name">${item.name}</div>
+            ${item.location ? `<div class="food-popup-loc">${item.location}</div>` : ''}
+            ${item.rating ? `<div style="margin-top:0.25rem;font-size:0.78rem">${starsHtml(item.rating)}</div>` : ''}`;
+        const viewBtn = document.createElement('button');
+        viewBtn.className = 'food-popup-view';
+        viewBtn.textContent = 'view →';
+        viewBtn.addEventListener('click', () => openVenueDetail(item));
+        popupEl.appendChild(viewBtn);
+        L.marker(coords).addTo(venueLeafletMap).bindPopup(popupEl);
+        bounds.push(coords);
+    });
+
+    if (bounds.length > 1) venueLeafletMap.fitBounds(bounds, { padding: [50, 50] });
+    else if (bounds.length === 1) venueLeafletMap.setView(bounds[0], 15);
+}
+
+async function openVenueDetail(item) {
+    const cover = document.getElementById('md-cover');
+    const box = document.getElementById('md-box');
+    box.classList.add('food-detail');
+
+    const dateList = item.dates?.length ? item.dates : (item.date ? [item.date] : []);
+    const dateStr = dateList.map(d => new Date(d + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long' })).join(', ');
+
+    document.getElementById('md-title').textContent = item.name;
+    document.getElementById('md-meta').textContent = [item.location, dateStr].filter(Boolean).join(' · ');
+    document.getElementById('md-tags').innerHTML = (item.tags || []).map(t => `<span class="md-tag">${t}</span>`).join('');
+    document.getElementById('md-photo-strip').innerHTML = '';
+    cover.style.display = item.photo_url ? '' : 'none';
+    cover.src = item.photo_url || '';
+    document.getElementById('md-rating').innerHTML = starsHtml(item.rating || 0);
+    document.getElementById('md-notes').textContent = item.notes || '';
+    const mapLink = document.getElementById('md-map-link');
+    const mapsUrl = item.place_id
+        ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.name)}&query_place_id=${item.place_id}`
+        : `https://maps.google.com/?q=${encodeURIComponent([item.name, item.location].filter(Boolean).join(' '))}`;
+    mapLink.href = mapsUrl;
+    mapLink.style.display = 'block';
+    document.getElementById('media-detail').classList.add('open');
+
+    const { data: photos } = await db.from('venue_photos').select('storage_path').eq('venue_id', item.id);
+    cover.onclick = null;
+    cover.style.cursor = '';
+    if (photos?.length) {
+        const base = SUPABASE_URL + '/storage/v1/object/public/media/';
+        const urls = photos.map(p => base + p.storage_path);
+        cover.style.cursor = 'pointer';
+        cover.title = `${urls.length} photo${urls.length > 1 ? 's' : ''} — click to view`;
+        cover.onclick = () => openFoodLb(urls, 0);
+    }
+}
 
 // food photo lightbox
 let foodLbPhotos = [], foodLbIdx = 0;
