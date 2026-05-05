@@ -530,6 +530,7 @@ async function renderFood() {
     if (error) { document.getElementById('c-content').innerHTML = `<div class="c-empty">error: ${error.message}</div>`; fadeIn(); return; }
     if (!data?.length) { document.getElementById('c-content').innerHTML = '<div class="c-empty">nothing here yet</div>'; fadeIn(); return; }
 
+    for (let i = data.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [data[i], data[j]] = [data[j], data[i]]; }
     foodAllData = data;
     const allTags = [...new Set(data.flatMap(d => d.tags || []))].sort();
     const tagFilterHtml = allTags.length ? `
@@ -741,6 +742,7 @@ async function renderVenues() {
     if (error) { document.getElementById('c-content').innerHTML = `<div class="c-empty">error: ${error.message}</div>`; fadeIn(); return; }
     if (!data?.length) { document.getElementById('c-content').innerHTML = '<div class="c-empty">nothing here yet</div>'; fadeIn(); return; }
 
+    for (let i = data.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [data[i], data[j]] = [data[j], data[i]]; }
     venueAllData = data;
     const allTags = [...new Set(data.flatMap(d => d.tags || []))].sort();
     const tagFilterHtml = allTags.length ? `
