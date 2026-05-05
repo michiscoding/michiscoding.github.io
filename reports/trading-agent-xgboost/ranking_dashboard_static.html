@@ -187,9 +187,9 @@ function render(d) {
 }
 
 const __DATA__ = {
-  "total_pnl": 1060.78,
-  "n_trades": 17,
-  "n_realized": 3,
+  "total_pnl": 2059.09,
+  "n_trades": 26,
+  "n_realized": 5,
   "holdings": [
     {
       "ticker": "AMZN",
@@ -199,18 +199,18 @@ const __DATA__ = {
       "score": 0.0593
     },
     {
-      "ticker": "INTC",
-      "qty": 104.4059,
-      "entry": 95.78,
-      "time": "2026-05-04 16:15",
-      "score": 0.0377
+      "ticker": "NKE",
+      "qty": 232.2341,
+      "entry": 43.06,
+      "time": "2026-05-05 16:16",
+      "score": 0.0286
     },
     {
-      "ticker": "NVDA",
-      "qty": 50.3669,
-      "entry": 198.543,
-      "time": "2026-05-04 16:15",
-      "score": 0.0292
+      "ticker": "LMT",
+      "qty": 19.6491,
+      "entry": 508.93,
+      "time": "2026-05-05 16:16",
+      "score": 0.0254
     }
   ],
   "realized": [
@@ -240,6 +240,24 @@ const __DATA__ = {
       "exit": 576.45,
       "qty": 18.7297,
       "pnl": 1086.14
+    },
+    {
+      "ticker": "INTC",
+      "buy_time": "2026-05-04 16:15",
+      "sell_time": "2026-05-05 16:16",
+      "entry": 95.78,
+      "exit": 108.15,
+      "qty": 97.3389,
+      "pnl": 1204.08
+    },
+    {
+      "ticker": "NVDA",
+      "buy_time": "2026-05-04 16:15",
+      "sell_time": "2026-05-05 16:16",
+      "entry": 198.54,
+      "exit": 196.5,
+      "qty": 100.7217,
+      "pnl": -205.77
     }
   ],
   "cum_pnl": [
@@ -310,15 +328,51 @@ const __DATA__ = {
     {
       "t": "2026-05-04 16:15",
       "v": 1060.78
+    },
+    {
+      "t": "2026-05-05 16:16",
+      "v": 1060.78
+    },
+    {
+      "t": "2026-05-05 16:16",
+      "v": 2264.86
+    },
+    {
+      "t": "2026-05-05 16:16",
+      "v": 2264.86
+    },
+    {
+      "t": "2026-05-05 16:16",
+      "v": 2264.86
+    },
+    {
+      "t": "2026-05-05 16:16",
+      "v": 2264.86
+    },
+    {
+      "t": "2026-05-05 16:16",
+      "v": 2059.09
+    },
+    {
+      "t": "2026-05-05 16:16",
+      "v": 2059.09
+    },
+    {
+      "t": "2026-05-05 16:16",
+      "v": 2059.09
+    },
+    {
+      "t": "2026-05-05 16:16",
+      "v": 2059.09
     }
   ],
   "rankings": [],
-  "last_run": "2026-05-04 16:15"
+  "last_run": "2026-05-05 16:16"
 };
 
 function refresh() {
   render(__DATA__);
-  document.getElementById('status').textContent = 'Snapshot — May 4, 2026 at 4:15 PM';
+  document.getElementById('status').textContent = 'Snapshot — May 5, 2026 at 4:16 PM';
 }
 
 refresh();
