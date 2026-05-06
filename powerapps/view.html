@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/home.css">
     <link rel="stylesheet" href="/css/entry.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
     <style>
         :root { --maxWidth: 67vw; }
         .pa-meta { font-size: .8rem; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 2rem; }
@@ -18,6 +19,26 @@
         body.dark .pa-section { background: #1e1e1e; color: #ddd; }
         body.dark .pa-section h2 { color: #eee; }
         body.dark .pa-meta { color: #666; }
+
+        /* technical notes */
+        .pa-notes-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.85rem; }
+        .pa-notes-header h2 { margin: 0; }
+        .pa-notes-nav { display: flex; align-items: center; gap: 0.5rem; }
+        .pa-note-nav-btn { background: none; border: 1px solid #ccc; border-radius: 5px; padding: 0.2rem 0.55rem; cursor: pointer; font-size: 0.85rem; color: #888; transition: all 0.12s; line-height: 1.4; }
+        .pa-note-nav-btn:hover:not(:disabled) { border-color: #888; color: #222; }
+        .pa-note-nav-btn:disabled { opacity: 0.25; cursor: default; }
+        body.dark .pa-note-nav-btn { border-color: #333; color: #555; }
+        body.dark .pa-note-nav-btn:hover:not(:disabled) { border-color: #666; color: #ccc; }
+        .pa-note-counter { font-size: 0.7rem; font-weight: 600; color: #aaa; letter-spacing: 0.05em; min-width: 2.5rem; text-align: center; }
+        .pa-note-code-wrap { border-radius: 8px; overflow: hidden; margin-bottom: 0.85rem; }
+        .pa-note-lang-label { background: #2d2d2d; color: #777; font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 0.32rem 0.9rem; }
+        .pa-note-code-wrap pre[class*="language-"] { margin: 0; border-radius: 0; font-size: 0.8rem; line-height: 1.6; }
+        .pa-note-code-wrap pre.no-lang { margin: 0; background: #2d2d2d; color: #ccc; padding: 1rem; font-size: 0.8rem; font-family: 'Courier New', monospace; white-space: pre; overflow-x: auto; }
+        .pa-note-attach-img { width: 100%; max-height: 380px; object-fit: contain; border-radius: 8px; display: block; margin-bottom: 0.85rem; background: #f0f0f0; }
+        body.dark .pa-note-attach-img { background: #1a1a1a; }
+        .pa-note-attach-link { font-size: 0.85rem; color: #888; display: block; margin-bottom: 0.85rem; }
+        .pa-note-desc { font-size: 0.9rem; line-height: 1.7; color: #555; margin: 0; }
+        body.dark .pa-note-desc { color: #999; }
 
         #pa-lb {
             position: fixed; inset: 0;
@@ -63,6 +84,18 @@
   <button type="button" class="back-btn" onclick="history.back()">←</button>
   <div class="entry-container" id="pa-body"></div>
 
+  <div id="pa-notes-section" class="pa-section" style="display:none">
+    <div class="pa-notes-header">
+      <h2>technical notes</h2>
+      <div class="pa-notes-nav" id="pa-notes-nav">
+        <button type="button" class="pa-note-nav-btn" id="pa-note-prev">←</button>
+        <span class="pa-note-counter" id="pa-note-counter"></span>
+        <button type="button" class="pa-note-nav-btn" id="pa-note-next">→</button>
+      </div>
+    </div>
+    <div id="pa-note-content"></div>
+  </div>
+
   <div id="pa-lb">
     <button type="button" id="pa-lb-close">×</button>
     <button type="button" class="pa-lb-arrow" id="pa-lb-prev">←</button>
@@ -77,6 +110,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/js/supabase.js"></script>
 <script src="/js/home.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/prism.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/autoloader/prism-autoloader.min.js"></script>
+<script>Prism.plugins.autoloader.languages_path = 'https://cdn.jsdelivr.net/npm/prismjs@1/components/';</script>
 <script>
 (async () => {
     const slug = new URLSearchParams(location.search).get('slug');
@@ -145,6 +181,75 @@
         next.addEventListener('click', () => nudge(1));
         slideshow.appendChild(prev);
         slideshow.appendChild(next);
+    }
+
+    // technical notes
+    const { data: notes } = await db.from('powerapps_notes').select('*').eq('record_slug', slug).order('sort_order', { ascending: true });
+    if (notes && notes.length > 0) {
+        const LANG_LABELS = { powerfx:'PowerFx', javascript:'JavaScript', typescript:'TypeScript', html:'HTML', css:'CSS', csharp:'C#', python:'Python', sql:'SQL', json:'JSON', m:'Power Query (M)' };
+        const LANG_PRISM  = { powerfx:'javascript', javascript:'javascript', typescript:'typescript', html:'markup', css:'css', csharp:'csharp', python:'python', sql:'sql', json:'json', m:'fsharp' };
+        const notesSection = document.getElementById('pa-notes-section');
+        const noteContent  = document.getElementById('pa-note-content');
+        const noteCounter  = document.getElementById('pa-note-counter');
+        const notePrev     = document.getElementById('pa-note-prev');
+        const noteNext     = document.getElementById('pa-note-next');
+        let noteIdx = 0;
+
+        if (notes.length === 1) document.getElementById('pa-notes-nav').style.display = 'none';
+
+        function showNote(idx) {
+            noteIdx = idx;
+            noteCounter.textContent = `${idx + 1} / ${notes.length}`;
+            notePrev.disabled = idx === 0;
+            noteNext.disabled = idx === notes.length - 1;
+            noteContent.innerHTML = '';
+            const note = notes[idx];
+
+            if (note.type === 'code') {
+                const langId = LANG_PRISM[note.language] || 'plaintext';
+                const wrap = document.createElement('div');
+                wrap.className = 'pa-note-code-wrap';
+                const lbl = document.createElement('div');
+                lbl.className = 'pa-note-lang-label';
+                lbl.textContent = LANG_LABELS[note.language] || note.language || 'code';
+                wrap.appendChild(lbl);
+                const pre = document.createElement('pre');
+                const code = document.createElement('code');
+                code.className = `language-${langId}`;
+                code.textContent = note.content || '';
+                pre.appendChild(code);
+                wrap.appendChild(pre);
+                noteContent.appendChild(wrap);
+                Prism.highlightElement(code);
+            } else if (note.file_path) {
+                const isImg = /\.(png|jpe?g|gif|webp|svg)$/i.test(note.file_path);
+                if (isImg) {
+                    const img = document.createElement('img');
+                    img.className = 'pa-note-attach-img';
+                    img.src = MEDIA_BASE + note.file_path;
+                    noteContent.appendChild(img);
+                } else {
+                    const link = document.createElement('a');
+                    link.href = MEDIA_BASE + note.file_path;
+                    link.target = '_blank';
+                    link.className = 'pa-note-attach-link';
+                    link.textContent = 'view attachment →';
+                    noteContent.appendChild(link);
+                }
+            }
+
+            if (note.description) {
+                const desc = document.createElement('p');
+                desc.className = 'pa-note-desc';
+                desc.innerHTML = note.description.replace(/\n/g, '<br>');
+                noteContent.appendChild(desc);
+            }
+        }
+
+        notePrev.addEventListener('click', () => { if (noteIdx > 0) showNote(noteIdx - 1); });
+        noteNext.addEventListener('click', () => { if (noteIdx < notes.length - 1) showNote(noteIdx + 1); });
+        notesSection.style.display = '';
+        showNote(0);
     }
 
     // lightbox
