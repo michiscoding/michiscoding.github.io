@@ -398,20 +398,25 @@ li{
     position: relative;
 }
 
+.nav-menu > ul {
+    padding: 0;
+    margin: 0;
+}
+
 .nav-sub {
     position: absolute;
-    right: 100%;
+    right: 0;
     top: 50%;
-    padding-right: 1.25rem;
+    padding-right: 0;
     margin: 0;
     display: flex;
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-end;
     gap: 0.15rem;
     white-space: nowrap;
     opacity: 0;
     pointer-events: none;
-    transform: translateY(-50%) translateX(6px);
+    transform: translateY(-50%) translateX(calc(100% + 1.25rem)) translateX(6px);
     transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
@@ -419,7 +424,7 @@ li{
     .nav-menu li:has(.nav-sub):hover .nav-sub {
         opacity: 1;
         pointer-events: auto;
-        transform: translateY(-50%) translateX(0);
+        transform: translateY(-50%) translateX(calc(100% + 1.25rem));
     }
 }
 
@@ -428,6 +433,7 @@ li{
     font-size: 0.9em;
     padding: 0.1rem 0;
     opacity: 0.6;
+    text-align: right;
 }
 
 a{
