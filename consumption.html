@@ -112,7 +112,14 @@
 
         /* food modal layout */
         .md-box.food-detail { flex-direction: column; max-width: 420px; }
-        .md-box.food-detail .md-cover { width: 100%; aspect-ratio: 4/3; height: auto; }
+        .md-carousel { position: relative; width: 100%; margin-bottom: 0.25rem; }
+        .md-car-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 8px; display: block; cursor: pointer; }
+        .md-car-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.35); border: none; color: #fff; font-size: 1.1rem; cursor: pointer; padding: 0.6rem 0.5rem; border-radius: 6px; line-height: 1; z-index: 2; }
+        .md-car-prev { left: 0.4rem; }
+        .md-car-next { right: 0.4rem; }
+        .md-car-btn:hover { background: rgba(0,0,0,0.55); }
+        .md-car-count { position: absolute; bottom: 0.5rem; right: 0.5rem; background: rgba(0,0,0,0.5); color: #fff; font-size: 0.65rem; font-weight: 600; border-radius: 999px; padding: 0.15rem 0.45rem; pointer-events: none; }
+        .md-carousel { display: none; }
 
         /* food */
         .food-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
@@ -195,8 +202,14 @@
 
 <div id="media-detail">
     <div class="md-box" id="md-box">
-        <button class="md-close" id="md-close">×</button>
+        <button type="button" class="md-close" id="md-close">×</button>
         <img class="md-cover" id="md-cover" src="" alt="">
+        <div class="md-carousel" id="md-carousel">
+            <img class="md-car-img" id="md-car-img" src="" alt="">
+            <button type="button" class="md-car-btn md-car-prev" id="md-car-prev">&#8592;</button>
+            <button type="button" class="md-car-btn md-car-next" id="md-car-next">&#8594;</button>
+            <span class="md-car-count" id="md-car-count"></span>
+        </div>
         <div class="md-info">
             <div class="md-title" id="md-title"></div>
             <div class="md-meta" id="md-meta"></div>
@@ -625,6 +638,8 @@ async function showFoodMap(data) {
 
 async function openFoodDetail(item) {
     const cover = document.getElementById('md-cover');
+    const carousel = document.getElementById('md-carousel');
+    const carImg = document.getElementById('md-car-img');
     const box = document.getElementById('md-box');
     box.classList.add('food-detail');
 
@@ -635,8 +650,8 @@ async function openFoodDetail(item) {
     document.getElementById('md-meta').textContent = [item.location, dateStr].filter(Boolean).join(' · ');
     document.getElementById('md-tags').innerHTML = (item.tags || []).map(t => `<span class="md-tag">${t}</span>`).join('');
     document.getElementById('md-photo-strip').innerHTML = '';
-    cover.style.display = item.photo_url ? '' : 'none';
-    cover.src = item.photo_url || '';
+    cover.style.display = 'none';
+    carousel.style.display = 'none';
     document.getElementById('md-rating').innerHTML = starsHtml(item.rating || 0);
     document.getElementById('md-notes').textContent = item.notes || '';
     const mapLink = document.getElementById('md-map-link');
@@ -648,14 +663,26 @@ async function openFoodDetail(item) {
     document.getElementById('media-detail').classList.add('open');
 
     const { data: photos } = await db.from('food_photos').select('storage_path').eq('food_id', item.id);
-    cover.onclick = null;
-    cover.style.cursor = '';
     if (photos?.length) {
         const base = SUPABASE_URL + '/storage/v1/object/public/media/';
         const urls = photos.map(p => base + p.storage_path);
-        cover.style.cursor = 'pointer';
-        cover.title = `${urls.length} photo${urls.length > 1 ? 's' : ''} — click to view`;
-        cover.onclick = () => openFoodLb(urls, 0);
+        let carIdx = 0;
+        const prevBtn = document.getElementById('md-car-prev');
+        const nextBtn = document.getElementById('md-car-next');
+        const countEl = document.getElementById('md-car-count');
+        const updateCarousel = (idx) => {
+            carIdx = idx;
+            carImg.src = urls[carIdx];
+            prevBtn.style.display = urls.length > 1 ? '' : 'none';
+            nextBtn.style.display = urls.length > 1 ? '' : 'none';
+            countEl.style.display = urls.length > 1 ? '' : 'none';
+            if (urls.length > 1) countEl.textContent = `${carIdx + 1} / ${urls.length}`;
+        };
+        prevBtn.onclick = (e) => { e.stopPropagation(); updateCarousel((carIdx - 1 + urls.length) % urls.length); };
+        nextBtn.onclick = (e) => { e.stopPropagation(); updateCarousel((carIdx + 1) % urls.length); };
+        carImg.onclick = () => openFoodLb(urls, carIdx);
+        carousel.style.display = '';
+        updateCarousel(0);
     }
 }
 
