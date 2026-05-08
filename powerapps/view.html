@@ -40,6 +40,7 @@
         .pa-note-desc { font-size: 0.9rem; line-height: 1.7; color: #555; margin: 0; }
         body.dark .pa-note-desc { color: #999; }
         .pa-notes-hidden { display: none; }
+        #pa-notes-section { max-width: var(--maxWidth); width: 90vw; margin: 0 auto 1.5rem; }
 
         #pa-lb {
             position: fixed; inset: 0;
@@ -83,18 +84,18 @@
 </head>
 <body>
   <button type="button" class="back-btn" onclick="history.back()">←</button>
-  <div class="entry-container" id="pa-body">
-    <div id="pa-notes-section" class="pa-section pa-notes-hidden">
-      <div class="pa-notes-header">
-        <h2>technical notes</h2>
-        <div class="pa-notes-nav" id="pa-notes-nav">
-          <button type="button" class="pa-note-nav-btn" id="pa-note-prev">←</button>
-          <span class="pa-note-counter" id="pa-note-counter"></span>
-          <button type="button" class="pa-note-nav-btn" id="pa-note-next">→</button>
-        </div>
+  <div class="entry-container" id="pa-body"></div>
+
+  <div id="pa-notes-section" class="pa-section pa-notes-hidden">
+    <div class="pa-notes-header">
+      <h2>technical notes</h2>
+      <div class="pa-notes-nav" id="pa-notes-nav">
+        <button type="button" class="pa-note-nav-btn" id="pa-note-prev">←</button>
+        <span class="pa-note-counter" id="pa-note-counter"></span>
+        <button type="button" class="pa-note-nav-btn" id="pa-note-next">→</button>
       </div>
-      <div id="pa-note-content"></div>
     </div>
+    <div id="pa-note-content"></div>
   </div>
 
   <div id="pa-lb">
