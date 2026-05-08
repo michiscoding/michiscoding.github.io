@@ -39,6 +39,7 @@
         .pa-note-attach-link { font-size: 0.85rem; color: #888; display: block; margin-bottom: 0.85rem; }
         .pa-note-desc { font-size: 0.9rem; line-height: 1.7; color: #555; margin: 0; }
         body.dark .pa-note-desc { color: #999; }
+        .pa-notes-hidden { display: none; }
 
         #pa-lb {
             position: fixed; inset: 0;
@@ -82,18 +83,18 @@
 </head>
 <body>
   <button type="button" class="back-btn" onclick="history.back()">←</button>
-  <div class="entry-container" id="pa-body"></div>
-
-  <div id="pa-notes-section" class="pa-section" style="display:none">
-    <div class="pa-notes-header">
-      <h2>technical notes</h2>
-      <div class="pa-notes-nav" id="pa-notes-nav">
-        <button type="button" class="pa-note-nav-btn" id="pa-note-prev">←</button>
-        <span class="pa-note-counter" id="pa-note-counter"></span>
-        <button type="button" class="pa-note-nav-btn" id="pa-note-next">→</button>
+  <div class="entry-container" id="pa-body">
+    <div id="pa-notes-section" class="pa-section pa-notes-hidden">
+      <div class="pa-notes-header">
+        <h2>technical notes</h2>
+        <div class="pa-notes-nav" id="pa-notes-nav">
+          <button type="button" class="pa-note-nav-btn" id="pa-note-prev">←</button>
+          <span class="pa-note-counter" id="pa-note-counter"></span>
+          <button type="button" class="pa-note-nav-btn" id="pa-note-next">→</button>
+        </div>
       </div>
+      <div id="pa-note-content"></div>
     </div>
-    <div id="pa-note-content"></div>
   </div>
 
   <div id="pa-lb">
@@ -248,7 +249,7 @@
 
         notePrev.addEventListener('click', () => { if (noteIdx > 0) showNote(noteIdx - 1); });
         noteNext.addEventListener('click', () => { if (noteIdx < notes.length - 1) showNote(noteIdx + 1); });
-        notesSection.style.display = '';
+        notesSection.style.display = 'block';
         showNote(0);
     }
 
