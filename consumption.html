@@ -681,7 +681,7 @@ async function openFoodDetail(item) {
         prevBtn.onclick = (e) => { e.stopPropagation(); updateCarousel((carIdx - 1 + urls.length) % urls.length); };
         nextBtn.onclick = (e) => { e.stopPropagation(); updateCarousel((carIdx + 1) % urls.length); };
         carImg.onclick = () => openFoodLb(urls, carIdx);
-        carousel.style.display = '';
+        carousel.style.display = 'block';
         updateCarousel(0);
     }
 }
