@@ -471,6 +471,9 @@ function openDetail(item) {
     const cover = document.getElementById('md-cover');
     const box = document.getElementById('md-box');
     box.classList.remove('food-detail');
+    const carousel = document.getElementById('md-carousel');
+    carousel.style.display = '';
+    document.getElementById('md-car-img').src = '';
     cover.style.display = '';
     cover.src = item.cover_url || '';
     document.getElementById('md-map-link').style.display = 'none';
