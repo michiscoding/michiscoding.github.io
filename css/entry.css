@@ -104,6 +104,27 @@
 .gallery-arrow:hover { color: #333; }
 .gallery-arrow.hidden { opacity: 0; pointer-events: none; }
 
+.entry-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e8e8e8;
+}
+body.dark .entry-nav { border-top-color: #2a2a2a; }
+.entry-nav-link {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #aaa;
+  text-decoration: none;
+  letter-spacing: 0.03em;
+  transition: color 0.15s;
+}
+.entry-nav-link:hover { color: #111; }
+body.dark .entry-nav-link:hover { color: #eee; }
+.entry-nav-next { margin-left: auto; }
+
 @media (max-width: 768px) {
   .entry-container {
     max-width: 92vw;

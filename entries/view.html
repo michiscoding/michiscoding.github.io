@@ -33,9 +33,11 @@
     document.title = dateTitle;
 
     const MEDIA_BASE = SUPABASE_URL + '/storage/v1/object/public/media/';
-    const [{ data: entry }, { data: photos }] = await Promise.all([
+    const [{ data: entry }, { data: photos }, { data: prevRows }, { data: nextRows }] = await Promise.all([
         db.from('entries').select('content, music_url').eq('date', date).single(),
-        db.from('entry_photos').select('storage_path').eq('entry_date', date)
+        db.from('entry_photos').select('storage_path').eq('entry_date', date),
+        db.from('entries').select('date').lt('date', date).order('date', { ascending: false }).limit(1),
+        db.from('entries').select('date').gt('date', date).order('date', { ascending: true }).limit(1)
     ]);
 
     const body = document.getElementById('entry-body');
@@ -131,6 +133,23 @@
             if (e.key === 'ArrowRight') { lbIndex = (lbIndex + 1) % mediaItems.length; lb.innerHTML = lbHtml(mediaItems[lbIndex]); }
             if (e.key === 'ArrowLeft') { lbIndex = (lbIndex - 1 + mediaItems.length) % mediaItems.length; lb.innerHTML = lbHtml(mediaItems[lbIndex]); }
         });
+    }
+    const prevDate = prevRows?.[0]?.date;
+    const nextDate = nextRows?.[0]?.date;
+    if (prevDate || nextDate) {
+        const nav = document.createElement('div');
+        nav.className = 'entry-nav';
+        if (prevDate) {
+            const [, pm, pd] = prevDate.split('-');
+            nav.innerHTML += `<a href="/entries/view.html?date=${prevDate}" class="entry-nav-link entry-nav-prev">← ${months[parseInt(pm)-1]} ${parseInt(pd)}</a>`;
+        } else {
+            nav.innerHTML += `<span></span>`;
+        }
+        if (nextDate) {
+            const [, nm, nd] = nextDate.split('-');
+            nav.innerHTML += `<a href="/entries/view.html?date=${nextDate}" class="entry-nav-link entry-nav-next">${months[parseInt(nm)-1]} ${parseInt(nd)} →</a>`;
+        }
+        body.appendChild(nav);
     }
 })();
 </script>
