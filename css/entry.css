@@ -57,6 +57,18 @@
     margin-top: 1.5rem;
 }
 
+.entry-photo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.35rem;
+    margin-top: 1.5rem;
+}
+
+.entry-photo-grid .entry-gallery-item {
+    aspect-ratio: 1;
+    overflow: hidden;
+}
+
 .gallery-track {
     display: flex;
     gap: 0.5rem;

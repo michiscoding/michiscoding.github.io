@@ -61,7 +61,8 @@
 
     if (photos?.length) {
         const gallery = document.createElement('div');
-        gallery.className = 'entry-gallery';
+        const useGrid = photos.length > 3;
+        gallery.className = useGrid ? 'entry-photo-grid' : 'entry-gallery';
         const thumbs = photos.map(p => {
             const src = MEDIA_BASE + p.storage_path;
             const isVideo = /\.(mp4|webm|mov)$/i.test(p.storage_path);
@@ -69,30 +70,31 @@
                 ? `<video muted autoplay loop playsinline><source src="${src}" type="video/mp4"></video>`
                 : `<img src="${src}" loading="lazy">`}</div>`;
         }).join('');
-        gallery.innerHTML = `
-            <button class="gallery-arrow gallery-prev" aria-label="previous">&#8592;</button>
-            <div class="gallery-track">${thumbs}</div>
-            <button class="gallery-arrow gallery-next" aria-label="next">&#8594;</button>
-        `;
-        body.appendChild(gallery);
 
-        const track = gallery.querySelector('.gallery-track');
-        const prevBtn = gallery.querySelector('.gallery-prev');
-        const nextBtn = gallery.querySelector('.gallery-next');
-        const perPage = 3;
-        const totalPages = Math.ceil(photos.length / perPage);
-        let page = 0;
-
-        function setPage(p) {
-            page = Math.max(0, Math.min(p, totalPages - 1));
-            track.scrollLeft = page * track.clientWidth;
-            prevBtn.classList.toggle('hidden', page === 0);
-            nextBtn.classList.toggle('hidden', page >= totalPages - 1);
+        if (useGrid) {
+            gallery.innerHTML = thumbs;
+        } else {
+            gallery.innerHTML = `
+                <button class="gallery-arrow gallery-prev" aria-label="previous">&#8592;</button>
+                <div class="gallery-track">${thumbs}</div>
+                <button class="gallery-arrow gallery-next" aria-label="next">&#8594;</button>
+            `;
+            const track = gallery.querySelector('.gallery-track');
+            const prevBtn = gallery.querySelector('.gallery-prev');
+            const nextBtn = gallery.querySelector('.gallery-next');
+            const perPage = 3;
+            const totalPages = Math.ceil(photos.length / perPage);
+            let page = 0;
+            function setPage(p) {
+                page = Math.max(0, Math.min(p, totalPages - 1));
+                track.scrollLeft = page * track.clientWidth;
+                prevBtn.classList.toggle('hidden', page === 0);
+                nextBtn.classList.toggle('hidden', page >= totalPages - 1);
+            }
+            prevBtn.addEventListener('click', () => setPage(page - 1));
+            nextBtn.addEventListener('click', () => setPage(page + 1));
+            setPage(0);
         }
-
-        prevBtn.addEventListener('click', () => setPage(page - 1));
-        nextBtn.addEventListener('click', () => setPage(page + 1));
-        setPage(0);
 
         const lb = document.createElement('div');
         lb.id = 'media-lb';
