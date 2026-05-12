@@ -117,7 +117,7 @@
 
     const lines = (data.body || '').split('\n').map(l => l.trimEnd()).join('<br>\n');
     const parsed = lines.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) =>
-        `<a class="overlay-link" data-url="${url}">${text}</a>`
+        `<a href="${url}" target="_blank" rel="noopener" class="overlay-link">${text}</a>`
     );
 
     const attachmentSection = data.attachment_url ? `
@@ -132,24 +132,13 @@
         ${attachmentSection}
     `;
 
-    // overlay for inline [text](url) links
     const overlay = document.getElementById('report-overlay');
     const frame = document.getElementById('report-frame');
-
-    function openOverlay(url) {
-        const theme = document.body.classList.contains('dark') ? 'dark' : 'light';
-        frame.src = url + (url.includes('?') ? '&' : '?') + 'theme=' + theme;
-        overlay.classList.add('open');
-    }
 
     function closeOverlay() {
         overlay.classList.remove('open');
         setTimeout(() => { frame.src = 'about:blank'; }, 300);
     }
-
-    body.querySelectorAll('.overlay-link').forEach(a => {
-        a.addEventListener('click', e => { e.preventDefault(); openOverlay(a.dataset.url); });
-    });
 
     document.getElementById('back-btn').addEventListener('click', () => {
         if (document.referrer) location.href = document.referrer;
