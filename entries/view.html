@@ -11,6 +11,10 @@
     <style>
         :root { --maxWidth: 67vw; }
         .entry-music { margin-top: 1.5rem; }
+        .training-link { display: inline-block; font-size: 0.75rem; color: #bbb; text-decoration: none; margin-top: 0.5rem; letter-spacing: 0.02em; }
+        .training-link:hover { color: #666; }
+        body.dark .training-link { color: #444; }
+        body.dark .training-link:hover { color: #888; }
     </style>
     <title></title>
 </head>
@@ -33,11 +37,12 @@
     document.title = dateTitle;
 
     const MEDIA_BASE = SUPABASE_URL + '/storage/v1/object/public/media/';
-    const [{ data: entry }, { data: photos }, { data: prevRows }, { data: nextRows }] = await Promise.all([
+    const [{ data: entry }, { data: photos }, { data: prevRows }, { data: nextRows }, { data: jjEntry }] = await Promise.all([
         db.from('entries').select('content, music_url').eq('date', date).single(),
         db.from('entry_photos').select('storage_path').eq('entry_date', date),
         db.from('entries').select('date').lt('date', date).order('date', { ascending: false }).limit(1),
-        db.from('entries').select('date').gt('date', date).order('date', { ascending: true }).limit(1)
+        db.from('entries').select('date').gt('date', date).order('date', { ascending: true }).limit(1),
+        db.from('jiu_jitsu').select('date').eq('date', date).maybeSingle()
     ]);
 
     const body = document.getElementById('entry-body');
@@ -51,6 +56,14 @@
             musicEl.innerHTML = `<iframe style="border-radius:12px" src="https://open.spotify.com/embed/${spotifyMatch[1]}/${spotifyMatch[2]}?utm_source=generator" width="100%" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`;
             body.appendChild(musicEl);
         }
+    }
+
+    if (jjEntry) {
+        const tlink = document.createElement('a');
+        tlink.href = `/jiu-jitsu/view.html?date=${date}`;
+        tlink.className = 'training-link';
+        tlink.textContent = '→ training for this day';
+        body.appendChild(tlink);
     }
 
     const content = document.createElement('div');

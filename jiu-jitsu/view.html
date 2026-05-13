@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="/css/blog.css">
+    <link rel="stylesheet" href="/css/entry.css">
+    <style>
+        :root { --maxWidth: 67vw; }
+        .jj-tag-section { margin-top: 1.25rem; }
+        .jj-tag-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #ccc; margin-bottom: 0.35rem; }
+        body.dark .jj-tag-label { color: #444; }
+        .jj-tag { display: inline-block; font-size: 0.72rem; font-weight: 600; color: #777; background: #f0f0f0; border-radius: 4px; padding: 0.18rem 0.5rem; margin: 0.15rem 0.15rem 0.15rem 0; letter-spacing: 0.02em; }
+        body.dark .jj-tag { background: #252525; color: #666; }
+        .thoughts-link { display: inline-block; font-size: 0.75rem; color: #bbb; text-decoration: none; margin-top: 0.6rem; letter-spacing: 0.02em; }
+        .thoughts-link:hover { color: #666; }
+        body.dark .thoughts-link { color: #444; }
+        body.dark .thoughts-link:hover { color: #888; }
+    </style>
+    <title></title>
+</head>
+<body>
+  <button type="button" class="back-btn" onclick="history.back()">←</button>
+  <div class="entry-container" id="jj-body"></div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/js/supabase.js"></script>
+<script src="/js/home.js"></script>
+<script>
+(async () => {
+    const date = new URLSearchParams(location.search).get('date');
+    if (!date) return;
+
+    const months = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+    const [yyyy, mm, dd] = date.split('-');
+    const dateTitle = `${months[parseInt(mm)-1]} ${parseInt(dd)} ${yyyy}`;
+    document.title = dateTitle;
+
+    const [{ data: entry }, { data: prevRows }, { data: nextRows }, { data: thoughtsEntry }] = await Promise.all([
+        db.from('jiu_jitsu').select('content, techniques, partners').eq('date', date).single(),
+        db.from('jiu_jitsu').select('date').lt('date', date).order('date', { ascending: false }).limit(1),
+        db.from('jiu_jitsu').select('date').gt('date', date).order('date', { ascending: true }).limit(1),
+        db.from('entries').select('date').eq('date', date).maybeSingle()
+    ]);
+
+    const body = document.getElementById('jj-body');
+    body.innerHTML = `<h1>${dateTitle}</h1>`;
+
+    if (thoughtsEntry) {
+        const tlink = document.createElement('a');
+        tlink.href = `/entries/view.html?date=${date}`;
+        tlink.className = 'thoughts-link';
+        tlink.textContent = '→ thoughts for this day';
+        body.appendChild(tlink);
+    }
+
+    const content = document.createElement('div');
+    content.className = 'entry-content';
+    const lines = (entry?.content || '').split('\n').map(l => l.trimEnd()).join('<br>\n');
+    content.innerHTML = `<p>${lines}</p>`;
+    body.appendChild(content);
+
+    if (entry?.techniques?.length) {
+        const sec = document.createElement('div');
+        sec.className = 'jj-tag-section';
+        sec.innerHTML = `<div class="jj-tag-label">techniques</div>` +
+            entry.techniques.map(t => `<span class="jj-tag">${t}</span>`).join('');
+        body.appendChild(sec);
+    }
+
+    if (entry?.partners?.length) {
+        const sec = document.createElement('div');
+        sec.className = 'jj-tag-section';
+        sec.innerHTML = `<div class="jj-tag-label">partners</div>` +
+            entry.partners.map(p => `<span class="jj-tag">${p}</span>`).join('');
+        body.appendChild(sec);
+    }
+
+    const prevDate = prevRows?.[0]?.date;
+    const nextDate = nextRows?.[0]?.date;
+    if (prevDate || nextDate) {
+        const nav = document.createElement('div');
+        nav.className = 'entry-nav';
+        if (prevDate) {
+            const [, pm, pd] = prevDate.split('-');
+            nav.innerHTML += `<a href="/jiu-jitsu/view.html?date=${prevDate}" class="entry-nav-link entry-nav-prev">← ${months[parseInt(pm)-1]} ${parseInt(pd)}</a>`;
+        } else {
+            nav.innerHTML += `<span></span>`;
+        }
+        if (nextDate) {
+            const [, nm, nd] = nextDate.split('-');
+            nav.innerHTML += `<a href="/jiu-jitsu/view.html?date=${nextDate}" class="entry-nav-link entry-nav-next">${months[parseInt(nm)-1]} ${parseInt(nd)} →</a>`;
+        }
+        body.appendChild(nav);
+    }
+})();
+</script>
+</html>

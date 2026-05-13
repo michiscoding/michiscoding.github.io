@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/blog.css">
+    <title>training</title>
+    <style>
+        .month-group { margin-bottom: 0.5rem; }
+        .month-block {
+            cursor: pointer;
+            -webkit-user-select: none; user-select: none;
+            flex-direction: column; align-items: flex-start; gap: 0.1rem;
+            min-height: unset; padding: 1.4rem 1rem;
+        }
+        .month-arrow { display: inline-block; font-size: 0.65rem; transition: transform 0.2s ease; color: inherit; }
+        .month-block.open .month-arrow { transform: rotate(90deg); }
+        .month-entries { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.25s ease; }
+        .month-entries.open { grid-template-rows: 1fr; }
+        .month-entries-inner { overflow: hidden; padding-left: 1rem; }
+        .entry-row { display: flex; align-items: baseline; gap: 0.75rem; padding: 0.3rem 0; border-bottom: 1px solid #f0f0f0; }
+        .entry-row:last-child { border-bottom: none; }
+        .entry-row .blog-link { font-size: 0.85rem; }
+        .entry-row .blog-details-2 { font-size: 0.75rem; }
+        .month-block .blog-details-2 { font-size: 0.7rem; font-weight: 400; color: #aaa; }
+        body.dark .entry-row { border-bottom-color: #2a2a2a; }
+        .year-divider { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #ccc; padding: 1rem 0 0.25rem; }
+        body.dark .year-divider { color: #444; }
+    </style>
+</head>
+<body>
+<div class="blog-container">
+  <h1>training log</h1>
+  <div id="entries-list"></div>
+</div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/js/supabase.js"></script>
+<script src="/js/home.js"></script>
+<script>
+const months = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+
+async function loadEntries() {
+    const { data } = await db.from('jiu_jitsu').select('date, techniques').order('date', { ascending: false });
+    const container = document.getElementById('entries-list');
+
+    const groups = new Map();
+    for (const row of (data || [])) {
+        const [yyyy, mm] = row.date.split('-');
+        const key = `${yyyy}-${mm}`;
+        if (!groups.has(key)) groups.set(key, { year: yyyy, month: mm, entries: [] });
+        groups.get(key).entries.push(row);
+    }
+
+    let currentYear = null;
+    for (const group of groups.values()) {
+        if (group.year !== currentYear) {
+            currentYear = group.year;
+            const divider = document.createElement('div');
+            divider.className = 'year-divider';
+            divider.textContent = group.year;
+            container.appendChild(divider);
+        }
+        const monthName = months[parseInt(group.month) - 1];
+        const groupEl = document.createElement('div');
+        groupEl.className = 'month-group';
+        const block = document.createElement('div');
+        block.className = 'blog-record month-block';
+        const count = group.entries.length;
+        block.innerHTML = `
+            <div class="blog-details-1">
+                <span class="blog-link"><span class="month-arrow">›</span> ${monthName}</span>
+            </div>
+            <div class="blog-details-2">${count} ${count === 1 ? 'session' : 'sessions'}</div>
+        `;
+        const entriesEl = document.createElement('div');
+        entriesEl.className = 'month-entries';
+        const inner = document.createElement('div');
+        inner.className = 'month-entries-inner';
+        for (const row of group.entries) {
+            const [yyyy, mm, dd] = row.date.split('-');
+            const dateLabel = `${mm}${dd}${yyyy.slice(2)}`;
+            const tags = (row.techniques || []).slice(0, 3).join(', ');
+            const rowEl = document.createElement('div');
+            rowEl.className = 'entry-row';
+            rowEl.innerHTML = `<a href="/jiu-jitsu/view.html?date=${row.date}" class="blog-link">${dateLabel}</a>${tags ? `<span class="blog-details-2">${tags}</span>` : ''}`;
+            inner.appendChild(rowEl);
+        }
+        entriesEl.appendChild(inner);
+        block.addEventListener('click', () => {
+            block.classList.toggle('open');
+            entriesEl.classList.toggle('open');
+        });
+        groupEl.appendChild(block);
+        groupEl.appendChild(entriesEl);
+        container.appendChild(groupEl);
+    }
+}
+
+loadEntries();
+</script>
+</html>
