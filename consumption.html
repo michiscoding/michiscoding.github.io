@@ -56,8 +56,8 @@
         .sp-login-btn { display: inline-block; padding: 0.6rem 1.4rem; background: #1db954; color: #fff; border: none; border-radius: 50px; font-size: 0.85rem; font-weight: 600; cursor: pointer; font-family: inherit; margin-top: 1rem; }
         .sp-login-btn:hover { background: #17a349; }
         .sp-nothing { color: #aaa; font-size: 0.85rem; padding: 2rem 0; text-align: center; }
-        .sp-track[data-url] { cursor: pointer; }
-        .sp-track[data-url]:hover .sp-name { color: #1db954; }
+        .sp-track[data-url], .sp-artist[data-url] { cursor: pointer; }
+        .sp-track[data-url]:hover .sp-name, .sp-artist[data-url]:hover .sp-name { color: #1db954; }
         @keyframes vinyl-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .sp-vinyl-wrap { display: flex; flex-direction: column; align-items: center; padding: 3rem 2rem; gap: 1rem; background: #ededed; border-radius: 12px; margin-top: 0.5rem; }
         body.dark .sp-vinyl-wrap { background: #1a1a1a; }
@@ -314,7 +314,7 @@ function trackRow(t, i) {
     </div>`;
 }
 function artistRow(a, i) {
-    return `<div class="sp-artist">
+    return `<div class="sp-artist" data-url="${a.external_urls?.spotify || ''}">
         <span class="sp-rank">${i + 1}</span>
         <img class="sp-art round" src="${a.images[2]?.url || a.images[0]?.url || ''}" alt="">
         <div class="sp-info">
@@ -364,7 +364,7 @@ async function renderTops(range) {
         </div>`;
     fadeIn();
 
-    document.querySelectorAll('.sp-track[data-url]').forEach(row => {
+    document.querySelectorAll('.sp-track[data-url], .sp-artist[data-url]').forEach(row => {
         row.addEventListener('click', () => { if (row.dataset.url) window.open(row.dataset.url, '_blank'); });
     });
 }
