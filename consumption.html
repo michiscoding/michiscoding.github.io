@@ -75,11 +75,10 @@
 
         /* media grid */
         .media-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; }
-        .watchlist-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #ccc; margin: 2rem 0 0.75rem; }
-        body.dark .watchlist-label { color: #444; }
-        @media (max-width: 1024px) { .media-grid { grid-template-columns: repeat(3, 1fr); } }
-        @media (max-width: 768px) { .media-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; } }
-        .media-card { cursor: pointer; }
+        .media-grid.movies-grid { grid-template-columns: repeat(6, 1fr); }
+        @media (max-width: 1024px) { .media-grid { grid-template-columns: repeat(3, 1fr); } .media-grid.movies-grid { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 768px) { .media-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; } .media-grid.movies-grid { grid-template-columns: repeat(3, 1fr); } }
+        .media-card { cursor: pointer; min-width: 0; }
         .media-cover-wrap { aspect-ratio: 2/3; overflow: hidden; border-radius: 6px; background: #e0e0e0; margin-bottom: 0.5rem; }
         body.dark .media-cover-wrap { background: #2a2a2a; }
         .media-cover-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s ease; }
@@ -440,42 +439,42 @@ function starsHtml(rating) {
     return html;
 }
 
+function movieSubTabsHtml(active) {
+    return ['watched', 'watchlist'].map(v =>
+        `<button type="button" class="c-subtab${v === active ? ' active' : ''}" data-mv="${v}">${v}</button>`
+    ).join('');
+}
+
 async function renderMedia(view) {
-    const type = view === 'books' ? 'book' : 'movie';
-    document.getElementById('c-content').innerHTML = '<div id="c-loading">loading...</div>';
-    const { data, error } = await db.from('media').select('*').eq('type', type).order('date', { ascending: false });
-    if (error) {
-        document.getElementById('c-content').innerHTML = `<div class="c-empty">error: ${error.message}</div>`;
-        fadeIn();
-        return;
-    }
-    if (!data?.length) {
-        document.getElementById('c-content').innerHTML = '<div class="c-empty">nothing here yet</div>';
-        fadeIn();
-        return;
+    const isMovies = view === 'movies' || view === 'watchlist';
+    const type = isMovies ? 'movie' : 'book';
+    const gridClass = isMovies ? 'media-grid movies-grid' : 'media-grid';
+    const subTabsHtml = isMovies ? `<div class="c-subtabs" id="mv-sub-tabs">${movieSubTabsHtml(view === 'watchlist' ? 'watchlist' : 'watched')}</div>` : '';
+    document.getElementById('c-content').innerHTML = subTabsHtml + '<div id="mv-grid-area"><div id="c-loading">loading...</div></div>';
+
+    if (isMovies) {
+        document.querySelectorAll('#mv-sub-tabs .c-subtab').forEach(btn => {
+            btn.onclick = () => renderMedia(btn.dataset.mv === 'watchlist' ? 'watchlist' : 'movies');
+        });
     }
 
-    const watched = type === 'movie' ? data.filter(d => !d.status || d.status === 'watched') : data;
-    const watchlist = type === 'movie' ? data.filter(d => d.status === 'want') : [];
+    let query = db.from('media').select('*').eq('type', type).order('date', { ascending: false });
+    if (view === 'movies') query = query.eq('status', 'watched');
+    if (view === 'watchlist') query = query.eq('status', 'want');
+    const { data, error } = await query;
 
-    let html = `<div class="media-grid">${watched.map(item => `
+    const gridArea = document.getElementById('mv-grid-area');
+    if (error) { gridArea.innerHTML = `<div class="c-empty">error: ${error.message}</div>`; fadeIn(); return; }
+    if (!data?.length) { gridArea.innerHTML = '<div class="c-empty">nothing here yet</div>'; fadeIn(); return; }
+
+    const showRating = view !== 'watchlist';
+    gridArea.innerHTML = `<div class="${gridClass}">${data.map(item => `
         <div class="media-card" data-id="${item.id}">
             <div class="media-cover-wrap"><img src="${item.cover_url || ''}" alt="${item.title}" loading="lazy"></div>
             <div class="media-card-title">${item.title}</div>
-            <div class="media-card-meta">${item.date ? item.date.slice(0, 4) : ''}</div>
-            ${item.rating ? `<div class="media-card-rating">${starsHtml(item.rating)}</div>` : ''}
+            ${showRating && item.date ? `<div class="media-card-meta">${item.date.slice(0, 4)}</div>` : ''}
+            ${showRating && item.rating ? `<div class="media-card-rating">${starsHtml(item.rating)}</div>` : ''}
         </div>`).join('')}</div>`;
-
-    if (watchlist.length) {
-        html += `<div class="watchlist-label">watchlist</div>
-        <div class="media-grid">${watchlist.map(item => `
-            <div class="media-card" data-id="${item.id}">
-                <div class="media-cover-wrap"><img src="${item.cover_url || ''}" alt="${item.title}" loading="lazy"></div>
-                <div class="media-card-title">${item.title}</div>
-            </div>`).join('')}</div>`;
-    }
-
-    document.getElementById('c-content').innerHTML = html;
     fadeIn();
 
     document.querySelectorAll('.media-card').forEach(card => {
