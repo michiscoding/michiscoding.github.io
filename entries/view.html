@@ -11,16 +11,62 @@
     <style>
         :root { --maxWidth: 67vw; }
         .entry-music { margin-top: 1.5rem; }
-        .training-link { display: inline-block; font-size: 0.75rem; color: #bbb; text-decoration: none; margin-top: 0.5rem; letter-spacing: 0.02em; }
+        .training-link { background: none; border: none; font-family: inherit; font-size: 0.75rem; color: #bbb; cursor: pointer; padding: 0; margin-top: 0.5rem; letter-spacing: 0.02em; display: inline-block; }
         .training-link:hover { color: #666; }
         body.dark .training-link { color: #444; }
         body.dark .training-link:hover { color: #888; }
+
+        #training-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 500;
+            display: flex; align-items: center; justify-content: center;
+            padding: 1.5rem;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        #training-overlay.open { opacity: 1; pointer-events: auto; }
+        #training-modal {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1.75rem 2rem;
+            max-width: 540px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.18);
+        }
+        body.dark #training-modal { background: #1a1a1a; }
+        #training-modal h2 { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #ccc; margin: 0 0 1rem; }
+        body.dark #training-modal h2 { color: #444; }
+        #training-modal-close { position: absolute; top: 0.75rem; right: 1rem; background: none; border: none; font-size: 1.2rem; color: #ccc; cursor: pointer; line-height: 1; padding: 0.2rem 0.3rem; }
+        #training-modal-close:hover { color: #555; }
+        #training-modal-body { font-size: 0.95rem; line-height: 1.7; color: #333; white-space: pre-wrap; }
+        body.dark #training-modal-body { color: #bbb; }
+        .training-tag-section { margin-top: 1rem; }
+        .training-tag-label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #ccc; margin-bottom: 0.3rem; }
+        body.dark .training-tag-label { color: #444; }
+        .training-tag { display: inline-block; font-size: 0.72rem; font-weight: 600; color: #777; background: #f0f0f0; border-radius: 4px; padding: 0.18rem 0.5rem; margin: 0.15rem 0.15rem 0 0; }
+        body.dark .training-tag { background: #252525; color: #666; }
+        #training-full-link { display: block; margin-top: 1.5rem; font-size: 0.75rem; color: #aaa; text-decoration: none; letter-spacing: 0.02em; }
+        #training-full-link:hover { color: #555; }
+        body.dark #training-full-link:hover { color: #aaa; }
     </style>
     <title></title>
 </head>
 <body>
   <button type="button" class="back-btn" onclick="history.back()">←</button>
   <div class="entry-container" id="entry-body"></div>
+
+  <div id="training-overlay">
+    <div id="training-modal">
+      <button type="button" id="training-modal-close">×</button>
+      <h2>training</h2>
+      <div id="training-modal-body"></div>
+      <a id="training-full-link" href="#">view full record →</a>
+    </div>
+  </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/js/supabase.js"></script>
@@ -59,10 +105,51 @@
     }
 
     if (jjEntry) {
-        const tlink = document.createElement('a');
-        tlink.href = `/jiu-jitsu/view.html?date=${date}`;
+        const tlink = document.createElement('button');
+        tlink.type = 'button';
         tlink.className = 'training-link';
         tlink.textContent = '→ my training';
+
+        const overlay = document.getElementById('training-overlay');
+        const modalBody = document.getElementById('training-modal-body');
+        const fullLink = document.getElementById('training-full-link');
+        fullLink.href = `/jiu-jitsu/view.html?date=${date}`;
+        let jjData = null;
+
+        function openTrainingOverlay() {
+            overlay.classList.add('open');
+        }
+        function closeTrainingOverlay() {
+            overlay.classList.remove('open');
+        }
+
+        tlink.addEventListener('click', async () => {
+            if (!jjData) {
+                const { data } = await db.from('jiu_jitsu').select('content, techniques, partners').eq('date', date).single();
+                jjData = data;
+                modalBody.textContent = jjData?.content || '';
+                if (jjData?.techniques?.length) {
+                    const sec = document.createElement('div');
+                    sec.className = 'training-tag-section';
+                    sec.innerHTML = `<div class="training-tag-label">techniques</div>` +
+                        jjData.techniques.map(t => `<span class="training-tag">${t}</span>`).join('');
+                    modalBody.appendChild(sec);
+                }
+                if (jjData?.partners?.length) {
+                    const sec = document.createElement('div');
+                    sec.className = 'training-tag-section';
+                    sec.innerHTML = `<div class="training-tag-label">partners</div>` +
+                        jjData.partners.map(p => `<span class="training-tag">${p}</span>`).join('');
+                    modalBody.appendChild(sec);
+                }
+            }
+            openTrainingOverlay();
+        });
+
+        document.getElementById('training-modal-close').addEventListener('click', closeTrainingOverlay);
+        overlay.addEventListener('click', e => { if (e.target === overlay) closeTrainingOverlay(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTrainingOverlay(); });
+
         body.appendChild(tlink);
     }
 
