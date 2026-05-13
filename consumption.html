@@ -240,6 +240,15 @@ const CLIENT_ID = 'd3ab93ff0a8248d79171391eb077f43d';
 const REDIRECT_URI = 'https://michiscoding.github.io/consumption.html';
 const SCOPES = 'user-top-read user-read-recently-played user-read-currently-playing';
 
+function openSpotify(webUrl) {
+    const m = webUrl.match(/spotify\.com\/(track|artist|album|playlist)\/([A-Za-z0-9]+)/);
+    if (!m) { window.open(webUrl, '_blank'); return; }
+    const appUri = `spotify:${m[1]}:${m[2]}`;
+    const timer = setTimeout(() => window.open(webUrl, '_blank'), 1000);
+    window.addEventListener('blur', () => clearTimeout(timer), { once: true });
+    window.location.href = appUri;
+}
+
 function randomStr(len) {
     const arr = new Uint8Array(len);
     crypto.getRandomValues(arr);
@@ -367,7 +376,7 @@ async function renderTops(range) {
     fadeIn();
 
     document.querySelectorAll('.sp-track[data-url], .sp-artist[data-url]').forEach(row => {
-        row.addEventListener('click', () => { if (row.dataset.url) window.open(row.dataset.url, '_blank'); });
+        row.addEventListener('click', () => { if (row.dataset.url) openSpotify(row.dataset.url); });
     });
 }
 
@@ -400,7 +409,7 @@ async function renderNowPlaying() {
             <div class="sp-progress-times"><span id="sp-elapsed"></span><span>${fmt(duration)}</span></div>
         </div>
     </div>`;
-    if (url) tops.querySelector('.sp-vinyl').addEventListener('click', () => window.open(url, '_blank'));
+    if (url) tops.querySelector('.sp-vinyl').addEventListener('click', () => openSpotify(url));
     fadeIn();
 
     let progress = data.progress_ms;
