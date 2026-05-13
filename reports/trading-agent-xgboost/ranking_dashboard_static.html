@@ -187,9 +187,9 @@ function render(d) {
 }
 
 const __DATA__ = {
-  "total_pnl": 7551.64,
-  "n_trades": 49,
-  "n_realized": 13,
+  "total_pnl": 7577.63,
+  "n_trades": 55,
+  "n_realized": 14,
   "holdings": [
     {
       "ticker": "AMD",
@@ -197,13 +197,6 @@ const __DATA__ = {
       "entry": 448.29,
       "time": "2026-05-12 20:25",
       "score": 0.0557
-    },
-    {
-      "ticker": "SNOW",
-      "qty": 65.7981,
-      "entry": 151.98,
-      "time": "2026-05-12 20:25",
-      "score": 0.0364
     }
   ],
   "realized": [
@@ -323,6 +316,15 @@ const __DATA__ = {
       "exit": 42.35,
       "qty": 235.7379,
       "pnl": -9.43
+    },
+    {
+      "ticker": "SNOW",
+      "buy_time": "2026-05-12 20:25",
+      "sell_time": "2026-05-13 16:16",
+      "entry": 151.98,
+      "exit": 152.37,
+      "qty": 66.6353,
+      "pnl": 25.99
     }
   ],
   "cum_pnl": [
@@ -521,15 +523,39 @@ const __DATA__ = {
     {
       "t": "2026-05-12 20:25",
       "v": 7551.64
+    },
+    {
+      "t": "2026-05-13 16:16",
+      "v": 7551.64
+    },
+    {
+      "t": "2026-05-13 16:16",
+      "v": 7551.64
+    },
+    {
+      "t": "2026-05-13 16:16",
+      "v": 7551.64
+    },
+    {
+      "t": "2026-05-13 16:16",
+      "v": 7551.64
+    },
+    {
+      "t": "2026-05-13 16:16",
+      "v": 7551.64
+    },
+    {
+      "t": "2026-05-13 16:16",
+      "v": 7577.63
     }
   ],
   "rankings": [],
-  "last_run": "2026-05-12 20:25"
+  "last_run": "2026-05-13 16:16"
 };
 
 function refresh() {
   render(__DATA__);
-  document.getElementById('status').textContent = 'Snapshot — May 12, 2026 at 8:25 PM';
+  document.getElementById('status').textContent = 'Snapshot — May 13, 2026 at 4:16 PM';
 }
 
 refresh();
