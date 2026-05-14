@@ -421,12 +421,19 @@ document.addEventListener('DOMContentLoaded', () => {
     gallery365Loaded = true;
 
     const MEDIA_BASE = SUPABASE_URL + '/storage/v1/object/public/media/';
-    const { data: rows } = await db.from('entry_photos').select('storage_path, entry_date').order('entry_date', { ascending: false });
+    const [{ data: rows }, { data: thoughtRows }] = await Promise.all([
+      db.from('entry_photos').select('storage_path, entry_date').order('entry_date', { ascending: false }),
+      db.from('entries').select('date, thought').not('thought', 'is', null).neq('thought', '')
+    ]);
 
     const byDate = {};
     for (const row of (rows || [])) {
-      if (!byDate[row.entry_date]) byDate[row.entry_date] = [];
-      byDate[row.entry_date].push(MEDIA_BASE + row.storage_path);
+      if (!byDate[row.entry_date]) byDate[row.entry_date] = { photos: [], thought: null };
+      byDate[row.entry_date].photos.push(MEDIA_BASE + row.storage_path);
+    }
+    for (const row of (thoughtRows || [])) {
+      if (!byDate[row.date]) byDate[row.date] = { photos: [], thought: null };
+      byDate[row.date].thought = row.thought;
     }
 
     gallery365.innerHTML = '';
@@ -439,7 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     for (const date of dates) {
-      const photos = byDate[date];
+      const { photos, thought } = byDate[date];
       let idx = 0;
 
       const card = document.createElement('div');
@@ -450,6 +457,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const track = document.createElement('div');
       track.className = 'card-365-track';
+
+      // thought slide first
+      if (thought) {
+        const slide = document.createElement('div');
+        slide.className = 'card-365-thought';
+        const p = document.createElement('p');
+        p.textContent = thought;
+        slide.appendChild(p);
+        track.appendChild(slide);
+        if (!photos.length) card.classList.add('loaded');
+      }
+
       photos.forEach((src, i) => {
         const isVid = /\.(mp4|webm|mov)$/i.test(src);
         const el = document.createElement(isVid ? 'video' : 'img');
@@ -458,9 +477,9 @@ document.addEventListener('DOMContentLoaded', () => {
           el.autoplay = true;
           el.loop = true;
           el.playsInline = true;
-          if (i === 0) el.addEventListener('loadeddata', () => card.classList.add('loaded'), { once: true });
+          if (!thought && i === 0) el.addEventListener('loadeddata', () => card.classList.add('loaded'), { once: true });
         } else {
-          if (i === 0) {
+          if (!thought && i === 0) {
             const onLoad = () => card.classList.add('loaded');
             el.addEventListener('load', onLoad, { once: true });
             if (el.complete && el.naturalWidth) onLoad();
@@ -498,12 +517,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       updateSoundBtn();
 
+      const totalSlides = track.children.length;
+
       const prev = document.createElement('button');
       prev.className = 'card-365-btn card-365-prev';
       prev.textContent = '←';
       prev.addEventListener('click', e => {
         e.stopPropagation();
-        idx = (idx - 1 + photos.length) % photos.length;
+        idx = (idx - 1 + totalSlides) % totalSlides;
         track.style.transform = `translateX(-${idx * 100}%)`;
         updateSoundBtn();
       });
@@ -513,7 +534,7 @@ document.addEventListener('DOMContentLoaded', () => {
       next.textContent = '→';
       next.addEventListener('click', e => {
         e.stopPropagation();
-        idx = (idx + 1) % photos.length;
+        idx = (idx + 1) % totalSlides;
         track.style.transform = `translateX(-${idx * 100}%)`;
         updateSoundBtn();
       });
@@ -525,8 +546,10 @@ document.addEventListener('DOMContentLoaded', () => {
       label.textContent = `${months[parseInt(mm)-1]} ${parseInt(dd)}`;
 
       card.appendChild(track);
-      card.appendChild(prev);
-      card.appendChild(next);
+      if (totalSlides > 1) {
+        card.appendChild(prev);
+        card.appendChild(next);
+      }
       card.appendChild(label);
       gallery365.appendChild(card);
     }

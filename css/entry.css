@@ -96,6 +96,27 @@
     border-radius: 0;
 }
 
+.entry-thought-slide {
+    background: #f5f2ee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    overflow: hidden;
+}
+body.dark .entry-thought-slide { background: #1c1c1c; }
+.entry-thought-slide p {
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: #666;
+    line-height: 1.7;
+    text-align: center;
+    margin: 0;
+    word-break: break-word;
+    font-family: 'Montserrat', sans-serif;
+}
+body.dark .entry-thought-slide p { color: #888; }
+
 .gallery-arrow {
     position: absolute;
     top: 50%;

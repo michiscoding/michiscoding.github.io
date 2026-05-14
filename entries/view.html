@@ -84,7 +84,7 @@
 
     const MEDIA_BASE = SUPABASE_URL + '/storage/v1/object/public/media/';
     const [{ data: entry }, { data: photos }, { data: prevRows }, { data: nextRows }, { data: jjEntry }] = await Promise.all([
-        db.from('entries').select('content, music_url').eq('date', date).single(),
+        db.from('entries').select('content, music_url, thought').eq('date', date).single(),
         db.from('entry_photos').select('storage_path').eq('entry_date', date),
         db.from('entries').select('date').lt('date', date).order('date', { ascending: false }).limit(1),
         db.from('entries').select('date').gt('date', date).order('date', { ascending: true }).limit(1),
@@ -159,17 +159,24 @@
     content.innerHTML = `<p>${lines}</p>`;
     body.appendChild(content);
 
-    if (photos?.length) {
+    const thought = entry?.thought || '';
+    if (photos?.length || thought) {
         const gallery = document.createElement('div');
-        const useGrid = photos.length > 3;
+        const totalItems = (thought ? 1 : 0) + (photos?.length || 0);
+        const useGrid = totalItems > 3;
         gallery.className = useGrid ? 'entry-photo-grid' : 'entry-gallery';
-        const thumbs = photos.map(p => {
+
+        const thoughtHtml = thought
+            ? `<div class="entry-gallery-item entry-thought-slide"><p>${thought}</p></div>`
+            : '';
+        const photoHtml = (photos || []).map(p => {
             const src = MEDIA_BASE + p.storage_path;
             const isVideo = /\.(mp4|webm|mov)$/i.test(p.storage_path);
             return `<div class="entry-gallery-item">${isVideo
                 ? `<video muted autoplay loop playsinline><source src="${src}" type="video/mp4"></video>`
                 : `<img src="${src}" loading="lazy">`}</div>`;
         }).join('');
+        const thumbs = thoughtHtml + photoHtml;
 
         if (useGrid) {
             gallery.innerHTML = thumbs;
@@ -183,7 +190,7 @@
             const prevBtn = gallery.querySelector('.gallery-prev');
             const nextBtn = gallery.querySelector('.gallery-next');
             const perPage = 3;
-            const totalPages = Math.ceil(photos.length / perPage);
+            const totalPages = Math.ceil(totalItems / perPage);
             let page = 0;
             function setPage(p) {
                 page = Math.max(0, Math.min(p, totalPages - 1));
@@ -198,45 +205,47 @@
 
         body.appendChild(gallery);
 
-        const lb = document.createElement('div');
-        lb.id = 'media-lb';
-        document.body.appendChild(lb);
-        lb.addEventListener('click', () => {
-            lb.classList.remove('open');
-            setTimeout(() => { lb.innerHTML = ''; }, 300);
-        });
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') lb.click(); });
+        if (photos?.length) {
+            const lb = document.createElement('div');
+            lb.id = 'media-lb';
+            document.body.appendChild(lb);
+            lb.addEventListener('click', () => {
+                lb.classList.remove('open');
+                setTimeout(() => { lb.innerHTML = ''; }, 300);
+            });
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') lb.click(); });
 
-        const mediaItems = Array.from(gallery.querySelectorAll('.entry-gallery-item'));
-        let lbIndex = 0;
+            const mediaItems = Array.from(gallery.querySelectorAll('.entry-gallery-item:not(.entry-thought-slide)'));
+            let lbIndex = 0;
 
-        function lbHtml(item) {
-            const video = item.querySelector('video');
-            if (video) {
-                const src = video.querySelector('source')?.src || video.src;
-                return `<video class="lb-media" autoplay loop playsinline controls><source src="${src}" type="video/mp4"></video>`;
+            function lbHtml(item) {
+                const video = item.querySelector('video');
+                if (video) {
+                    const src = video.querySelector('source')?.src || video.src;
+                    return `<video class="lb-media" autoplay loop playsinline controls><source src="${src}" type="video/mp4"></video>`;
+                }
+                return `<img class="lb-media" src="${item.querySelector('img').src}">`;
             }
-            return `<img class="lb-media" src="${item.querySelector('img').src}">`;
+
+            function openLbAt(i) {
+                lbIndex = i;
+                lb.innerHTML = lbHtml(mediaItems[i]);
+                requestAnimationFrame(() => lb.classList.add('open'));
+            }
+
+            mediaItems.forEach((item, i) => {
+                const el = item.querySelector('img, video');
+                if (!el) return;
+                el.style.cursor = 'pointer';
+                el.addEventListener('click', () => openLbAt(i));
+            });
+
+            document.addEventListener('keydown', e => {
+                if (!lb.classList.contains('open')) return;
+                if (e.key === 'ArrowRight') { lbIndex = (lbIndex + 1) % mediaItems.length; lb.innerHTML = lbHtml(mediaItems[lbIndex]); }
+                if (e.key === 'ArrowLeft') { lbIndex = (lbIndex - 1 + mediaItems.length) % mediaItems.length; lb.innerHTML = lbHtml(mediaItems[lbIndex]); }
+            });
         }
-
-        function openLbAt(i) {
-            lbIndex = i;
-            lb.innerHTML = lbHtml(mediaItems[i]);
-            requestAnimationFrame(() => lb.classList.add('open'));
-        }
-
-        mediaItems.forEach((item, i) => {
-            const el = item.querySelector('img, video');
-            if (!el) return;
-            el.style.cursor = 'pointer';
-            el.addEventListener('click', () => openLbAt(i));
-        });
-
-        document.addEventListener('keydown', e => {
-            if (!lb.classList.contains('open')) return;
-            if (e.key === 'ArrowRight') { lbIndex = (lbIndex + 1) % mediaItems.length; lb.innerHTML = lbHtml(mediaItems[lbIndex]); }
-            if (e.key === 'ArrowLeft') { lbIndex = (lbIndex - 1 + mediaItems.length) % mediaItems.length; lb.innerHTML = lbHtml(mediaItems[lbIndex]); }
-        });
     }
     const prevDate = prevRows?.[0]?.date;
     const nextDate = nextRows?.[0]?.date;
