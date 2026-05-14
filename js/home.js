@@ -458,6 +458,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const track = document.createElement('div');
       track.className = 'card-365-track';
 
+      let photosLoaded = false;
+
+      function updateGrain() {
+        if (thought && idx === 0) {
+          card.classList.remove('loaded');
+        } else if (photosLoaded) {
+          card.classList.add('loaded');
+        }
+      }
+
       // thought slide first
       if (thought) {
         const slide = document.createElement('div');
@@ -466,7 +476,6 @@ document.addEventListener('DOMContentLoaded', () => {
         p.textContent = thought;
         slide.appendChild(p);
         track.appendChild(slide);
-        if (!photos.length) card.classList.add('loaded');
       }
 
       photos.forEach((src, i) => {
@@ -477,10 +486,10 @@ document.addEventListener('DOMContentLoaded', () => {
           el.autoplay = true;
           el.loop = true;
           el.playsInline = true;
-          if (!thought && i === 0) el.addEventListener('loadeddata', () => card.classList.add('loaded'), { once: true });
+          if (i === 0) el.addEventListener('loadeddata', () => { photosLoaded = true; updateGrain(); }, { once: true });
         } else {
-          if (!thought && i === 0) {
-            const onLoad = () => card.classList.add('loaded');
+          if (i === 0) {
+            const onLoad = () => { photosLoaded = true; updateGrain(); };
             el.addEventListener('load', onLoad, { once: true });
             if (el.complete && el.naturalWidth) onLoad();
           }
@@ -533,6 +542,7 @@ document.addEventListener('DOMContentLoaded', () => {
         idx = (idx - 1 + totalSlides) % totalSlides;
         track.style.transform = `translateX(-${idx * 100}%)`;
         updateSoundBtn();
+        updateGrain();
       });
 
       const next = document.createElement('button');
@@ -543,6 +553,7 @@ document.addEventListener('DOMContentLoaded', () => {
         idx = (idx + 1) % totalSlides;
         track.style.transform = `translateX(-${idx * 100}%)`;
         updateSoundBtn();
+        updateGrain();
       });
 
       const label = document.createElement('div');
