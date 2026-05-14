@@ -515,9 +515,15 @@ document.addEventListener('DOMContentLoaded', () => {
         soundBtn.style.display = current?.tagName === 'VIDEO' ? '' : 'none';
         if (current?.tagName === 'VIDEO') soundBtn.innerHTML = current.muted ? ICON_MUTED_365 : ICON_SOUND_365;
       }
-      updateSoundBtn();
-
       const totalSlides = track.children.length;
+
+      if (photos.length > 1) {
+        const photoStart = (thought ? 1 : 0) + Math.floor(Math.random() * photos.length);
+        idx = photoStart;
+        track.style.transform = `translateX(-${idx * 100}%)`;
+      }
+
+      updateSoundBtn();
 
       const prev = document.createElement('button');
       prev.className = 'card-365-btn card-365-prev';
