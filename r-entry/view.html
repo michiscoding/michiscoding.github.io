@@ -140,8 +140,7 @@
     }
 
     document.getElementById('back-btn').addEventListener('click', () => {
-        if (document.referrer) location.href = document.referrer;
-        else history.back();
+        location.href = '/work.html#records';
     });
 
     document.getElementById('report-close-btn').addEventListener('click', closeOverlay);
