@@ -107,7 +107,8 @@
 body.dark .entry-thought-slide { background: #1c1c1c; }
 .entry-thought-slide p {
     font-size: 0.72rem;
-    font-weight: 400;
+    font-weight: 300;
+    font-style: italic;
     color: #666;
     line-height: 1.7;
     text-align: center;
