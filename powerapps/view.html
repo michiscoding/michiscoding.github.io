@@ -189,8 +189,8 @@
     // technical notes
     const { data: notes } = await db.from('powerapps_notes').select('*').eq('record_slug', slug).order('sort_order', { ascending: true });
     if (notes && notes.length > 0) {
-        const LANG_LABELS = { powerfx:'PowerFx', javascript:'JavaScript', typescript:'TypeScript', html:'HTML', css:'CSS', csharp:'C#', python:'Python', sql:'SQL', json:'JSON', m:'Power Query (M)' };
-        const LANG_PRISM  = { powerfx:'javascript', javascript:'javascript', typescript:'typescript', html:'markup', css:'css', csharp:'csharp', python:'python', sql:'sql', json:'json', m:'fsharp' };
+        const LANG_LABELS = { powerfx:'PowerFx', javascript:'JavaScript', typescript:'TypeScript', html:'HTML', css:'CSS', csharp:'C#', python:'Python', sql:'SQL', json:'JSON', m:'Power Query (M)', powershell:'PowerShell' };
+        const LANG_PRISM  = { powerfx:'javascript', javascript:'javascript', typescript:'typescript', html:'markup', css:'css', csharp:'csharp', python:'python', sql:'sql', json:'json', m:'fsharp', powershell:'powershell' };
         const notesSection = document.getElementById('pa-notes-section');
         const noteContent  = document.getElementById('pa-note-content');
         const noteCounter  = document.getElementById('pa-note-counter');
