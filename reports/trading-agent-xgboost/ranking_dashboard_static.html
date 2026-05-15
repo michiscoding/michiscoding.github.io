@@ -187,9 +187,9 @@ function render(d) {
 }
 
 const __DATA__ = {
-  "total_pnl": 7577.63,
-  "n_trades": 60,
-  "n_realized": 14,
+  "total_pnl": 7631.27,
+  "n_trades": 67,
+  "n_realized": 15,
   "holdings": [
     {
       "ticker": "AMD",
@@ -206,11 +206,11 @@ const __DATA__ = {
       "score": 0.0413
     },
     {
-      "ticker": "UBER",
-      "qty": 133.8867,
-      "entry": 74.69,
-      "time": "2026-05-14 16:52",
-      "score": 0.0263
+      "ticker": "INTC",
+      "qty": 91.9371,
+      "entry": 108.77,
+      "time": "2026-05-15 16:15",
+      "score": 0.0589
     }
   ],
   "realized": [
@@ -339,6 +339,15 @@ const __DATA__ = {
       "exit": 152.37,
       "qty": 66.6353,
       "pnl": 25.99
+    },
+    {
+      "ticker": "UBER",
+      "buy_time": "2026-05-14 16:52",
+      "sell_time": "2026-05-15 16:15",
+      "entry": 74.69,
+      "exit": 75.09,
+      "qty": 134.1202,
+      "pnl": 53.65
     }
   ],
   "cum_pnl": [
@@ -581,15 +590,43 @@ const __DATA__ = {
     {
       "t": "2026-05-14 16:52",
       "v": 7577.63
+    },
+    {
+      "t": "2026-05-15 16:15",
+      "v": 7577.63
+    },
+    {
+      "t": "2026-05-15 16:15",
+      "v": 7577.63
+    },
+    {
+      "t": "2026-05-15 16:15",
+      "v": 7577.63
+    },
+    {
+      "t": "2026-05-15 16:15",
+      "v": 7577.63
+    },
+    {
+      "t": "2026-05-15 16:15",
+      "v": 7577.63
+    },
+    {
+      "t": "2026-05-15 16:15",
+      "v": 7631.27
+    },
+    {
+      "t": "2026-05-15 16:15",
+      "v": 7631.27
     }
   ],
   "rankings": [],
-  "last_run": "2026-05-14 16:52"
+  "last_run": "2026-05-15 16:15"
 };
 
 function refresh() {
   render(__DATA__);
-  document.getElementById('status').textContent = 'Snapshot — May 14, 2026 at 4:52 PM';
+  document.getElementById('status').textContent = 'Snapshot — May 15, 2026 at 4:15 PM';
 }
 
 refresh();
