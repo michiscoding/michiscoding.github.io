@@ -82,7 +82,6 @@
     const dateTitle = `${months[parseInt(mm)-1]} ${parseInt(dd)} ${yyyy}`;
     document.title = dateTitle;
 
-    const MEDIA_BASE = SUPABASE_URL + '/storage/v1/object/public/media/';
     const [{ data: entry }, { data: photos }, { data: prevRows }, { data: nextRows }, { data: jjEntry }] = await Promise.all([
         db.from('entries').select('content, music_url, thought').eq('date', date).single(),
         db.from('entry_photos').select('storage_path').eq('entry_date', date),

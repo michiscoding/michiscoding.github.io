@@ -125,7 +125,6 @@
     if (error || !data) return;
 
     document.title = data.title;
-    const MEDIA_BASE = SUPABASE_URL + '/storage/v1/object/public/media/';
     const body = document.getElementById('pa-body');
 
     const tags = (data.tags || []).join(', ');

@@ -271,7 +271,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function getPhotos() {
     if (photosCache) return photosCache;
-    const MEDIA_BASE = SUPABASE_URL + '/storage/v1/object/public/media/';
     const { data } = await db.from('photos').select('storage_path, tags, date').order('date', { ascending: false });
     photosCache = (data || []).map(p => ({
       src: p.storage_path.startsWith('http') ? p.storage_path : MEDIA_BASE + p.storage_path,
@@ -420,7 +419,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     gallery365Loaded = true;
 
-    const MEDIA_BASE = SUPABASE_URL + '/storage/v1/object/public/media/';
     const [{ data: rows }, { data: thoughtRows }] = await Promise.all([
       db.from('entry_photos').select('storage_path, entry_date').order('entry_date', { ascending: false }),
       db.from('entries').select('date, thought').not('thought', 'is', null).neq('thought', '')
