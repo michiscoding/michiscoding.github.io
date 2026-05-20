@@ -122,20 +122,26 @@
         .md-car-count { position: absolute; bottom: 0.5rem; right: 0.5rem; background: rgba(0,0,0,0.5); color: #fff; font-size: 0.65rem; font-weight: 600; border-radius: 999px; padding: 0.15rem 0.45rem; pointer-events: none; }
         .md-carousel { display: none; }
 
-        /* food */
-        .food-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
-        @media (max-width: 1024px) { .food-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 600px) { .food-grid { grid-template-columns: 1fr; gap: 0.75rem; } }
-        .food-card { cursor: pointer; min-width: 0; }
-        .food-photo-wrap { aspect-ratio: 4/3; overflow: hidden; border-radius: 8px; background: #e8e8e8; margin-bottom: 0.5rem; }
+        /* food carousel */
+        .food-carousel-outer { overflow: hidden; }
+        .food-grid { display: flex; transition: transform 0.32s ease; will-change: transform; }
+        .food-card { min-width: 100%; flex-shrink: 0; cursor: pointer; box-sizing: border-box; }
+        .food-photo-wrap { aspect-ratio: 4/3; max-height: 280px; overflow: hidden; border-radius: 10px; background: #e8e8e8; margin-bottom: 0.65rem; }
         body.dark .food-photo-wrap { background: #2a2a2a; }
         .food-photo-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s ease; }
-        .food-card:hover .food-photo-wrap img { transform: scale(1.04); }
-        .food-no-photo { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 2rem; }
-        .food-card-name { font-size: 0.85rem; font-weight: 700; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .food-card:hover .food-photo-wrap img { transform: scale(1.03); }
+        .food-no-photo { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; }
+        .food-card-name { font-size: 1rem; font-weight: 700; color: #111; }
         body.dark .food-card-name { color: #ddd; }
-        .food-card-meta { font-size: 0.68rem; font-weight: 400; color: #aaa; }
-        .food-card-rating { font-size: 0.68rem; color: #aaa; }
+        .food-card-meta { font-size: 0.72rem; font-weight: 400; color: #aaa; margin-top: 0.15rem; }
+        .food-card-rating { font-size: 0.72rem; color: #aaa; margin-top: 0.15rem; }
+        .food-carousel-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.85rem; }
+        .food-c-arrow { background: none; border: none; padding: 0; font-size: 1.1rem; color: #bbb; cursor: pointer; line-height: 1; font-family: inherit; transition: color 0.15s; }
+        .food-c-arrow:hover:not(:disabled) { color: #111; }
+        .food-c-arrow:disabled { opacity: 0.2; cursor: default; }
+        body.dark .food-c-arrow { color: #444; }
+        body.dark .food-c-arrow:hover:not(:disabled) { color: #eee; }
+        .food-c-counter { font-size: 0.72rem; color: #aaa; }
 
         /* food detail tags */
         .md-photo-strip { display: none; }
@@ -572,12 +578,42 @@ function foodGridHtml(data) {
         </div>`).join('');
 }
 
-function renderFoodGrid(data) {
-    document.getElementById('food-grid').innerHTML = foodGridHtml(data);
-    document.querySelectorAll('.food-card').forEach(card => {
+let fdCarouselIdx = 0;
+let fdCarouselTotal = 0;
+
+function initFoodCarousel() {
+    fdCarouselIdx = 0;
+    fdCarouselTotal = document.querySelectorAll('#food-grid .food-card').length;
+    document.querySelectorAll('#food-grid .food-card').forEach(card => {
         const item = foodAllData.find(d => d.id === card.dataset.id);
         card.addEventListener('click', () => item && openFoodDetail(item));
     });
+    updateFoodCarousel();
+    document.getElementById('fd-prev').onclick = () => goFoodCard(-1);
+    document.getElementById('fd-next').onclick = () => goFoodCard(1);
+}
+
+function goFoodCard(dir) {
+    fdCarouselIdx = Math.max(0, Math.min(fdCarouselTotal - 1, fdCarouselIdx + dir));
+    updateFoodCarousel();
+}
+
+function updateFoodCarousel() {
+    document.getElementById('food-grid').style.transform = `translateX(-${fdCarouselIdx * 100}%)`;
+    document.getElementById('fd-prev').disabled = fdCarouselIdx === 0;
+    document.getElementById('fd-next').disabled = fdCarouselIdx >= fdCarouselTotal - 1;
+    document.getElementById('fd-counter').textContent = fdCarouselTotal ? `${fdCarouselIdx + 1} / ${fdCarouselTotal}` : '';
+}
+
+function renderFoodGrid(data) {
+    document.getElementById('food-grid').innerHTML = foodGridHtml(data);
+    fdCarouselIdx = 0;
+    fdCarouselTotal = data.length;
+    document.querySelectorAll('#food-grid .food-card').forEach(card => {
+        const item = foodAllData.find(d => d.id === card.dataset.id);
+        card.addEventListener('click', () => item && openFoodDetail(item));
+    });
+    updateFoodCarousel();
 }
 
 function applyFoodTagFilter(tag) {
@@ -614,18 +650,27 @@ async function renderFood() {
             <button class="fv-btn" id="fv-map">map</button>
         </div>
         ${tagFilterHtml}
-        <div class="food-grid" id="food-grid">${foodGridHtml(data)}</div>
+        <div class="food-carousel-nav" id="food-carousel-nav">
+            <button class="food-c-arrow" id="fd-prev" disabled>←</button>
+            <span class="food-c-counter" id="fd-counter"></span>
+            <button class="food-c-arrow" id="fd-next">→</button>
+        </div>
+        <div class="food-carousel-outer" id="food-carousel-outer">
+            <div class="food-grid" id="food-grid">${foodGridHtml(data)}</div>
+        </div>
         <div class="food-map-wrap" id="food-map-wrap"><div id="food-map-inner" style="height:100%"></div></div>`;
     fadeIn();
 
     document.getElementById('fv-grid').onclick = () => {
-        document.getElementById('food-grid').style.display = '';
+        document.getElementById('food-carousel-outer').style.display = '';
+        document.getElementById('food-carousel-nav').style.display = '';
         document.getElementById('food-map-wrap').style.display = 'none';
         document.getElementById('fv-grid').classList.add('active');
         document.getElementById('fv-map').classList.remove('active');
     };
     document.getElementById('fv-map').onclick = () => {
-        document.getElementById('food-grid').style.display = 'none';
+        document.getElementById('food-carousel-outer').style.display = 'none';
+        document.getElementById('food-carousel-nav').style.display = 'none';
         document.getElementById('food-map-wrap').style.display = 'block';
         document.getElementById('fv-grid').classList.remove('active');
         document.getElementById('fv-map').classList.add('active');
@@ -636,6 +681,15 @@ async function renderFood() {
     document.querySelectorAll('.food-tag-pill').forEach(pill => {
         pill.addEventListener('click', () => applyFoodTagFilter(pill.dataset.tag));
     });
+
+    initFoodCarousel();
+    let fdTouchX = 0;
+    document.getElementById('food-carousel-outer').addEventListener('touchstart', e => { fdTouchX = e.touches[0].clientX; }, { passive: true });
+    document.getElementById('food-carousel-outer').addEventListener('touchend', e => {
+        const dx = e.changedTouches[0].clientX - fdTouchX;
+        if (Math.abs(dx) < 50) return;
+        dx < 0 ? goFoodCard(1) : goFoodCard(-1);
+    }, { passive: true });
 
     document.querySelectorAll('.food-card').forEach(card => {
         const item = data.find(d => d.id === card.dataset.id);
