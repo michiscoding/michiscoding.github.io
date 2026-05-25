@@ -198,17 +198,21 @@
         #c-loading { color: #aaa; font-size: 0.85rem; margin-top: 2rem; }
         .c-empty { color: #aaa; font-size: 0.85rem; padding: 3rem 0; text-align: center; }
 
-        /* youtube videos */
-        .video-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-        @media (max-width: 1024px) { .video-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 600px) { .video-grid { grid-template-columns: 1fr; gap: 1.2rem; } }
-        .video-card { }
-        .video-embed-wrap { position: relative; aspect-ratio: 16/9; border-radius: 10px; overflow: hidden; background: #f0f0f0; margin-bottom: 0.6rem; }
-        .video-card-spotify .video-embed-wrap { aspect-ratio: unset; height: 352px; }
-        body.dark .video-embed-wrap { background: #1e1e1e; }
-        .video-embed-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
-        .video-caption { font-size: 0.85rem; color: #555; line-height: 1.45; }
-        body.dark .video-caption { color: #888; }
+        /* video carousel */
+        .vid-carousel { max-width: 820px; margin: 0 auto; }
+        .vid-embed-wrap { border-radius: 12px; overflow: hidden; background: #f0f0f0; margin-bottom: 1.25rem; aspect-ratio: 16/9; }
+        .vid-embed-wrap.sp { aspect-ratio: unset; height: 352px; }
+        body.dark .vid-embed-wrap { background: #1e1e1e; }
+        .vid-embed-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
+        .vid-caption { font-size: 0.95rem; color: #444; line-height: 1.55; text-align: center; margin-bottom: 1.25rem; }
+        body.dark .vid-caption { color: #999; }
+        .vid-nav { display: flex; align-items: center; justify-content: space-between; }
+        .vid-nav-btn { background: none; border: none; font-size: 1.4rem; color: #ccc; cursor: pointer; padding: 0.4rem 0.6rem; transition: color 0.15s; line-height: 1; font-family: inherit; }
+        .vid-nav-btn:hover:not(:disabled) { color: #111; }
+        .vid-nav-btn:disabled { opacity: 0.2; cursor: default; }
+        body.dark .vid-nav-btn { color: #444; }
+        body.dark .vid-nav-btn:hover:not(:disabled) { color: #eee; }
+        .vid-counter { font-size: 0.72rem; color: #bbb; letter-spacing: 0.05em; }
     </style>
 </head>
 <body>
@@ -1035,6 +1039,11 @@ document.addEventListener('keydown', e => {
         if (e.key === 'Escape') closeDetail();
         if (e.key === 'ArrowLeft') navigateOverlay(-1);
         if (e.key === 'ArrowRight') navigateOverlay(1);
+        return;
+    }
+    if (vidData.length && document.querySelector('#c-tabs .c-tab[data-view="videos"]')?.classList.contains('active')) {
+        if (e.key === 'ArrowLeft') document.getElementById('vid-prev')?.click();
+        if (e.key === 'ArrowRight') document.getElementById('vid-next')?.click();
     }
 });
 
@@ -1047,30 +1056,62 @@ function parseMediaUrl(url) {
     return null;
 }
 
+let vidData = [], vidIdx = 0;
+
+function vidEmbedHtml(v) {
+    const parsed = parseMediaUrl(v.url);
+    if (!parsed) return '';
+    const isSpotify = parsed.type === 'spotify';
+    const src = isSpotify
+        ? `https://open.spotify.com/embed/${parsed.spotifyType}/${parsed.id}?utm_source=generator`
+        : `https://www.youtube.com/embed/${parsed.id}`;
+    const allow = isSpotify
+        ? 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture'
+        : 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+    return `<div class="vid-embed-wrap${isSpotify ? ' sp' : ''}"><iframe src="${src}" allow="${allow}" allowfullscreen></iframe></div>`;
+}
+
+function renderVidCard(idx) {
+    const v = vidData[idx];
+    document.getElementById('vid-embed-slot').innerHTML = vidEmbedHtml(v);
+    const cap = document.getElementById('vid-caption-slot');
+    cap.textContent = v.caption || '';
+    cap.style.display = v.caption ? '' : 'none';
+    document.getElementById('vid-counter').textContent = `${idx + 1} / ${vidData.length}`;
+    document.getElementById('vid-prev').disabled = idx === 0;
+    document.getElementById('vid-next').disabled = idx === vidData.length - 1;
+}
+
 async function renderVideos() {
     document.getElementById('c-content').innerHTML = '<div id="c-loading">loading...</div>';
     const { data, error } = await db.from('videos').select('url, caption').order('created_at', { ascending: false });
     if (error) { document.getElementById('c-content').innerHTML = `<div class="c-empty">error: ${error.message}</div>`; fadeIn(); return; }
     if (!data?.length) { document.getElementById('c-content').innerHTML = '<div class="c-empty">nothing here yet</div>'; fadeIn(); return; }
-    document.getElementById('c-content').innerHTML = `<div class="video-grid">${data.map(v => {
-        const parsed = parseMediaUrl(v.url);
-        if (!parsed) return '';
-        let embedSrc, allow;
-        if (parsed.type === 'youtube') {
-            embedSrc = `https://www.youtube.com/embed/${parsed.id}`;
-            allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-        } else {
-            embedSrc = `https://open.spotify.com/embed/${parsed.spotifyType}/${parsed.id}?utm_source=generator`;
-            allow = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
-        }
-        return `<div class="video-card${parsed.type === 'spotify' ? ' video-card-spotify' : ''}">
-            <div class="video-embed-wrap">
-                <iframe src="${embedSrc}" allow="${allow}" allowfullscreen loading="lazy"></iframe>
+    vidData = data.filter(v => parseMediaUrl(v.url));
+    vidIdx = 0;
+    document.getElementById('c-content').innerHTML = `
+        <div class="vid-carousel">
+            <div id="vid-embed-slot"></div>
+            <div class="vid-caption" id="vid-caption-slot"></div>
+            <div class="vid-nav">
+                <button type="button" class="vid-nav-btn" id="vid-prev">←</button>
+                <span class="vid-counter" id="vid-counter"></span>
+                <button type="button" class="vid-nav-btn" id="vid-next">→</button>
             </div>
-            ${v.caption ? `<div class="video-caption">${v.caption}</div>` : ''}
         </div>`;
-    }).join('')}</div>`;
+    renderVidCard(0);
     fadeIn();
+    document.getElementById('vid-prev').addEventListener('click', () => { if (vidIdx > 0) renderVidCard(--vidIdx); });
+    document.getElementById('vid-next').addEventListener('click', () => { if (vidIdx < vidData.length - 1) renderVidCard(++vidIdx); });
+
+    let swipeX = 0;
+    document.getElementById('c-content').addEventListener('touchstart', e => { swipeX = e.touches[0].clientX; }, { passive: true });
+    document.getElementById('c-content').addEventListener('touchend', e => {
+        const dx = e.changedTouches[0].clientX - swipeX;
+        if (Math.abs(dx) < 50) return;
+        if (dx < 0 && vidIdx < vidData.length - 1) renderVidCard(++vidIdx);
+        else if (dx > 0 && vidIdx > 0) renderVidCard(--vidIdx);
+    }, { passive: true });
 }
 </script>
 </body>
