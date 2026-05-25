@@ -212,7 +212,6 @@
         .vid-nav-btn:disabled { opacity: 0.2; cursor: default; }
         body.dark .vid-nav-btn { color: #444; }
         body.dark .vid-nav-btn:hover:not(:disabled) { color: #eee; }
-        .vid-counter { font-size: 0.72rem; color: #bbb; letter-spacing: 0.05em; }
     </style>
 </head>
 <body>
@@ -1077,7 +1076,6 @@ function renderVidCard(idx) {
     const cap = document.getElementById('vid-caption-slot');
     cap.textContent = v.caption || '';
     cap.style.display = v.caption ? '' : 'none';
-    document.getElementById('vid-counter').textContent = `${idx + 1} / ${vidData.length}`;
     document.getElementById('vid-prev').disabled = idx === 0;
     document.getElementById('vid-next').disabled = idx === vidData.length - 1;
 }
@@ -1095,7 +1093,6 @@ async function renderVideos() {
             <div class="vid-caption" id="vid-caption-slot"></div>
             <div class="vid-nav">
                 <button type="button" class="vid-nav-btn" id="vid-prev">←</button>
-                <span class="vid-counter" id="vid-counter"></span>
                 <button type="button" class="vid-nav-btn" id="vid-next">→</button>
             </div>
         </div>`;
