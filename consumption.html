@@ -197,6 +197,18 @@
         .c-fade { animation: c-fade-in 0.25s ease forwards; }
         #c-loading { color: #aaa; font-size: 0.85rem; margin-top: 2rem; }
         .c-empty { color: #aaa; font-size: 0.85rem; padding: 3rem 0; text-align: center; }
+
+        /* youtube videos */
+        .video-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        @media (max-width: 1024px) { .video-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .video-grid { grid-template-columns: 1fr; gap: 1.2rem; } }
+        .video-card { }
+        .video-embed-wrap { position: relative; aspect-ratio: 16/9; border-radius: 10px; overflow: hidden; background: #f0f0f0; margin-bottom: 0.6rem; }
+        .video-card-spotify .video-embed-wrap { aspect-ratio: unset; height: 352px; }
+        body.dark .video-embed-wrap { background: #1e1e1e; }
+        .video-embed-wrap iframe { width: 100%; height: 100%; border: none; display: block; }
+        .video-caption { font-size: 0.85rem; color: #555; line-height: 1.45; }
+        body.dark .video-caption { color: #888; }
     </style>
 </head>
 <body>
@@ -208,6 +220,7 @@
         <button type="button" class="c-tab" data-view="tv">tv</button>
         <button type="button" class="c-tab" data-view="food">food</button>
         <button type="button" class="c-tab" data-view="venues">venues</button>
+        <button type="button" class="c-tab" data-view="videos">videos</button>
     </div>
     <div id="c-content"></div>
 </div>
@@ -808,6 +821,7 @@ document.querySelectorAll('#c-tabs .c-tab').forEach(btn => {
         if (view === 'spotify') renderSpotify();
         else if (view === 'food') renderFood();
         else if (view === 'venues') renderVenues();
+        else if (view === 'videos') renderVideos();
         else renderMedia(view);
     };
 });
@@ -818,13 +832,14 @@ document.querySelectorAll('#c-tabs .c-tab').forEach(btn => {
     if (code) await exchangeCode(code);
 
     const hash = location.hash.slice(1);
-    const startView = ['spotify', 'books', 'movies', 'tv', 'food', 'venues'].includes(hash) ? hash : 'spotify';
+    const startView = ['spotify', 'books', 'movies', 'tv', 'food', 'venues', 'videos'].includes(hash) ? hash : 'spotify';
     document.querySelectorAll('#c-tabs .c-tab').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.view === startView);
     });
     if (startView === 'spotify') renderSpotify();
     else if (startView === 'food') renderFood();
     else if (startView === 'venues') renderVenues();
+    else if (startView === 'videos') renderVideos();
     else renderMedia(startView);
 })();
 
@@ -1022,6 +1037,41 @@ document.addEventListener('keydown', e => {
         if (e.key === 'ArrowRight') navigateOverlay(1);
     }
 });
+
+// videos
+function parseMediaUrl(url) {
+    const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([A-Za-z0-9_-]{11})/);
+    if (yt) return { type: 'youtube', id: yt[1] };
+    const sp = url.match(/spotify\.com\/(playlist|album|track|episode)\/([A-Za-z0-9]+)/);
+    if (sp) return { type: 'spotify', spotifyType: sp[1], id: sp[2] };
+    return null;
+}
+
+async function renderVideos() {
+    document.getElementById('c-content').innerHTML = '<div id="c-loading">loading...</div>';
+    const { data, error } = await db.from('videos').select('url, caption').order('created_at', { ascending: false });
+    if (error) { document.getElementById('c-content').innerHTML = `<div class="c-empty">error: ${error.message}</div>`; fadeIn(); return; }
+    if (!data?.length) { document.getElementById('c-content').innerHTML = '<div class="c-empty">nothing here yet</div>'; fadeIn(); return; }
+    document.getElementById('c-content').innerHTML = `<div class="video-grid">${data.map(v => {
+        const parsed = parseMediaUrl(v.url);
+        if (!parsed) return '';
+        let embedSrc, allow;
+        if (parsed.type === 'youtube') {
+            embedSrc = `https://www.youtube.com/embed/${parsed.id}`;
+            allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+        } else {
+            embedSrc = `https://open.spotify.com/embed/${parsed.spotifyType}/${parsed.id}?utm_source=generator`;
+            allow = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
+        }
+        return `<div class="video-card${parsed.type === 'spotify' ? ' video-card-spotify' : ''}">
+            <div class="video-embed-wrap">
+                <iframe src="${embedSrc}" allow="${allow}" allowfullscreen loading="lazy"></iframe>
+            </div>
+            ${v.caption ? `<div class="video-caption">${v.caption}</div>` : ''}
+        </div>`;
+    }).join('')}</div>`;
+    fadeIn();
+}
 </script>
 </body>
 </html>
