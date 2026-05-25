@@ -1041,8 +1041,8 @@ document.addEventListener('keydown', e => {
         return;
     }
     if (vidData.length && document.querySelector('#c-tabs .c-tab[data-view="videos"]')?.classList.contains('active')) {
-        if (e.key === 'ArrowLeft') document.getElementById('vid-prev')?.click();
-        if (e.key === 'ArrowRight') document.getElementById('vid-next')?.click();
+        if (e.key === 'ArrowLeft') { vidIdx = (vidIdx - 1 + vidData.length) % vidData.length; renderVidCard(vidIdx); }
+        if (e.key === 'ArrowRight') { vidIdx = (vidIdx + 1) % vidData.length; renderVidCard(vidIdx); }
     }
 });
 
@@ -1076,8 +1076,6 @@ function renderVidCard(idx) {
     const cap = document.getElementById('vid-caption-slot');
     cap.textContent = v.caption || '';
     cap.style.display = v.caption ? '' : 'none';
-    document.getElementById('vid-prev').disabled = idx === 0;
-    document.getElementById('vid-next').disabled = idx === vidData.length - 1;
 }
 
 async function renderVideos() {
@@ -1098,16 +1096,16 @@ async function renderVideos() {
         </div>`;
     renderVidCard(0);
     fadeIn();
-    document.getElementById('vid-prev').addEventListener('click', () => { if (vidIdx > 0) renderVidCard(--vidIdx); });
-    document.getElementById('vid-next').addEventListener('click', () => { if (vidIdx < vidData.length - 1) renderVidCard(++vidIdx); });
+    document.getElementById('vid-prev').addEventListener('click', () => { vidIdx = (vidIdx - 1 + vidData.length) % vidData.length; renderVidCard(vidIdx); });
+    document.getElementById('vid-next').addEventListener('click', () => { vidIdx = (vidIdx + 1) % vidData.length; renderVidCard(vidIdx); });
 
     let swipeX = 0;
     document.getElementById('c-content').addEventListener('touchstart', e => { swipeX = e.touches[0].clientX; }, { passive: true });
     document.getElementById('c-content').addEventListener('touchend', e => {
         const dx = e.changedTouches[0].clientX - swipeX;
         if (Math.abs(dx) < 50) return;
-        if (dx < 0 && vidIdx < vidData.length - 1) renderVidCard(++vidIdx);
-        else if (dx > 0 && vidIdx > 0) renderVidCard(--vidIdx);
+        if (dx < 0) { vidIdx = (vidIdx + 1) % vidData.length; renderVidCard(vidIdx); }
+        else { vidIdx = (vidIdx - 1 + vidData.length) % vidData.length; renderVidCard(vidIdx); }
     }, { passive: true });
 }
 </script>
