@@ -858,6 +858,76 @@ body.dark .card-365-thought p { color: #ddd; }
 .card-365:hover .card-365-label { opacity: 1; }
 .card-365:hover .sound-btn { opacity: 1; }
 
+/* 365 sub-toggle */
+.g365-header {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+.g365-sub {
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #bbb;
+  cursor: pointer;
+  padding: 0 0 0.15rem;
+  letter-spacing: 0.06em;
+  text-transform: lowercase;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  outline: none;
+}
+.g365-sub.active { color: #222; border-bottom-color: #222; }
+body.dark .g365-sub { color: #555; }
+body.dark .g365-sub.active { color: #ddd; border-bottom-color: #ddd; }
+
+/* thought-only cards */
+.thought-card {
+  position: relative;
+  aspect-ratio: 1;
+  cursor: pointer;
+  overflow: hidden;
+  background: #f5f2ee;
+  display: flex;
+  align-items: flex-start;
+  padding: 1rem;
+  box-sizing: border-box;
+  transition: opacity 0.2s;
+}
+body.dark .thought-card { background: #1c1c1c; }
+.thought-card p {
+  font-size: 0.72rem;
+  font-weight: 500;
+  font-style: italic;
+  color: #222;
+  line-height: 1.7;
+  text-align: left;
+  margin: 0;
+  word-break: break-word;
+  font-family: 'Montserrat', sans-serif;
+  display: -webkit-box;
+  -webkit-line-clamp: 9;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+body.dark .thought-card p { color: #ddd; }
+.thought-card-date {
+  position: absolute;
+  bottom: 0.6rem;
+  right: 0.75rem;
+  font-size: 0.63rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #aaa;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+body.dark .thought-card-date { color: #555; }
+.thought-card:hover .thought-card-date { opacity: 1; }
 
 @media (max-width: 768px) {
   #gallery-365 {

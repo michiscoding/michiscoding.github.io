@@ -434,8 +434,8 @@ document.addEventListener('DOMContentLoaded', () => {
       byDate[row.date].thought = row.thought;
     }
 
-    gallery365.innerHTML = '';
     const dates = Object.keys(byDate).sort((a, b) => b.localeCompare(a));
+    const months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
 
     if (!dates.length) {
       gallery365.innerHTML = '<p style="opacity:0.4;font-size:0.85rem">no photos yet</p>';
@@ -443,132 +443,172 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    for (const date of dates) {
-      const { photos, thought } = byDate[date];
-      let idx = 0;
+    const ICON_MUTED_365 = `<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15" stroke="white" stroke-width="2" stroke-linecap="round"/><line x1="17" y1="9" x2="23" y2="15" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>`;
+    const ICON_SOUND_365 = `<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`;
 
-      const card = document.createElement('div');
-      card.className = 'card-365';
-      card.addEventListener('click', e => {
-        if (!e.target.closest('.card-365-btn')) window.location.href = `/entries/view.html?date=${date}`;
-      });
+    // add sub-toggle header
+    const header = document.createElement('div');
+    header.className = 'g365-header';
+    header.innerHTML = `
+      <button type="button" class="g365-sub active" data-mode="all">all</button>
+      <button type="button" class="g365-sub" data-mode="thoughts">thoughts</button>`;
+    gallery365.appendChild(header);
 
-      const track = document.createElement('div');
-      track.className = 'card-365-track';
+    let g365Mode = 'all';
 
-      let photosLoaded = false;
-
-      function updateGrain() {
-        if (thought && idx === 0) {
-          card.classList.remove('loaded');
-        } else if (photosLoaded) {
-          card.classList.add('loaded');
-        }
-      }
-
-      // thought slide first
-      if (thought) {
-        const slide = document.createElement('div');
-        slide.className = 'card-365-thought';
-        const p = document.createElement('p');
-        p.textContent = thought;
-        slide.appendChild(p);
-        track.appendChild(slide);
-      }
-
-      photos.forEach((src, i) => {
-        const isVid = /\.(mp4|webm|mov)$/i.test(src);
-        const el = document.createElement(isVid ? 'video' : 'img');
-        if (isVid) {
-          el.muted = true;
-          el.autoplay = true;
-          el.loop = true;
-          el.playsInline = true;
-          if (i === 0) el.addEventListener('loadeddata', () => { photosLoaded = true; updateGrain(); }, { once: true });
-        } else {
-          if (i === 0) {
-            const onLoad = () => { photosLoaded = true; updateGrain(); };
-            el.addEventListener('load', onLoad, { once: true });
-            if (el.complete && el.naturalWidth) onLoad();
-          }
-        }
-        el.src = src;
-        track.appendChild(el);
-      });
-
-      const ICON_MUTED_365 = `<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15" stroke="white" stroke-width="2" stroke-linecap="round"/><line x1="17" y1="9" x2="23" y2="15" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>`;
-      const ICON_SOUND_365 = `<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`;
-
-      const allMedia = Array.from(track.children);
-      const hasAnyVideo = allMedia.some(el => el.tagName === 'VIDEO');
-      let soundBtn = null;
-      if (hasAnyVideo) {
-        soundBtn = document.createElement('button');
-        soundBtn.className = 'sound-btn';
-        soundBtn.innerHTML = ICON_MUTED_365;
-        soundBtn.addEventListener('click', e => {
-          e.stopPropagation();
-          const vid = allMedia[idx];
-          if (vid?.tagName !== 'VIDEO') return;
-          vid.muted = !vid.muted;
-          soundBtn.innerHTML = vid.muted ? ICON_MUTED_365 : ICON_SOUND_365;
-        });
-        card.appendChild(soundBtn);
-      }
-
-      function updateSoundBtn() {
-        if (!soundBtn) return;
-        const current = allMedia[idx];
-        soundBtn.style.display = current?.tagName === 'VIDEO' ? '' : 'none';
-        if (current?.tagName === 'VIDEO') soundBtn.innerHTML = current.muted ? ICON_MUTED_365 : ICON_SOUND_365;
-      }
-      const totalSlides = track.children.length;
-
-      if (photos.length > 1) {
-        const photoStart = (thought ? 1 : 0) + Math.floor(Math.random() * photos.length);
-        idx = photoStart;
-        track.style.transform = `translateX(-${idx * 100}%)`;
-      }
-
-      updateSoundBtn();
-
-      const prev = document.createElement('button');
-      prev.className = 'card-365-btn card-365-prev';
-      prev.textContent = '←';
-      prev.addEventListener('click', e => {
-        e.stopPropagation();
-        idx = (idx - 1 + totalSlides) % totalSlides;
-        track.style.transform = `translateX(-${idx * 100}%)`;
-        updateSoundBtn();
-        updateGrain();
-      });
-
-      const next = document.createElement('button');
-      next.className = 'card-365-btn card-365-next';
-      next.textContent = '→';
-      next.addEventListener('click', e => {
-        e.stopPropagation();
-        idx = (idx + 1) % totalSlides;
-        track.style.transform = `translateX(-${idx * 100}%)`;
-        updateSoundBtn();
-        updateGrain();
-      });
-
-      const label = document.createElement('div');
-      label.className = 'card-365-label';
-      const [yyyy, mm, dd] = date.split('-');
-      const months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
-      label.textContent = `${months[parseInt(mm)-1]} ${parseInt(dd)}`;
-
-      card.appendChild(track);
-      if (totalSlides > 1) {
-        card.appendChild(prev);
-        card.appendChild(next);
-      }
-      card.appendChild(label);
-      gallery365.appendChild(card);
+    function clearCards() {
+      Array.from(gallery365.children).forEach(el => { if (!el.classList.contains('g365-header')) el.remove(); });
     }
 
+    function renderAllCards() {
+      clearCards();
+      for (const date of dates) {
+        const { photos, thought } = byDate[date];
+        let idx = 0;
+
+        const card = document.createElement('div');
+        card.className = 'card-365';
+        card.addEventListener('click', e => {
+          if (!e.target.closest('.card-365-btn')) window.location.href = `/entries/view.html?date=${date}`;
+        });
+
+        const track = document.createElement('div');
+        track.className = 'card-365-track';
+
+        let photosLoaded = false;
+
+        const updateGrain = () => {
+          if (thought && idx === 0) { card.classList.remove('loaded'); }
+          else if (photosLoaded) { card.classList.add('loaded'); }
+        };
+
+        if (thought) {
+          const slide = document.createElement('div');
+          slide.className = 'card-365-thought';
+          const p = document.createElement('p');
+          p.textContent = thought;
+          slide.appendChild(p);
+          track.appendChild(slide);
+        }
+
+        photos.forEach((src, i) => {
+          const isVid = /\.(mp4|webm|mov)$/i.test(src);
+          const el = document.createElement(isVid ? 'video' : 'img');
+          if (isVid) {
+            el.muted = true; el.autoplay = true; el.loop = true; el.playsInline = true;
+            if (i === 0) el.addEventListener('loadeddata', () => { photosLoaded = true; updateGrain(); }, { once: true });
+          } else {
+            if (i === 0) {
+              const onLoad = () => { photosLoaded = true; updateGrain(); };
+              el.addEventListener('load', onLoad, { once: true });
+              if (el.complete && el.naturalWidth) onLoad();
+            }
+          }
+          el.src = src;
+          track.appendChild(el);
+        });
+
+        const allMedia = Array.from(track.children);
+        const hasAnyVideo = allMedia.some(el => el.tagName === 'VIDEO');
+        let soundBtn = null;
+        if (hasAnyVideo) {
+          soundBtn = document.createElement('button');
+          soundBtn.className = 'sound-btn';
+          soundBtn.innerHTML = ICON_MUTED_365;
+          soundBtn.addEventListener('click', e => {
+            e.stopPropagation();
+            const vid = allMedia[idx];
+            if (vid?.tagName !== 'VIDEO') return;
+            vid.muted = !vid.muted;
+            soundBtn.innerHTML = vid.muted ? ICON_MUTED_365 : ICON_SOUND_365;
+          });
+          card.appendChild(soundBtn);
+        }
+
+        const updateSoundBtn = () => {
+          if (!soundBtn) return;
+          const current = allMedia[idx];
+          soundBtn.style.display = current?.tagName === 'VIDEO' ? '' : 'none';
+          if (current?.tagName === 'VIDEO') soundBtn.innerHTML = current.muted ? ICON_MUTED_365 : ICON_SOUND_365;
+        };
+
+        const totalSlides = track.children.length;
+
+        if (photos.length > 1) {
+          const photoStart = (thought ? 1 : 0) + Math.floor(Math.random() * photos.length);
+          idx = photoStart;
+          track.style.transform = `translateX(-${idx * 100}%)`;
+        }
+
+        updateSoundBtn();
+
+        const prev = document.createElement('button');
+        prev.className = 'card-365-btn card-365-prev';
+        prev.textContent = '←';
+        prev.addEventListener('click', e => {
+          e.stopPropagation();
+          idx = (idx - 1 + totalSlides) % totalSlides;
+          track.style.transform = `translateX(-${idx * 100}%)`;
+          updateSoundBtn(); updateGrain();
+        });
+
+        const next = document.createElement('button');
+        next.className = 'card-365-btn card-365-next';
+        next.textContent = '→';
+        next.addEventListener('click', e => {
+          e.stopPropagation();
+          idx = (idx + 1) % totalSlides;
+          track.style.transform = `translateX(-${idx * 100}%)`;
+          updateSoundBtn(); updateGrain();
+        });
+
+        const label = document.createElement('div');
+        label.className = 'card-365-label';
+        const [, mm, dd] = date.split('-');
+        label.textContent = `${months[parseInt(mm)-1]} ${parseInt(dd)}`;
+
+        card.appendChild(track);
+        if (totalSlides > 1) { card.appendChild(prev); card.appendChild(next); }
+        card.appendChild(label);
+        gallery365.appendChild(card);
+      }
+    }
+
+    function renderThoughtsCards() {
+      clearCards();
+      dates.filter(d => byDate[d].thought).forEach(date => {
+        const thought = byDate[date].thought;
+        const [, mm, dd] = date.split('-');
+        const card = document.createElement('div');
+        card.className = 'thought-card';
+        card.addEventListener('click', () => { window.location.href = `/entries/view.html?date=${date}`; });
+        const p = document.createElement('p');
+        p.textContent = thought;
+        const dateEl = document.createElement('div');
+        dateEl.className = 'thought-card-date';
+        dateEl.textContent = `${months[parseInt(mm)-1]} ${parseInt(dd)}`;
+        card.appendChild(p);
+        card.appendChild(dateEl);
+        gallery365.appendChild(card);
+      });
+    }
+
+    header.querySelectorAll('.g365-sub').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (btn.dataset.mode === g365Mode) return;
+        header.querySelectorAll('.g365-sub').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        g365Mode = btn.dataset.mode;
+        gallery365.style.opacity = '0';
+        setTimeout(() => {
+          if (g365Mode === 'thoughts') renderThoughtsCards();
+          else renderAllCards();
+          requestAnimationFrame(() => requestAnimationFrame(() => { gallery365.style.opacity = '1'; }));
+        }, 200);
+      });
+    });
+
+    renderAllCards();
     requestAnimationFrame(() => requestAnimationFrame(() => { gallery365.style.opacity = '1'; }));
   }
 
