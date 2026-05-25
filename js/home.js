@@ -593,12 +593,12 @@ document.addEventListener('DOMContentLoaded', () => {
         slide.appendChild(p);
         track.appendChild(slide);
 
-        const label = document.createElement('div');
-        label.className = 'card-365-label';
-        label.textContent = `${months[parseInt(mm)-1]} ${parseInt(dd)}`;
+        const strip = document.createElement('div');
+        strip.className = 'thought-date-strip';
+        strip.textContent = `${months[parseInt(mm)-1]} ${parseInt(dd)}`;
 
         card.appendChild(track);
-        card.appendChild(label);
+        card.appendChild(strip);
         gallery365.appendChild(card);
       });
     }

@@ -885,17 +885,28 @@ body.dark .card-365-thought p { color: #ddd; }
 body.dark .g365-sub { color: #555; }
 body.dark .g365-sub.active { color: #ddd; border-bottom-color: #ddd; }
 
-/* thought-only card: reposition date label to bottom-right */
-.card-365.thought-only .card-365-label {
-  top: auto;
-  left: auto;
-  bottom: 0.6rem;
-  right: 0.75rem;
-  transform: none;
-  color: #aaa;
-  text-shadow: none;
+/* thought-only card: hide the centered label, use a bottom strip instead */
+.card-365.thought-only .card-365-label { display: none; }
+
+.thought-date-strip {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1.2rem 0.75rem 0.55rem;
+  font-size: 0.63rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #666;
+  background: linear-gradient(transparent, rgba(245,242,238,0.92));
+  text-align: right;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  z-index: 3;
 }
-body.dark .card-365.thought-only .card-365-label { color: #555; }
+body.dark .thought-date-strip { color: #999; background: linear-gradient(transparent, rgba(28,28,28,0.92)); }
+.card-365.thought-only:hover .thought-date-strip { opacity: 1; }
 
 @media (max-width: 768px) {
   #gallery-365 {
