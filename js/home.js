@@ -579,16 +579,26 @@ document.addEventListener('DOMContentLoaded', () => {
       dates.filter(d => byDate[d].thought).forEach(date => {
         const thought = byDate[date].thought;
         const [, mm, dd] = date.split('-');
+
         const card = document.createElement('div');
-        card.className = 'thought-card';
+        card.className = 'card-365 thought-only';
         card.addEventListener('click', () => { window.location.href = `/entries/view.html?date=${date}`; });
+
+        const track = document.createElement('div');
+        track.className = 'card-365-track';
+        const slide = document.createElement('div');
+        slide.className = 'card-365-thought';
         const p = document.createElement('p');
         p.textContent = thought;
-        const dateEl = document.createElement('div');
-        dateEl.className = 'thought-card-date';
-        dateEl.textContent = `${months[parseInt(mm)-1]} ${parseInt(dd)}`;
-        card.appendChild(p);
-        card.appendChild(dateEl);
+        slide.appendChild(p);
+        track.appendChild(slide);
+
+        const label = document.createElement('div');
+        label.className = 'card-365-label';
+        label.textContent = `${months[parseInt(mm)-1]} ${parseInt(dd)}`;
+
+        card.appendChild(track);
+        card.appendChild(label);
         gallery365.appendChild(card);
       });
     }
