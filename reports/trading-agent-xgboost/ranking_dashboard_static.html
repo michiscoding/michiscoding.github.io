@@ -187,51 +187,33 @@ function render(d) {
 }
 
 const __DATA__ = {
-  "total_pnl": 5556.46,
-  "n_trades": 110,
-  "n_realized": 25,
+  "total_pnl": 10380.33,
+  "n_trades": 117,
+  "n_realized": 27,
   "holdings": [
-    {
-      "ticker": "MU",
-      "qty": 13.3156,
-      "entry": 751.0,
-      "time": "2026-05-22 16:40",
-      "score": 0.022
-    },
-    {
-      "ticker": "MSFT",
-      "qty": 23.8909,
-      "entry": 418.57,
-      "time": "2026-05-22 16:40",
-      "score": 0.017
-    },
     {
       "ticker": "INTC",
       "qty": 82.7198,
       "entry": 120.89,
       "time": "2026-05-28 13:57",
       "score": 0.0819
+    },
+    {
+      "ticker": "ADBE",
+      "qty": 38.1519,
+      "entry": 262.11,
+      "time": "2026-06-02 16:16",
+      "score": 0.0233
+    },
+    {
+      "ticker": "GOOGL",
+      "qty": 27.6358,
+      "entry": 361.85,
+      "time": "2026-06-02 16:16",
+      "score": 0.0204
     }
   ],
   "realized": [
-    {
-      "ticker": "AMZN",
-      "buy_time": "2026-04-29 10:54",
-      "sell_time": "2026-05-06 16:39",
-      "entry": 265.19,
-      "exit": 274.99,
-      "qty": 37.7003,
-      "pnl": 369.64
-    },
-    {
-      "ticker": "COP",
-      "buy_time": "2026-05-06 16:39",
-      "sell_time": "2026-05-07 16:27",
-      "entry": 118.9,
-      "exit": 114.88,
-      "qty": 86.3334,
-      "pnl": -347.06
-    },
     {
       "ticker": "LMT",
       "buy_time": "2026-05-05 16:16",
@@ -393,6 +375,24 @@ const __DATA__ = {
       "exit": 47.37,
       "qty": 225.0731,
       "pnl": 607.7
+    },
+    {
+      "ticker": "MSFT",
+      "buy_time": "2026-05-22 16:40",
+      "sell_time": "2026-06-02 16:16",
+      "entry": 418.57,
+      "exit": 441.31,
+      "qty": 48.0631,
+      "pnl": 1092.96
+    },
+    {
+      "ticker": "MU",
+      "buy_time": "2026-05-22 16:40",
+      "sell_time": "2026-06-02 16:16",
+      "entry": 751.0,
+      "exit": 1064.1,
+      "qty": 11.916,
+      "pnl": 3730.91
     }
   ],
   "cum_pnl": [
@@ -835,15 +835,43 @@ const __DATA__ = {
     {
       "t": "2026-05-29 13:16",
       "v": 5556.46
+    },
+    {
+      "t": "2026-06-02 16:16",
+      "v": 5556.46
+    },
+    {
+      "t": "2026-06-02 16:16",
+      "v": 5556.46
+    },
+    {
+      "t": "2026-06-02 16:16",
+      "v": 6649.42
+    },
+    {
+      "t": "2026-06-02 16:16",
+      "v": 10380.33
+    },
+    {
+      "t": "2026-06-02 16:16",
+      "v": 10380.33
+    },
+    {
+      "t": "2026-06-02 16:16",
+      "v": 10380.33
+    },
+    {
+      "t": "2026-06-02 16:16",
+      "v": 10380.33
     }
   ],
   "rankings": [],
-  "last_run": "2026-05-29 13:16"
+  "last_run": "2026-06-02 16:16"
 };
 
 function refresh() {
   render(__DATA__);
-  document.getElementById('status').textContent = 'Snapshot — June 1, 2026 at 6:01 PM';
+  document.getElementById('status').textContent = 'Snapshot — June 2, 2026 at 4:16 PM';
 }
 
 refresh();
