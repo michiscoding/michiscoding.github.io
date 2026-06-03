@@ -187,9 +187,9 @@ function render(d) {
 }
 
 const __DATA__ = {
-  "total_pnl": 10380.33,
-  "n_trades": 117,
-  "n_realized": 27,
+  "total_pnl": 10151.88,
+  "n_trades": 120,
+  "n_realized": 28,
   "holdings": [
     {
       "ticker": "INTC",
@@ -197,13 +197,6 @@ const __DATA__ = {
       "entry": 120.89,
       "time": "2026-05-28 13:57",
       "score": 0.0819
-    },
-    {
-      "ticker": "ADBE",
-      "qty": 38.1519,
-      "entry": 262.11,
-      "time": "2026-06-02 16:16",
-      "score": 0.0233
     },
     {
       "ticker": "GOOGL",
@@ -214,15 +207,6 @@ const __DATA__ = {
     }
   ],
   "realized": [
-    {
-      "ticker": "LMT",
-      "buy_time": "2026-05-05 16:16",
-      "sell_time": "2026-05-07 16:27",
-      "entry": 508.93,
-      "exit": 512.41,
-      "qty": 19.6774,
-      "pnl": 68.48
-    },
     {
       "ticker": "NKE",
       "buy_time": "2026-05-05 16:16",
@@ -393,6 +377,15 @@ const __DATA__ = {
       "exit": 1064.1,
       "qty": 11.916,
       "pnl": 3730.91
+    },
+    {
+      "ticker": "ADBE",
+      "buy_time": "2026-06-02 16:16",
+      "sell_time": "2026-06-03 16:15",
+      "entry": 262.11,
+      "exit": 256.24,
+      "qty": 38.9189,
+      "pnl": -228.45
     }
   ],
   "cum_pnl": [
@@ -863,15 +856,27 @@ const __DATA__ = {
     {
       "t": "2026-06-02 16:16",
       "v": 10380.33
+    },
+    {
+      "t": "2026-06-03 16:15",
+      "v": 10151.88
+    },
+    {
+      "t": "2026-06-03 16:15",
+      "v": 10151.88
+    },
+    {
+      "t": "2026-06-03 16:15",
+      "v": 10151.88
     }
   ],
   "rankings": [],
-  "last_run": "2026-06-02 16:16"
+  "last_run": "2026-06-03 16:15"
 };
 
 function refresh() {
   render(__DATA__);
-  document.getElementById('status').textContent = 'Snapshot — June 2, 2026 at 4:16 PM';
+  document.getElementById('status').textContent = 'Snapshot — June 3, 2026 at 4:15 PM';
 }
 
 refresh();
