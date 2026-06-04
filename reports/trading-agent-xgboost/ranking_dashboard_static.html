@@ -187,9 +187,9 @@ function render(d) {
 }
 
 const __DATA__ = {
-  "total_pnl": 10151.88,
-  "n_trades": 120,
-  "n_realized": 28,
+  "total_pnl": 11002.55,
+  "n_trades": 126,
+  "n_realized": 29,
   "holdings": [
     {
       "ticker": "INTC",
@@ -199,23 +199,14 @@ const __DATA__ = {
       "score": 0.0819
     },
     {
-      "ticker": "GOOGL",
-      "qty": 27.6358,
-      "entry": 361.85,
-      "time": "2026-06-02 16:16",
-      "score": 0.0204
+      "ticker": "UNH",
+      "qty": 25.2226,
+      "entry": 396.47,
+      "time": "2026-06-04 16:15",
+      "score": 0.0232
     }
   ],
   "realized": [
-    {
-      "ticker": "NKE",
-      "buy_time": "2026-05-05 16:16",
-      "sell_time": "2026-05-07 16:27",
-      "entry": 43.06,
-      "exit": 44.41,
-      "qty": 228.0009,
-      "pnl": 307.8
-    },
     {
       "ticker": "AMD",
       "buy_time": "2026-05-07 16:27",
@@ -386,6 +377,15 @@ const __DATA__ = {
       "exit": 256.24,
       "qty": 38.9189,
       "pnl": -228.45
+    },
+    {
+      "ticker": "GOOGL",
+      "buy_time": "2026-06-02 16:16",
+      "sell_time": "2026-06-04 16:15",
+      "entry": 361.85,
+      "exit": 372.19,
+      "qty": 82.2702,
+      "pnl": 850.67
     }
   ],
   "cum_pnl": [
@@ -868,15 +868,39 @@ const __DATA__ = {
     {
       "t": "2026-06-03 16:15",
       "v": 10151.88
+    },
+    {
+      "t": "2026-06-04 16:15",
+      "v": 10151.88
+    },
+    {
+      "t": "2026-06-04 16:15",
+      "v": 11002.55
+    },
+    {
+      "t": "2026-06-04 16:15",
+      "v": 11002.55
+    },
+    {
+      "t": "2026-06-04 16:15",
+      "v": 11002.55
+    },
+    {
+      "t": "2026-06-04 16:15",
+      "v": 11002.55
+    },
+    {
+      "t": "2026-06-04 16:15",
+      "v": 11002.55
     }
   ],
   "rankings": [],
-  "last_run": "2026-06-03 16:15"
+  "last_run": "2026-06-04 16:15"
 };
 
 function refresh() {
   render(__DATA__);
-  document.getElementById('status').textContent = 'Snapshot — June 3, 2026 at 4:15 PM';
+  document.getElementById('status').textContent = 'Snapshot — June 4, 2026 at 4:15 PM';
 }
 
 refresh();
