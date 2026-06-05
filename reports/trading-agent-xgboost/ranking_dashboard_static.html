@@ -187,9 +187,9 @@ function render(d) {
 }
 
 const __DATA__ = {
-  "total_pnl": 11002.55,
-  "n_trades": 126,
-  "n_realized": 29,
+  "total_pnl": 11077.06,
+  "n_trades": 132,
+  "n_realized": 30,
   "holdings": [
     {
       "ticker": "INTC",
@@ -199,23 +199,21 @@ const __DATA__ = {
       "score": 0.0819
     },
     {
-      "ticker": "UNH",
-      "qty": 25.2226,
-      "entry": 396.47,
-      "time": "2026-06-04 16:15",
-      "score": 0.0232
+      "ticker": "AMD",
+      "qty": 21.4417,
+      "entry": 466.38,
+      "time": "2026-06-05 16:15",
+      "score": 0.0751
+    },
+    {
+      "ticker": "TXN",
+      "qty": 35.0803,
+      "entry": 285.06,
+      "time": "2026-06-05 16:15",
+      "score": 0.0358
     }
   ],
   "realized": [
-    {
-      "ticker": "AMD",
-      "buy_time": "2026-05-07 16:27",
-      "sell_time": "2026-05-11 23:32",
-      "entry": 408.46,
-      "exit": 458.79,
-      "qty": 23.526,
-      "pnl": 1184.06
-    },
     {
       "ticker": "INTC",
       "buy_time": "2026-05-07 16:27",
@@ -386,6 +384,15 @@ const __DATA__ = {
       "exit": 372.19,
       "qty": 82.2702,
       "pnl": 850.67
+    },
+    {
+      "ticker": "UNH",
+      "buy_time": "2026-06-04 16:15",
+      "sell_time": "2026-06-05 16:15",
+      "entry": 396.47,
+      "exit": 399.47,
+      "qty": 24.8367,
+      "pnl": 74.51
     }
   ],
   "cum_pnl": [
@@ -892,15 +899,39 @@ const __DATA__ = {
     {
       "t": "2026-06-04 16:15",
       "v": 11002.55
+    },
+    {
+      "t": "2026-06-05 16:15",
+      "v": 11002.55
+    },
+    {
+      "t": "2026-06-05 16:15",
+      "v": 11002.55
+    },
+    {
+      "t": "2026-06-05 16:15",
+      "v": 11002.55
+    },
+    {
+      "t": "2026-06-05 16:15",
+      "v": 11077.06
+    },
+    {
+      "t": "2026-06-05 16:15",
+      "v": 11077.06
+    },
+    {
+      "t": "2026-06-05 16:15",
+      "v": 11077.06
     }
   ],
   "rankings": [],
-  "last_run": "2026-06-04 16:15"
+  "last_run": "2026-06-05 16:15"
 };
 
 function refresh() {
   render(__DATA__);
-  document.getElementById('status').textContent = 'Snapshot — June 4, 2026 at 4:15 PM';
+  document.getElementById('status').textContent = 'Snapshot — June 5, 2026 at 4:15 PM';
 }
 
 refresh();
