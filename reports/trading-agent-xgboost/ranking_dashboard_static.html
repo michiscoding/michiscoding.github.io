@@ -187,9 +187,9 @@ function render(d) {
 }
 
 const __DATA__ = {
-  "total_pnl": 11972.65,
-  "n_trades": 160,
-  "n_realized": 37,
+  "total_pnl": 11819.67,
+  "n_trades": 169,
+  "n_realized": 38,
   "holdings": [
     {
       "ticker": "INTC",
@@ -199,23 +199,21 @@ const __DATA__ = {
       "score": 0.0179
     },
     {
-      "ticker": "LMT",
-      "qty": 18.2256,
-      "entry": 548.68,
-      "time": "2026-06-11 16:15",
-      "score": 0.005
+      "ticker": "NKE",
+      "qty": 222.5684,
+      "entry": 44.93,
+      "time": "2026-06-12 16:15",
+      "score": 0.0367
+    },
+    {
+      "ticker": "SBUX",
+      "qty": 97.0497,
+      "entry": 103.04,
+      "time": "2026-06-12 16:15",
+      "score": 0.0225
     }
   ],
   "realized": [
-    {
-      "ticker": "MU",
-      "buy_time": "2026-05-14 16:52",
-      "sell_time": "2026-05-19 16:15",
-      "entry": 776.01,
-      "exit": 698.74,
-      "qty": 13.4147,
-      "pnl": -1036.56
-    },
     {
       "ticker": "AMZN",
       "buy_time": "2026-05-19 16:15",
@@ -386,6 +384,15 @@ const __DATA__ = {
       "exit": 297.1,
       "qty": 34.2727,
       "pnl": 412.64
+    },
+    {
+      "ticker": "LMT",
+      "buy_time": "2026-06-11 16:15",
+      "sell_time": "2026-06-12 16:15",
+      "entry": 548.68,
+      "exit": 540.33,
+      "qty": 18.322,
+      "pnl": -152.99
     }
   ],
   "cum_pnl": [
@@ -1028,15 +1035,51 @@ const __DATA__ = {
     {
       "t": "2026-06-11 16:15",
       "v": 11972.65
+    },
+    {
+      "t": "2026-06-12 16:15",
+      "v": 11972.65
+    },
+    {
+      "t": "2026-06-12 16:15",
+      "v": 11972.65
+    },
+    {
+      "t": "2026-06-12 16:15",
+      "v": 11972.65
+    },
+    {
+      "t": "2026-06-12 16:15",
+      "v": 11819.67
+    },
+    {
+      "t": "2026-06-12 16:15",
+      "v": 11819.67
+    },
+    {
+      "t": "2026-06-12 16:15",
+      "v": 11819.67
+    },
+    {
+      "t": "2026-06-12 16:15",
+      "v": 11819.67
+    },
+    {
+      "t": "2026-06-12 16:15",
+      "v": 11819.67
+    },
+    {
+      "t": "2026-06-12 16:15",
+      "v": 11819.67
     }
   ],
   "rankings": [],
-  "last_run": "2026-06-11 16:15"
+  "last_run": "2026-06-12 16:15"
 };
 
 function refresh() {
   render(__DATA__);
-  document.getElementById('status').textContent = 'Snapshot — June 11, 2026 at 4:15 PM';
+  document.getElementById('status').textContent = 'Snapshot — June 12, 2026 at 4:15 PM';
 }
 
 refresh();
