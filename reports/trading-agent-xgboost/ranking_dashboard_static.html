@@ -188,7 +188,7 @@ function render(d) {
 
 const __DATA__ = {
   "total_pnl": 12405.48,
-  "n_trades": 201,
+  "n_trades": 203,
   "n_realized": 46,
   "holdings": [
     {
@@ -202,15 +202,15 @@ const __DATA__ = {
       "ticker": "QCOM",
       "qty": 44.2263,
       "entry": 226.11,
-      "time": "2026-06-18 16:15",
-      "score": 0.0832
+      "time": "2026-06-19 16:17",
+      "score": 0.0846
     },
     {
       "ticker": "MU",
       "qty": 8.8184,
       "entry": 1133.99,
-      "time": "2026-06-18 16:15",
-      "score": 0.0515
+      "time": "2026-06-19 16:17",
+      "score": 0.0552
     }
   ],
   "realized": [
@@ -1199,15 +1199,23 @@ const __DATA__ = {
     {
       "t": "2026-06-18 16:15",
       "v": 12405.48
+    },
+    {
+      "t": "2026-06-19 16:17",
+      "v": 12405.48
+    },
+    {
+      "t": "2026-06-19 16:17",
+      "v": 12405.48
     }
   ],
   "rankings": [],
-  "last_run": "2026-06-18 16:15"
+  "last_run": "2026-06-19 16:17"
 };
 
 function refresh() {
   render(__DATA__);
-  document.getElementById('status').textContent = 'Snapshot — June 18, 2026 at 4:15 PM';
+  document.getElementById('status').textContent = 'Snapshot — June 19, 2026 at 4:17 PM';
 }
 
 refresh();
