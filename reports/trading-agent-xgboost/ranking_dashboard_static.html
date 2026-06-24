@@ -188,9 +188,31 @@ function render(d) {
 
 const __DATA__ = {
   "total_pnl": 13150.84,
-  "n_trades": 216,
+  "n_trades": 221,
   "n_realized": 50,
-  "holdings": [],
+  "holdings": [
+    {
+      "ticker": "INTC",
+      "qty": 75.959,
+      "entry": 131.65,
+      "time": "2026-06-24 16:17",
+      "score": 0.0475
+    },
+    {
+      "ticker": "AMD",
+      "qty": 19.2404,
+      "entry": 519.74,
+      "time": "2026-06-24 16:17",
+      "score": 0.0357
+    },
+    {
+      "ticker": "ORCL",
+      "qty": 63.48,
+      "entry": 157.53,
+      "time": "2026-06-24 16:17",
+      "score": 0.0262
+    }
+  ],
   "realized": [
     {
       "ticker": "AMD",
@@ -1237,15 +1259,35 @@ const __DATA__ = {
     {
       "t": "2026-06-23 16:32",
       "v": 13150.84
+    },
+    {
+      "t": "2026-06-24 16:17",
+      "v": 13150.84
+    },
+    {
+      "t": "2026-06-24 16:17",
+      "v": 13150.84
+    },
+    {
+      "t": "2026-06-24 16:17",
+      "v": 13150.84
+    },
+    {
+      "t": "2026-06-24 16:17",
+      "v": 13150.84
+    },
+    {
+      "t": "2026-06-24 16:17",
+      "v": 13150.84
     }
   ],
   "rankings": [],
-  "last_run": "2026-06-23 16:32"
+  "last_run": "2026-06-24 16:17"
 };
 
 function refresh() {
   render(__DATA__);
-  document.getElementById('status').textContent = 'Snapshot — June 23, 2026 at 4:32 PM';
+  document.getElementById('status').textContent = 'Snapshot — June 24, 2026 at 4:17 PM';
 }
 
 refresh();
