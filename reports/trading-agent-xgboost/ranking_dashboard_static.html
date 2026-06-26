@@ -187,9 +187,9 @@ function render(d) {
 }
 
 const __DATA__ = {
-  "total_pnl": 12913.5,
-  "n_trades": 230,
-  "n_realized": 52,
+  "total_pnl": 12153.16,
+  "n_trades": 235,
+  "n_realized": 53,
   "holdings": [
     {
       "ticker": "AMD",
@@ -199,23 +199,21 @@ const __DATA__ = {
       "score": 0.0357
     },
     {
-      "ticker": "QCOM",
-      "qty": 48.8043,
-      "entry": 204.9,
-      "time": "2026-06-25 16:23",
-      "score": 0.0185
+      "ticker": "INTC",
+      "qty": 77.9302,
+      "entry": 128.32,
+      "time": "2026-06-26 16:30",
+      "score": 0.0599
+    },
+    {
+      "ticker": "TXN",
+      "qty": 35.0355,
+      "entry": 285.425,
+      "time": "2026-06-26 16:30",
+      "score": 0.049
     }
   ],
   "realized": [
-    {
-      "ticker": "CAT",
-      "buy_time": "2026-06-08 23:35",
-      "sell_time": "2026-06-09 16:15",
-      "entry": 915.64,
-      "exit": 914.7,
-      "qty": 10.7423,
-      "pnl": -10.1
-    },
     {
       "ticker": "LLY",
       "buy_time": "2026-06-08 23:35",
@@ -386,6 +384,15 @@ const __DATA__ = {
       "exit": 152.46,
       "qty": 63.9631,
       "pnl": -324.29
+    },
+    {
+      "ticker": "QCOM",
+      "buy_time": "2026-06-25 16:23",
+      "sell_time": "2026-06-26 16:30",
+      "entry": 204.9,
+      "exit": 189.39,
+      "qty": 49.0223,
+      "pnl": -760.34
     }
   ],
   "cum_pnl": [
@@ -1308,15 +1315,35 @@ const __DATA__ = {
     {
       "t": "2026-06-25 16:23",
       "v": 12913.5
+    },
+    {
+      "t": "2026-06-26 16:30",
+      "v": 12913.5
+    },
+    {
+      "t": "2026-06-26 16:30",
+      "v": 12153.16
+    },
+    {
+      "t": "2026-06-26 16:30",
+      "v": 12153.16
+    },
+    {
+      "t": "2026-06-26 16:30",
+      "v": 12153.16
+    },
+    {
+      "t": "2026-06-26 16:30",
+      "v": 12153.16
     }
   ],
   "rankings": [],
-  "last_run": "2026-06-25 16:23"
+  "last_run": "2026-06-26 16:30"
 };
 
 function refresh() {
   render(__DATA__);
-  document.getElementById('status').textContent = 'Snapshot — June 25, 2026 at 4:23 PM';
+  document.getElementById('status').textContent = 'Snapshot — June 26, 2026 at 4:30 PM';
 }
 
 refresh();
