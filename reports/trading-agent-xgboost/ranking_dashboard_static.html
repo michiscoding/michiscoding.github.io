@@ -187,9 +187,9 @@ function render(d) {
 }
 
 const __DATA__ = {
-  "total_pnl": 12155.1,
-  "n_trades": 251,
-  "n_realized": 54,
+  "total_pnl": 11523.13,
+  "n_trades": 255,
+  "n_realized": 55,
   "holdings": [
     {
       "ticker": "AMD",
@@ -199,30 +199,21 @@ const __DATA__ = {
       "score": 0.0357
     },
     {
-      "ticker": "INTC",
-      "qty": 77.9302,
-      "entry": 128.32,
-      "time": "2026-06-26 16:30",
-      "score": 0.0599
-    },
-    {
       "ticker": "QCOM",
       "qty": 52.9886,
       "entry": 188.72,
       "time": "2026-06-29 16:47",
       "score": 0.0331
+    },
+    {
+      "ticker": "MU",
+      "qty": 10.2505,
+      "entry": 975.56,
+      "time": "2026-07-02 16:39",
+      "score": 0.0453
     }
   ],
   "realized": [
-    {
-      "ticker": "AMD",
-      "buy_time": "2026-06-09 16:15",
-      "sell_time": "2026-06-11 16:15",
-      "entry": 475.51,
-      "exit": 488.45,
-      "qty": 21.3001,
-      "pnl": 275.62
-    },
     {
       "ticker": "QCOM",
       "buy_time": "2026-06-10 16:21",
@@ -393,6 +384,15 @@ const __DATA__ = {
       "exit": 285.48,
       "qty": 35.2311,
       "pnl": 1.94
+    },
+    {
+      "ticker": "INTC",
+      "buy_time": "2026-06-26 16:30",
+      "sell_time": "2026-07-02 16:39",
+      "entry": 128.32,
+      "exit": 120.35,
+      "qty": 79.2927,
+      "pnl": -631.96
     }
   ],
   "cum_pnl": [
@@ -1399,15 +1399,31 @@ const __DATA__ = {
     {
       "t": "2026-07-01 16:21",
       "v": 12155.1
+    },
+    {
+      "t": "2026-07-02 16:39",
+      "v": 11523.13
+    },
+    {
+      "t": "2026-07-02 16:39",
+      "v": 11523.13
+    },
+    {
+      "t": "2026-07-02 16:39",
+      "v": 11523.13
+    },
+    {
+      "t": "2026-07-02 16:39",
+      "v": 11523.13
     }
   ],
   "rankings": [],
-  "last_run": "2026-07-01 16:21"
+  "last_run": "2026-07-02 16:39"
 };
 
 function refresh() {
   render(__DATA__);
-  document.getElementById('status').textContent = 'Snapshot — July 1, 2026 at 4:21 PM';
+  document.getElementById('status').textContent = 'Snapshot — July 2, 2026 at 4:39 PM';
 }
 
 refresh();
