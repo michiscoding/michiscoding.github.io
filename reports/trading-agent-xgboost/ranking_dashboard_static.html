@@ -187,35 +187,33 @@ function render(d) {
 }
 
 const __DATA__ = {
-  "total_pnl": 12181.11,
-  "n_trades": 266,
-  "n_realized": 58,
+  "total_pnl": 11145.88,
+  "n_trades": 272,
+  "n_realized": 59,
   "holdings": [
-    {
-      "ticker": "INTC",
-      "qty": 81.8331,
-      "entry": 122.2,
-      "time": "2026-07-06 16:15",
-      "score": 0.0386
-    },
     {
       "ticker": "LMT",
       "qty": 18.5874,
       "entry": 538.0,
       "time": "2026-07-06 16:15",
       "score": 0.0244
+    },
+    {
+      "ticker": "QCOM",
+      "qty": 54.6538,
+      "entry": 182.97,
+      "time": "2026-07-07 16:17",
+      "score": 0.0542
+    },
+    {
+      "ticker": "META",
+      "qty": 16.2448,
+      "entry": 615.58,
+      "time": "2026-07-07 16:17",
+      "score": 0.0405
     }
   ],
   "realized": [
-    {
-      "ticker": "INTC",
-      "buy_time": "2026-06-11 16:15",
-      "sell_time": "2026-06-15 16:15",
-      "entry": 116.96,
-      "exit": 127.86,
-      "qty": 85.7115,
-      "pnl": 934.26
-    },
     {
       "ticker": "SBUX",
       "buy_time": "2026-06-12 16:15",
@@ -386,6 +384,15 @@ const __DATA__ = {
       "exit": 186.48,
       "qty": 52.222,
       "pnl": -116.98
+    },
+    {
+      "ticker": "INTC",
+      "buy_time": "2026-07-06 16:15",
+      "sell_time": "2026-07-07 16:17",
+      "entry": 122.2,
+      "exit": 110.39,
+      "qty": 87.6577,
+      "pnl": -1035.24
     }
   ],
   "cum_pnl": [
@@ -1452,15 +1459,39 @@ const __DATA__ = {
     {
       "t": "2026-07-06 16:15",
       "v": 12181.11
+    },
+    {
+      "t": "2026-07-07 16:17",
+      "v": 12181.11
+    },
+    {
+      "t": "2026-07-07 16:17",
+      "v": 11145.88
+    },
+    {
+      "t": "2026-07-07 16:17",
+      "v": 11145.88
+    },
+    {
+      "t": "2026-07-07 16:17",
+      "v": 11145.88
+    },
+    {
+      "t": "2026-07-07 16:17",
+      "v": 11145.88
+    },
+    {
+      "t": "2026-07-07 16:17",
+      "v": 11145.88
     }
   ],
   "rankings": [],
-  "last_run": "2026-07-06 16:15"
+  "last_run": "2026-07-07 16:17"
 };
 
 function refresh() {
   render(__DATA__);
-  document.getElementById('status').textContent = 'Snapshot — July 6, 2026 at 4:15 PM';
+  document.getElementById('status').textContent = 'Snapshot — July 7, 2026 at 4:17 PM';
 }
 
 refresh();
