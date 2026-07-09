@@ -187,17 +187,10 @@ function render(d) {
 }
 
 const __DATA__ = {
-  "total_pnl": 11145.88,
-  "n_trades": 272,
-  "n_realized": 59,
+  "total_pnl": 10554.26,
+  "n_trades": 278,
+  "n_realized": 61,
   "holdings": [
-    {
-      "ticker": "LMT",
-      "qty": 18.5874,
-      "entry": 538.0,
-      "time": "2026-07-06 16:15",
-      "score": 0.0244
-    },
     {
       "ticker": "QCOM",
       "qty": 54.6538,
@@ -206,32 +199,14 @@ const __DATA__ = {
       "score": 0.0542
     },
     {
-      "ticker": "META",
-      "qty": 16.2448,
-      "entry": 615.58,
-      "time": "2026-07-07 16:17",
-      "score": 0.0405
+      "ticker": "AMD",
+      "qty": 19.3272,
+      "entry": 517.405,
+      "time": "2026-07-09 00:22",
+      "score": 0.0619
     }
   ],
   "realized": [
-    {
-      "ticker": "SBUX",
-      "buy_time": "2026-06-12 16:15",
-      "sell_time": "2026-06-15 16:15",
-      "entry": 103.04,
-      "exit": 101.59,
-      "qty": 97.2943,
-      "pnl": -141.08
-    },
-    {
-      "ticker": "LMT",
-      "buy_time": "2026-06-15 16:15",
-      "sell_time": "2026-06-16 16:32",
-      "entry": 530.36,
-      "exit": 535.95,
-      "qty": 18.7085,
-      "pnl": 104.58
-    },
     {
       "ticker": "MU",
       "buy_time": "2026-06-15 16:15",
@@ -393,6 +368,24 @@ const __DATA__ = {
       "exit": 110.39,
       "qty": 87.6577,
       "pnl": -1035.24
+    },
+    {
+      "ticker": "LMT",
+      "buy_time": "2026-07-06 16:15",
+      "sell_time": "2026-07-09 00:22",
+      "entry": 538.0,
+      "exit": 527.96,
+      "qty": 18.2841,
+      "pnl": -183.57
+    },
+    {
+      "ticker": "META",
+      "buy_time": "2026-07-07 16:17",
+      "sell_time": "2026-07-09 00:22",
+      "entry": 615.58,
+      "exit": 603.12,
+      "qty": 32.7481,
+      "pnl": -408.04
     }
   ],
   "cum_pnl": [
@@ -1483,15 +1476,39 @@ const __DATA__ = {
     {
       "t": "2026-07-07 16:17",
       "v": 11145.88
+    },
+    {
+      "t": "2026-07-09 00:22",
+      "v": 11145.88
+    },
+    {
+      "t": "2026-07-09 00:22",
+      "v": 10962.3
+    },
+    {
+      "t": "2026-07-09 00:22",
+      "v": 10554.26
+    },
+    {
+      "t": "2026-07-09 00:22",
+      "v": 10554.26
+    },
+    {
+      "t": "2026-07-09 00:22",
+      "v": 10554.26
+    },
+    {
+      "t": "2026-07-09 00:22",
+      "v": 10554.26
     }
   ],
   "rankings": [],
-  "last_run": "2026-07-07 16:17"
+  "last_run": "2026-07-09 00:22"
 };
 
 function refresh() {
   render(__DATA__);
-  document.getElementById('status').textContent = 'Snapshot — July 7, 2026 at 4:17 PM';
+  document.getElementById('status').textContent = 'Snapshot — July 9, 2026 at 12:22 AM';
 }
 
 refresh();
