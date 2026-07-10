@@ -187,35 +187,33 @@ function render(d) {
 }
 
 const __DATA__ = {
-  "total_pnl": 11092.24,
-  "n_trades": 283,
-  "n_realized": 62,
+  "total_pnl": 11427.9,
+  "n_trades": 290,
+  "n_realized": 63,
   "holdings": [
-    {
-      "ticker": "QCOM",
-      "qty": 54.6538,
-      "entry": 182.97,
-      "time": "2026-07-07 16:17",
-      "score": 0.0542
-    },
     {
       "ticker": "META",
       "qty": 15.8358,
       "entry": 631.48,
       "time": "2026-07-09 16:18",
       "score": 0.0209
+    },
+    {
+      "ticker": "AMD",
+      "qty": 17.9247,
+      "entry": 557.89,
+      "time": "2026-07-10 16:41",
+      "score": 0.0982
+    },
+    {
+      "ticker": "INTC",
+      "qty": 91.0415,
+      "entry": 109.84,
+      "time": "2026-07-10 16:41",
+      "score": 0.0654
     }
   ],
   "realized": [
-    {
-      "ticker": "NKE",
-      "buy_time": "2026-06-12 16:15",
-      "sell_time": "2026-06-16 16:32",
-      "entry": 44.93,
-      "exit": 45.04,
-      "qty": 218.6868,
-      "pnl": 24.06
-    },
     {
       "ticker": "QCOM",
       "buy_time": "2026-06-16 16:32",
@@ -386,6 +384,15 @@ const __DATA__ = {
       "exit": 546.72,
       "qty": 18.3516,
       "pnl": 537.98
+    },
+    {
+      "ticker": "QCOM",
+      "buy_time": "2026-07-07 16:17",
+      "sell_time": "2026-07-10 16:41",
+      "entry": 182.97,
+      "exit": 189.16,
+      "qty": 54.2266,
+      "pnl": 335.66
     }
   ],
   "cum_pnl": [
@@ -1520,15 +1527,43 @@ const __DATA__ = {
     {
       "t": "2026-07-09 16:18",
       "v": 11092.24
+    },
+    {
+      "t": "2026-07-10 16:41",
+      "v": 11092.24
+    },
+    {
+      "t": "2026-07-10 16:41",
+      "v": 11092.24
+    },
+    {
+      "t": "2026-07-10 16:41",
+      "v": 11092.24
+    },
+    {
+      "t": "2026-07-10 16:41",
+      "v": 11092.24
+    },
+    {
+      "t": "2026-07-10 16:41",
+      "v": 11427.9
+    },
+    {
+      "t": "2026-07-10 16:41",
+      "v": 11427.9
+    },
+    {
+      "t": "2026-07-10 16:41",
+      "v": 11427.9
     }
   ],
   "rankings": [],
-  "last_run": "2026-07-09 16:18"
+  "last_run": "2026-07-10 16:41"
 };
 
 function refresh() {
   render(__DATA__);
-  document.getElementById('status').textContent = 'Snapshot — July 9, 2026 at 4:18 PM';
+  document.getElementById('status').textContent = 'Snapshot — July 10, 2026 at 4:41 PM';
 }
 
 refresh();
