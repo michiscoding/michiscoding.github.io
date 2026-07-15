@@ -187,17 +187,10 @@ function render(d) {
 }
 
 const __DATA__ = {
-  "total_pnl": 11537.87,
-  "n_trades": 301,
-  "n_realized": 65,
+  "total_pnl": 11004.82,
+  "n_trades": 307,
+  "n_realized": 66,
   "holdings": [
-    {
-      "ticker": "AMD",
-      "qty": 17.9247,
-      "entry": 557.89,
-      "time": "2026-07-10 16:41",
-      "score": 0.0982
-    },
     {
       "ticker": "QCOM",
       "qty": 54.3537,
@@ -211,18 +204,16 @@ const __DATA__ = {
       "entry": 131.54,
       "time": "2026-07-13 17:11",
       "score": 0.0624
+    },
+    {
+      "ticker": "INTC",
+      "qty": 97.0968,
+      "entry": 102.99,
+      "time": "2026-07-15 16:50",
+      "score": 0.0753
     }
   ],
   "realized": [
-    {
-      "ticker": "OXY",
-      "buy_time": "2026-06-17 16:16",
-      "sell_time": "2026-06-18 16:15",
-      "entry": 53.04,
-      "exit": 51.82,
-      "qty": 191.6809,
-      "pnl": -233.85
-    },
     {
       "ticker": "MU",
       "buy_time": "2026-06-19 16:17",
@@ -393,6 +384,15 @@ const __DATA__ = {
       "exit": 656.73,
       "qty": 29.7268,
       "pnl": 750.6
+    },
+    {
+      "ticker": "AMD",
+      "buy_time": "2026-07-10 16:41",
+      "sell_time": "2026-07-15 16:50",
+      "entry": 557.89,
+      "exit": 529.14,
+      "qty": 18.5408,
+      "pnl": -533.05
     }
   ],
   "cum_pnl": [
@@ -1599,15 +1599,39 @@ const __DATA__ = {
     {
       "t": "2026-07-14 17:11",
       "v": 11537.87
+    },
+    {
+      "t": "2026-07-15 16:50",
+      "v": 11537.87
+    },
+    {
+      "t": "2026-07-15 16:50",
+      "v": 11004.82
+    },
+    {
+      "t": "2026-07-15 16:50",
+      "v": 11004.82
+    },
+    {
+      "t": "2026-07-15 16:50",
+      "v": 11004.82
+    },
+    {
+      "t": "2026-07-15 16:50",
+      "v": 11004.82
+    },
+    {
+      "t": "2026-07-15 16:50",
+      "v": 11004.82
     }
   ],
   "rankings": [],
-  "last_run": "2026-07-14 17:11"
+  "last_run": "2026-07-15 16:50"
 };
 
 function refresh() {
   render(__DATA__);
-  document.getElementById('status').textContent = 'Snapshot — July 14, 2026 at 5:11 PM';
+  document.getElementById('status').textContent = 'Snapshot — July 15, 2026 at 4:50 PM';
 }
 
 refresh();
