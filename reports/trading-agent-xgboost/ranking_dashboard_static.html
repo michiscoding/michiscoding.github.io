@@ -187,9 +187,9 @@ function render(d) {
 }
 
 const __DATA__ = {
-  "total_pnl": 8791.52,
-  "n_trades": 359,
-  "n_realized": 75,
+  "total_pnl": 8702.16,
+  "n_trades": 364,
+  "n_realized": 76,
   "holdings": [
     {
       "ticker": "MU",
@@ -206,23 +206,14 @@ const __DATA__ = {
       "score": 0.0332
     },
     {
-      "ticker": "MSFT",
-      "qty": 19.7605,
-      "entry": 506.06,
-      "time": "2026-08-10 17:11",
-      "score": 0.0324
+      "ticker": "INTC",
+      "qty": 102.3437,
+      "entry": 97.71,
+      "time": "2026-08-11 17:00",
+      "score": 0.0495
     }
   ],
   "realized": [
-    {
-      "ticker": "AMD",
-      "buy_time": "2026-06-24 16:17",
-      "sell_time": "2026-07-06 16:15",
-      "entry": 519.74,
-      "exit": 552.05,
-      "qty": 18.2991,
-      "pnl": 591.24
-    },
     {
       "ticker": "MU",
       "buy_time": "2026-07-03 16:18",
@@ -393,6 +384,15 @@ const __DATA__ = {
       "exit": 217.55,
       "qty": 89.439,
       "pnl": -573.3
+    },
+    {
+      "ticker": "MSFT",
+      "buy_time": "2026-08-10 17:11",
+      "sell_time": "2026-08-11 17:00",
+      "entry": 506.06,
+      "exit": 503.81,
+      "qty": 39.7161,
+      "pnl": -89.36
     }
   ],
   "cum_pnl": [
@@ -1831,15 +1831,35 @@ const __DATA__ = {
     {
       "t": "2026-08-10 17:11",
       "v": 8791.52
+    },
+    {
+      "t": "2026-08-11 17:00",
+      "v": 8791.52
+    },
+    {
+      "t": "2026-08-11 17:00",
+      "v": 8791.52
+    },
+    {
+      "t": "2026-08-11 17:00",
+      "v": 8702.16
+    },
+    {
+      "t": "2026-08-11 17:00",
+      "v": 8702.16
+    },
+    {
+      "t": "2026-08-11 17:00",
+      "v": 8702.16
     }
   ],
   "rankings": [],
-  "last_run": "2026-08-10 17:11"
+  "last_run": "2026-08-11 17:00"
 };
 
 function refresh() {
   render(__DATA__);
-  document.getElementById('status').textContent = 'Snapshot — August 10, 2026 at 5:11 PM';
+  document.getElementById('status').textContent = 'Snapshot — August 11, 2026 at 5:00 PM';
 }
 
 refresh();
