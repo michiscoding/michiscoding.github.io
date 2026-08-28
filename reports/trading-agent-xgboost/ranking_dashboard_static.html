@@ -187,9 +187,9 @@ function render(d) {
 }
 
 const __DATA__ = {
-  "total_pnl": 9730.97,
-  "n_trades": 398,
-  "n_realized": 82,
+  "total_pnl": 9659.83,
+  "n_trades": 402,
+  "n_realized": 83,
   "holdings": [
     {
       "ticker": "MU",
@@ -199,30 +199,21 @@ const __DATA__ = {
       "score": 0.0238
     },
     {
-      "ticker": "ORCL",
-      "qty": 65.8155,
-      "entry": 151.94,
-      "time": "2026-08-27 16:23",
-      "score": 0.0761
-    },
-    {
       "ticker": "CRM",
       "qty": 39.6747,
       "entry": 252.05,
       "time": "2026-08-27 16:23",
       "score": 0.0645
+    },
+    {
+      "ticker": "INTC",
+      "qty": 111.7693,
+      "entry": 89.47,
+      "time": "2026-08-28 16:30",
+      "score": 0.0545
     }
   ],
   "realized": [
-    {
-      "ticker": "QCOM",
-      "buy_time": "2026-07-07 16:17",
-      "sell_time": "2026-07-10 16:41",
-      "entry": 182.97,
-      "exit": 189.16,
-      "qty": 54.2266,
-      "pnl": 335.66
-    },
     {
       "ticker": "INTC",
       "buy_time": "2026-07-10 16:41",
@@ -393,6 +384,15 @@ const __DATA__ = {
       "exit": 329.11,
       "qty": 30.8807,
       "pnl": 424.3
+    },
+    {
+      "ticker": "ORCL",
+      "buy_time": "2026-08-27 16:23",
+      "sell_time": "2026-08-28 16:30",
+      "entry": 151.94,
+      "exit": 150.85,
+      "qty": 65.2609,
+      "pnl": -71.13
     }
   ],
   "cum_pnl": [
@@ -1987,15 +1987,31 @@ const __DATA__ = {
     {
       "t": "2026-08-27 16:23",
       "v": 9730.97
+    },
+    {
+      "t": "2026-08-28 16:30",
+      "v": 9730.97
+    },
+    {
+      "t": "2026-08-28 16:30",
+      "v": 9659.83
+    },
+    {
+      "t": "2026-08-28 16:30",
+      "v": 9659.83
+    },
+    {
+      "t": "2026-08-28 16:30",
+      "v": 9659.83
     }
   ],
   "rankings": [],
-  "last_run": "2026-08-27 16:23"
+  "last_run": "2026-08-28 16:30"
 };
 
 function refresh() {
   render(__DATA__);
-  document.getElementById('status').textContent = 'Snapshot — August 27, 2026 at 4:23 PM';
+  document.getElementById('status').textContent = 'Snapshot — August 28, 2026 at 4:30 PM';
 }
 
 refresh();
