@@ -187,9 +187,9 @@ function render(d) {
 }
 
 const __DATA__ = {
-  "total_pnl": 9659.83,
-  "n_trades": 402,
-  "n_realized": 83,
+  "total_pnl": 9874.55,
+  "n_trades": 410,
+  "n_realized": 84,
   "holdings": [
     {
       "ticker": "MU",
@@ -199,30 +199,21 @@ const __DATA__ = {
       "score": 0.0238
     },
     {
-      "ticker": "CRM",
-      "qty": 39.6747,
-      "entry": 252.05,
-      "time": "2026-08-27 16:23",
-      "score": 0.0645
-    },
-    {
       "ticker": "INTC",
       "qty": 111.7693,
       "entry": 89.47,
       "time": "2026-08-28 16:30",
       "score": 0.0545
+    },
+    {
+      "ticker": "ORCL",
+      "qty": 67.0601,
+      "entry": 149.12,
+      "time": "2026-08-31 16:16",
+      "score": 0.0393
     }
   ],
   "realized": [
-    {
-      "ticker": "INTC",
-      "buy_time": "2026-07-10 16:41",
-      "sell_time": "2026-07-13 17:11",
-      "entry": 109.84,
-      "exit": 103.12,
-      "qty": 95.332,
-      "pnl": -640.63
-    },
     {
       "ticker": "META",
       "buy_time": "2026-07-09 16:18",
@@ -393,6 +384,15 @@ const __DATA__ = {
       "exit": 150.85,
       "qty": 65.2609,
       "pnl": -71.13
+    },
+    {
+      "ticker": "CRM",
+      "buy_time": "2026-08-27 16:23",
+      "sell_time": "2026-08-31 16:16",
+      "entry": 252.05,
+      "exit": 257.54,
+      "qty": 39.1107,
+      "pnl": 214.72
     }
   ],
   "cum_pnl": [
@@ -2003,15 +2003,47 @@ const __DATA__ = {
     {
       "t": "2026-08-28 16:30",
       "v": 9659.83
+    },
+    {
+      "t": "2026-08-31 16:16",
+      "v": 9659.83
+    },
+    {
+      "t": "2026-08-31 16:16",
+      "v": 9659.83
+    },
+    {
+      "t": "2026-08-31 16:16",
+      "v": 9874.55
+    },
+    {
+      "t": "2026-08-31 16:16",
+      "v": 9874.55
+    },
+    {
+      "t": "2026-08-31 16:16",
+      "v": 9874.55
+    },
+    {
+      "t": "2026-08-31 16:16",
+      "v": 9874.55
+    },
+    {
+      "t": "2026-08-31 16:16",
+      "v": 9874.55
+    },
+    {
+      "t": "2026-08-31 16:16",
+      "v": 9874.55
     }
   ],
   "rankings": [],
-  "last_run": "2026-08-28 16:30"
+  "last_run": "2026-08-31 16:16"
 };
 
 function refresh() {
   render(__DATA__);
-  document.getElementById('status').textContent = 'Snapshot — August 28, 2026 at 4:30 PM';
+  document.getElementById('status').textContent = 'Snapshot — August 31, 2026 at 4:16 PM';
 }
 
 refresh();
