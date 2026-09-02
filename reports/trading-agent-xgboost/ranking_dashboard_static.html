@@ -187,9 +187,9 @@ function render(d) {
 }
 
 const __DATA__ = {
-  "total_pnl": 9335.42,
-  "n_trades": 414,
-  "n_realized": 85,
+  "total_pnl": 9393.03,
+  "n_trades": 422,
+  "n_realized": 86,
   "holdings": [
     {
       "ticker": "MU",
@@ -206,23 +206,14 @@ const __DATA__ = {
       "score": 0.0545
     },
     {
-      "ticker": "TXN",
-      "qty": 39.4726,
-      "entry": 253.34,
-      "time": "2026-09-01 16:15",
-      "score": 0.0414
+      "ticker": "ORCL",
+      "qty": 68.6106,
+      "entry": 145.75,
+      "time": "2026-09-02 16:20",
+      "score": 0.0403
     }
   ],
   "realized": [
-    {
-      "ticker": "AMD",
-      "buy_time": "2026-07-10 16:41",
-      "sell_time": "2026-07-15 16:50",
-      "entry": 557.89,
-      "exit": 529.14,
-      "qty": 18.5408,
-      "pnl": -533.05
-    },
     {
       "ticker": "ORCL",
       "buy_time": "2026-07-13 17:11",
@@ -393,6 +384,15 @@ const __DATA__ = {
       "exit": 141.32,
       "qty": 69.1196,
       "pnl": -539.13
+    },
+    {
+      "ticker": "TXN",
+      "buy_time": "2026-09-01 16:15",
+      "sell_time": "2026-09-02 16:20",
+      "entry": 253.34,
+      "exit": 254.8,
+      "qty": 39.461,
+      "pnl": 57.61
     }
   ],
   "cum_pnl": [
@@ -2051,15 +2051,47 @@ const __DATA__ = {
     {
       "t": "2026-09-01 16:15",
       "v": 9335.42
+    },
+    {
+      "t": "2026-09-02 16:20",
+      "v": 9335.42
+    },
+    {
+      "t": "2026-09-02 16:20",
+      "v": 9335.42
+    },
+    {
+      "t": "2026-09-02 16:20",
+      "v": 9335.42
+    },
+    {
+      "t": "2026-09-02 16:20",
+      "v": 9335.42
+    },
+    {
+      "t": "2026-09-02 16:20",
+      "v": 9335.42
+    },
+    {
+      "t": "2026-09-02 16:20",
+      "v": 9335.42
+    },
+    {
+      "t": "2026-09-02 16:20",
+      "v": 9393.03
+    },
+    {
+      "t": "2026-09-02 16:20",
+      "v": 9393.03
     }
   ],
   "rankings": [],
-  "last_run": "2026-09-01 16:15"
+  "last_run": "2026-09-02 16:20"
 };
 
 function refresh() {
   render(__DATA__);
-  document.getElementById('status').textContent = 'Snapshot — September 1, 2026 at 4:15 PM';
+  document.getElementById('status').textContent = 'Snapshot — September 2, 2026 at 4:20 PM';
 }
 
 refresh();
