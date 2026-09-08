@@ -187,9 +187,9 @@ function render(d) {
 }
 
 const __DATA__ = {
-  "total_pnl": 12291.74,
-  "n_trades": 427,
-  "n_realized": 88,
+  "total_pnl": 12357.91,
+  "n_trades": 429,
+  "n_realized": 89,
   "holdings": [
     {
       "ticker": "MU",
@@ -206,23 +206,14 @@ const __DATA__ = {
       "score": 0.0331
     },
     {
-      "ticker": "TXN",
-      "qty": 38.878,
-      "entry": 257.215,
-      "time": "2026-09-08 12:49",
-      "score": 0.0239
+      "ticker": "CRM",
+      "qty": 40.1413,
+      "entry": 249.12,
+      "time": "2026-09-08 16:23",
+      "score": 0.0174
     }
   ],
   "realized": [
-    {
-      "ticker": "MU",
-      "buy_time": "2026-07-17 16:34",
-      "sell_time": "2026-07-21 16:21",
-      "entry": 848.95,
-      "exit": 970.82,
-      "qty": 11.2546,
-      "pnl": 1371.6
-    },
     {
       "ticker": "AMD",
       "buy_time": "2026-07-21 16:21",
@@ -393,6 +384,15 @@ const __DATA__ = {
       "exit": 162.64,
       "qty": 67.2599,
       "pnl": 1136.02
+    },
+    {
+      "ticker": "TXN",
+      "buy_time": "2026-09-08 12:49",
+      "sell_time": "2026-09-08 16:23",
+      "entry": 257.21,
+      "exit": 258.92,
+      "qty": 38.8078,
+      "pnl": 66.17
     }
   ],
   "cum_pnl": [
@@ -2103,15 +2103,23 @@ const __DATA__ = {
     {
       "t": "2026-09-08 12:49",
       "v": 12291.74
+    },
+    {
+      "t": "2026-09-08 16:23",
+      "v": 12357.91
+    },
+    {
+      "t": "2026-09-08 16:23",
+      "v": 12357.91
     }
   ],
   "rankings": [],
-  "last_run": "2026-09-08 12:49"
+  "last_run": "2026-09-08 16:23"
 };
 
 function refresh() {
   render(__DATA__);
-  document.getElementById('status').textContent = 'Snapshot — September 8, 2026 at 12:49 PM';
+  document.getElementById('status').textContent = 'Snapshot — September 8, 2026 at 4:23 PM';
 }
 
 refresh();
