@@ -187,9 +187,9 @@ function render(d) {
 }
 
 const __DATA__ = {
-  "total_pnl": 9393.03,
-  "n_trades": 422,
-  "n_realized": 86,
+  "total_pnl": 12291.74,
+  "n_trades": 427,
+  "n_realized": 88,
   "holdings": [
     {
       "ticker": "MU",
@@ -199,39 +199,21 @@ const __DATA__ = {
       "score": 0.0238
     },
     {
-      "ticker": "INTC",
-      "qty": 111.7693,
-      "entry": 89.47,
-      "time": "2026-08-28 16:30",
-      "score": 0.0545
+      "ticker": "SNOW",
+      "qty": 29.8267,
+      "entry": 335.27,
+      "time": "2026-09-08 12:49",
+      "score": 0.0331
     },
     {
-      "ticker": "ORCL",
-      "qty": 68.6106,
-      "entry": 145.75,
-      "time": "2026-09-02 16:20",
-      "score": 0.0403
+      "ticker": "TXN",
+      "qty": 38.878,
+      "entry": 257.215,
+      "time": "2026-09-08 12:49",
+      "score": 0.0239
     }
   ],
   "realized": [
-    {
-      "ticker": "ORCL",
-      "buy_time": "2026-07-13 17:11",
-      "sell_time": "2026-07-16 16:16",
-      "entry": 131.54,
-      "exit": 124.21,
-      "qty": 76.0051,
-      "pnl": -557.12
-    },
-    {
-      "ticker": "AMD",
-      "buy_time": "2026-07-16 16:16",
-      "sell_time": "2026-07-17 16:34",
-      "entry": 500.94,
-      "exit": 495.76,
-      "qty": 20.8609,
-      "pnl": -108.06
-    },
     {
       "ticker": "MU",
       "buy_time": "2026-07-17 16:34",
@@ -393,6 +375,24 @@ const __DATA__ = {
       "exit": 254.8,
       "qty": 39.461,
       "pnl": 57.61
+    },
+    {
+      "ticker": "INTC",
+      "buy_time": "2026-08-28 16:30",
+      "sell_time": "2026-09-08 12:49",
+      "entry": 89.47,
+      "exit": 105.43,
+      "qty": 110.4443,
+      "pnl": 1762.69
+    },
+    {
+      "ticker": "ORCL",
+      "buy_time": "2026-09-02 16:20",
+      "sell_time": "2026-09-08 12:49",
+      "entry": 145.75,
+      "exit": 162.64,
+      "qty": 67.2599,
+      "pnl": 1136.02
     }
   ],
   "cum_pnl": [
@@ -2083,15 +2083,35 @@ const __DATA__ = {
     {
       "t": "2026-09-02 16:20",
       "v": 9393.03
+    },
+    {
+      "t": "2026-09-08 12:49",
+      "v": 9393.03
+    },
+    {
+      "t": "2026-09-08 12:49",
+      "v": 11155.72
+    },
+    {
+      "t": "2026-09-08 12:49",
+      "v": 12291.74
+    },
+    {
+      "t": "2026-09-08 12:49",
+      "v": 12291.74
+    },
+    {
+      "t": "2026-09-08 12:49",
+      "v": 12291.74
     }
   ],
   "rankings": [],
-  "last_run": "2026-09-02 16:20"
+  "last_run": "2026-09-08 12:49"
 };
 
 function refresh() {
   render(__DATA__);
-  document.getElementById('status').textContent = 'Snapshot — September 2, 2026 at 4:20 PM';
+  document.getElementById('status').textContent = 'Snapshot — September 8, 2026 at 12:49 PM';
 }
 
 refresh();
