@@ -187,17 +187,10 @@ function render(d) {
 }
 
 const __DATA__ = {
-  "total_pnl": 11994.72,
-  "n_trades": 435,
-  "n_realized": 91,
+  "total_pnl": 12915.25,
+  "n_trades": 437,
+  "n_realized": 92,
   "holdings": [
-    {
-      "ticker": "MU",
-      "qty": 11.2023,
-      "entry": 892.67,
-      "time": "2026-08-04 23:13",
-      "score": 0.0238
-    },
     {
       "ticker": "TSLA",
       "qty": 27.188,
@@ -211,18 +204,16 @@ const __DATA__ = {
       "entry": 644.38,
       "time": "2026-09-10 16:23",
       "score": 0.0223
+    },
+    {
+      "ticker": "SNOW",
+      "qty": 30.3961,
+      "entry": 328.99,
+      "time": "2026-09-11 16:19",
+      "score": 0.023
     }
   ],
   "realized": [
-    {
-      "ticker": "MSFT",
-      "buy_time": "2026-08-04 23:13",
-      "sell_time": "2026-08-05 16:21",
-      "entry": 492.81,
-      "exit": 487.46,
-      "qty": 40.3721,
-      "pnl": -215.99
-    },
     {
       "ticker": "AMD",
       "buy_time": "2026-08-05 16:21",
@@ -393,6 +384,15 @@ const __DATA__ = {
       "exit": 329.72,
       "qty": 29.8489,
       "pnl": -165.66
+    },
+    {
+      "ticker": "MU",
+      "buy_time": "2026-08-04 23:13",
+      "sell_time": "2026-09-11 16:19",
+      "entry": 892.67,
+      "exit": 975.26,
+      "qty": 11.1459,
+      "pnl": 920.54
     }
   ],
   "cum_pnl": [
@@ -2135,15 +2135,23 @@ const __DATA__ = {
     {
       "t": "2026-09-10 16:23",
       "v": 11994.72
+    },
+    {
+      "t": "2026-09-11 16:19",
+      "v": 12915.25
+    },
+    {
+      "t": "2026-09-11 16:19",
+      "v": 12915.25
     }
   ],
   "rankings": [],
-  "last_run": "2026-09-10 16:23"
+  "last_run": "2026-09-11 16:19"
 };
 
 function refresh() {
   render(__DATA__);
-  document.getElementById('status').textContent = 'Snapshot — September 10, 2026 at 4:23 PM';
+  document.getElementById('status').textContent = 'Snapshot — September 11, 2026 at 4:19 PM';
 }
 
 refresh();
