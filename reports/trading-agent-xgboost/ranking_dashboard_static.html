@@ -187,9 +187,9 @@ function render(d) {
 }
 
 const __DATA__ = {
-  "total_pnl": 12669.06,
-  "n_trades": 442,
-  "n_realized": 93,
+  "total_pnl": 12483.51,
+  "n_trades": 444,
+  "n_realized": 94,
   "holdings": [
     {
       "ticker": "META",
@@ -199,30 +199,21 @@ const __DATA__ = {
       "score": 0.0236
     },
     {
-      "ticker": "SNOW",
-      "qty": 30.3961,
-      "entry": 328.99,
-      "time": "2026-09-11 16:19",
-      "score": 0.023
-    },
-    {
       "ticker": "INTC",
       "qty": 102.8912,
       "entry": 97.19,
       "time": "2026-09-14 16:21",
       "score": 0.0254
+    },
+    {
+      "ticker": "ORCL",
+      "qty": 71.2504,
+      "entry": 140.35,
+      "time": "2026-09-15 16:23",
+      "score": 0.0471
     }
   ],
   "realized": [
-    {
-      "ticker": "INTC",
-      "buy_time": "2026-07-15 16:50",
-      "sell_time": "2026-08-10 17:11",
-      "entry": 102.99,
-      "exit": 97.52,
-      "qty": 98.7166,
-      "pnl": -539.98
-    },
     {
       "ticker": "NVDA",
       "buy_time": "2026-08-07 16:17",
@@ -393,6 +384,15 @@ const __DATA__ = {
       "exit": 358.97,
       "qty": 27.8496,
       "pnl": -246.19
+    },
+    {
+      "ticker": "SNOW",
+      "buy_time": "2026-09-11 16:19",
+      "sell_time": "2026-09-15 16:23",
+      "entry": 328.99,
+      "exit": 322.98,
+      "qty": 30.8746,
+      "pnl": -185.56
     }
   ],
   "cum_pnl": [
@@ -2163,15 +2163,23 @@ const __DATA__ = {
     {
       "t": "2026-09-14 16:21",
       "v": 12669.06
+    },
+    {
+      "t": "2026-09-15 16:23",
+      "v": 12483.51
+    },
+    {
+      "t": "2026-09-15 16:23",
+      "v": 12483.51
     }
   ],
   "rankings": [],
-  "last_run": "2026-09-14 16:21"
+  "last_run": "2026-09-15 16:23"
 };
 
 function refresh() {
   render(__DATA__);
-  document.getElementById('status').textContent = 'Snapshot — September 14, 2026 at 4:21 PM';
+  document.getElementById('status').textContent = 'Snapshot — September 15, 2026 at 4:23 PM';
 }
 
 refresh();
