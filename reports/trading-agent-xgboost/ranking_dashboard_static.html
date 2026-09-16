@@ -187,9 +187,9 @@ function render(d) {
 }
 
 const __DATA__ = {
-  "total_pnl": 12483.51,
-  "n_trades": 444,
-  "n_realized": 94,
+  "total_pnl": 12872.81,
+  "n_trades": 447,
+  "n_realized": 95,
   "holdings": [
     {
       "ticker": "META",
@@ -199,30 +199,21 @@ const __DATA__ = {
       "score": 0.0236
     },
     {
-      "ticker": "INTC",
-      "qty": 102.8912,
-      "entry": 97.19,
-      "time": "2026-09-14 16:21",
-      "score": 0.0254
-    },
-    {
       "ticker": "ORCL",
       "qty": 71.2504,
       "entry": 140.35,
       "time": "2026-09-15 16:23",
       "score": 0.0471
+    },
+    {
+      "ticker": "SNOW",
+      "qty": 30.2097,
+      "entry": 331.02,
+      "time": "2026-09-16 16:23",
+      "score": 0.0324
     }
   ],
   "realized": [
-    {
-      "ticker": "NVDA",
-      "buy_time": "2026-08-07 16:17",
-      "sell_time": "2026-08-10 17:11",
-      "entry": 223.96,
-      "exit": 217.55,
-      "qty": 89.439,
-      "pnl": -573.3
-    },
     {
       "ticker": "MSFT",
       "buy_time": "2026-08-10 17:11",
@@ -393,6 +384,15 @@ const __DATA__ = {
       "exit": 322.98,
       "qty": 30.8746,
       "pnl": -185.56
+    },
+    {
+      "ticker": "INTC",
+      "buy_time": "2026-09-14 16:21",
+      "sell_time": "2026-09-16 16:23",
+      "entry": 97.19,
+      "exit": 101.05,
+      "qty": 100.8572,
+      "pnl": 389.31
     }
   ],
   "cum_pnl": [
@@ -2171,15 +2171,27 @@ const __DATA__ = {
     {
       "t": "2026-09-15 16:23",
       "v": 12483.51
+    },
+    {
+      "t": "2026-09-16 16:23",
+      "v": 12483.51
+    },
+    {
+      "t": "2026-09-16 16:23",
+      "v": 12872.81
+    },
+    {
+      "t": "2026-09-16 16:23",
+      "v": 12872.81
     }
   ],
   "rankings": [],
-  "last_run": "2026-09-15 16:23"
+  "last_run": "2026-09-16 16:23"
 };
 
 function refresh() {
   render(__DATA__);
-  document.getElementById('status').textContent = 'Snapshot — September 15, 2026 at 4:23 PM';
+  document.getElementById('status').textContent = 'Snapshot — September 16, 2026 at 4:23 PM';
 }
 
 refresh();
