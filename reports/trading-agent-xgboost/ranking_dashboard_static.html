@@ -187,23 +187,16 @@ function render(d) {
 }
 
 const __DATA__ = {
-  "total_pnl": 13826.62,
-  "n_trades": 452,
-  "n_realized": 97,
+  "total_pnl": 13780.39,
+  "n_trades": 456,
+  "n_realized": 98,
   "holdings": [
     {
       "ticker": "META",
-      "qty": 15.024,
-      "entry": 665.6,
-      "time": "2026-09-14 16:21",
-      "score": 0.0236
-    },
-    {
-      "ticker": "MS",
-      "qty": 49.1352,
-      "entry": 203.52,
-      "time": "2026-09-17 16:17",
-      "score": 0.0438
+      "qty": 15.0207,
+      "entry": 665.75,
+      "time": "2026-09-18 16:20",
+      "score": 0.0268
     },
     {
       "ticker": "TSLA",
@@ -211,18 +204,16 @@ const __DATA__ = {
       "entry": 366.2,
       "time": "2026-09-17 16:17",
       "score": 0.0395
+    },
+    {
+      "ticker": "CRM",
+      "qty": 42.0309,
+      "entry": 237.92,
+      "time": "2026-09-18 16:20",
+      "score": 0.0296
     }
   ],
   "realized": [
-    {
-      "ticker": "TXN",
-      "buy_time": "2026-08-10 17:11",
-      "sell_time": "2026-08-12 20:47",
-      "entry": 280.44,
-      "exit": 276.59,
-      "qty": 35.3498,
-      "pnl": -136.1
-    },
     {
       "ticker": "ORCL",
       "buy_time": "2026-08-22 12:38",
@@ -393,6 +384,15 @@ const __DATA__ = {
       "exit": 338.39,
       "qty": 30.1468,
       "pnl": 222.18
+    },
+    {
+      "ticker": "MS",
+      "buy_time": "2026-09-17 16:17",
+      "sell_time": "2026-09-18 16:20",
+      "entry": 203.52,
+      "exit": 202.58,
+      "qty": 49.1808,
+      "pnl": -46.23
     }
   ],
   "cum_pnl": [
@@ -2203,15 +2203,31 @@ const __DATA__ = {
     {
       "t": "2026-09-17 16:17",
       "v": 13826.62
+    },
+    {
+      "t": "2026-09-18 16:20",
+      "v": 13780.39
+    },
+    {
+      "t": "2026-09-18 16:20",
+      "v": 13780.39
+    },
+    {
+      "t": "2026-09-18 16:20",
+      "v": 13780.39
+    },
+    {
+      "t": "2026-09-18 16:20",
+      "v": 13780.39
     }
   ],
   "rankings": [],
-  "last_run": "2026-09-17 16:17"
+  "last_run": "2026-09-18 16:20"
 };
 
 function refresh() {
   render(__DATA__);
-  document.getElementById('status').textContent = 'Snapshot — September 17, 2026 at 4:17 PM';
+  document.getElementById('status').textContent = 'Snapshot — September 18, 2026 at 4:20 PM';
 }
 
 refresh();
