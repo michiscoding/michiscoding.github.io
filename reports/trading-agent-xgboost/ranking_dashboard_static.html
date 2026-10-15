@@ -187,9 +187,9 @@ function render(d) {
 }
 
 const __DATA__ = {
-  "total_pnl": 13137.74,
-  "n_trades": 464,
-  "n_realized": 100,
+  "total_pnl": 12951.21,
+  "n_trades": 468,
+  "n_realized": 101,
   "holdings": [
     {
       "ticker": "TSLA",
@@ -213,23 +213,14 @@ const __DATA__ = {
       "score": 0.0361
     },
     {
-      "ticker": "CAT",
-      "qty": 13.3515,
-      "entry": 748.98,
-      "time": "2026-10-14 16:23",
-      "score": 0.0287
+      "ticker": "MSFT",
+      "qty": 18.5377,
+      "entry": 539.44,
+      "time": "2026-10-15 16:46",
+      "score": 0.0295
     }
   ],
   "realized": [
-    {
-      "ticker": "INTC",
-      "buy_time": "2026-08-22 12:38",
-      "sell_time": "2026-08-27 16:23",
-      "entry": 90.07,
-      "exit": 92.09,
-      "qty": 115.2061,
-      "pnl": 232.72
-    },
     {
       "ticker": "SNOW",
       "buy_time": "2026-08-26 16:19",
@@ -400,6 +391,15 @@ const __DATA__ = {
       "exit": 914.13,
       "qty": 9.1367,
       "pnl": -1663.15
+    },
+    {
+      "ticker": "CAT",
+      "buy_time": "2026-10-14 16:23",
+      "sell_time": "2026-10-15 16:46",
+      "entry": 748.98,
+      "exit": 735.64,
+      "qty": 13.9828,
+      "pnl": -186.53
     }
   ],
   "cum_pnl": [
@@ -2258,15 +2258,31 @@ const __DATA__ = {
     {
       "t": "2026-10-14 16:23",
       "v": 13137.74
+    },
+    {
+      "t": "2026-10-15 16:46",
+      "v": 12951.21
+    },
+    {
+      "t": "2026-10-15 16:46",
+      "v": 12951.21
+    },
+    {
+      "t": "2026-10-15 16:46",
+      "v": 12951.21
+    },
+    {
+      "t": "2026-10-15 16:46",
+      "v": 12951.21
     }
   ],
   "rankings": [],
-  "last_run": "2026-10-14 16:23"
+  "last_run": "2026-10-15 16:46"
 };
 
 function refresh() {
   render(__DATA__);
-  document.getElementById('status').textContent = 'Snapshot — October 14, 2026 at 4:23 PM';
+  document.getElementById('status').textContent = 'Snapshot — October 15, 2026 at 4:46 PM';
 }
 
 refresh();
